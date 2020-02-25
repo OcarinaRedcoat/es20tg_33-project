@@ -53,4 +53,7 @@ public class Tourney {
     public void setStatus(Tourney.Status status){
         this.status = status;
     }
+
+    public void closeTourney() {}
+
 }
