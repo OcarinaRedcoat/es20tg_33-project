@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TourneyConjunction {
+
+
     public TourneyConjunction(){}
 
     public TourneyDto createTourney(TourneyDto tourneyDto){

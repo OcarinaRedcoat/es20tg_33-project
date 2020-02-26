@@ -1,16 +1,19 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.tourney.service
 
+import org.springframework.beans.factory.annotation.Autowired
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.Tourney
-import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyConjunction
+import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyService
 import spock.lang.Specification
 
 public class GetOpenTourneysTest extends Specification {
 
-    def tourneyConj
 
-    def setup() {
-        tourneyConj = TourneyConjunction()
-    }
+    @Autowired
+    TourneyService tourneyService
+
+    @Autowired
+    TourneyRepository tourneyRepository
 
     def "no tourney open"(){
         when:
@@ -24,13 +27,13 @@ public class GetOpenTourneysTest extends Specification {
         given: "two tourneys"
         def tourney = new Tourney()
         tourney.setId(1)
-        tourneyConj.addTourney(tourney)
+        tourneyRepository.save(tourney)
         tourney = new Tourney()
         tourney.setId(2)
-        tourneyConj.addTourney(tourney)
+        tourneyRepository.save(tourney)
 
         when:
-        def result = tourneyConj.getOpenTourneys()
+        def result = tourneyService.getOpenTourneys()
 
         then:
         result.size() == 2

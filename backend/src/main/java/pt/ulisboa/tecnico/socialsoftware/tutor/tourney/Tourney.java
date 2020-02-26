@@ -1,16 +1,24 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.tourney;
 
 import java.time.LocalDateTime;
+import javax.persistence.*;
 
+@Entity
+@Table(name = "tourneys")
 public class Tourney {
 
     public enum Status {CLOSED, OPEN}
 
-    private int numberOfQuestions;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    //TODO topicConjunction
-    private LocalDateTime availableDate, conclusionDate;
+
+    @Enumerated(EnumType.STRING)
     private Tourney.Status status;
+
+    private int numberOfQuestions;
+    // TODO topicConjunction
+    private LocalDateTime availableDate, conclusionDate;
 
     public Tourney(){}
 
