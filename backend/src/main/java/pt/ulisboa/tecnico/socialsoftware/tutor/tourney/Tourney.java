@@ -1,6 +1,11 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.tourney;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.*;
 
 @Entity
@@ -17,8 +22,19 @@ public class Tourney {
     private Tourney.Status status;
 
     private int numberOfQuestions;
-    // TODO topicConjunction
+
     private LocalDateTime availableDate, conclusionDate;
+
+    public List<Topic> getTopics() {
+        return topics;
+    }
+
+    public void setTopics(List<Topic> topics) {
+        this.topics = topics;
+    }
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tourney", fetch=FetchType.LAZY, orphanRemoval=true)
+    private List<Topic> topics = new ArrayList<>();
 
     public Tourney(){}
 
@@ -38,11 +54,9 @@ public class Tourney {
         this.id = id;
     }
 
-    public LocalDateTime getAvailableDate(){
-        return availableDate;
-    }
+    public LocalDateTime getAvailableDate(){ return availableDate; }
 
-    public void setNumberOfQuestions(LocalDateTime availableDate){
+    public void setAvailableDate(LocalDateTime availableDate){
         this.availableDate = availableDate;
     }
 

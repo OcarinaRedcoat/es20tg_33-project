@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 public class TourneyDto implements Serializable {
     private int tourneyNumberOfQuestions;
     private int tourneyId;
-    //TODO topicConjunction
     private LocalDateTime tourneyAvailableDate, tourneyConclusionDate;
     private Tourney.Status tourneyStatus;
 
@@ -15,7 +14,6 @@ public class TourneyDto implements Serializable {
     public TourneyDto(Tourney tourney){
         this.tourneyNumberOfQuestions = tourney.getNumberOfQuestions();
         this.tourneyId = tourney.getId();
-        //TODO this.topicConjunction = tourney.getTopicConjunction();
         this.tourneyAvailableDate = tourney.getAvailableDate();
         this.tourneyConclusionDate = tourney.getConclusionDate();
         this.tourneyStatus = tourney.getStatus();

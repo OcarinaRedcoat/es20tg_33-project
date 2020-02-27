@@ -29,19 +29,6 @@ class CreateTourneyTest extends Specification{
         topicConjunction = new TopicConjunction()
     }
 
-    /* In case we want to implement a name feature for a tourney
-    def "tourney with the same name already exists"(){
-        expect: false
-    }
-
-    def "tourney name is blank"(){
-        expect: false
-    }
-
-    def "tourney name is empty"(){
-        expect: false
-    }*/
-
     def "tourney with no start date"(){
         // an exception is thrown
         expect: false
