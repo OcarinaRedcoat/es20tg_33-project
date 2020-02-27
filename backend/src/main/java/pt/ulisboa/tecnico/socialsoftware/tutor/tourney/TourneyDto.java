@@ -1,13 +1,18 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.tourney;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class TourneyDto implements Serializable {
-    private int tourneyNumberOfQuestions;
-    private int tourneyId;
-    private LocalDateTime tourneyAvailableDate, tourneyConclusionDate;
+    private Integer tourneyNumberOfQuestions;
+    private Integer tourneyId;
+    private String tourneyAvailableDate, tourneyConclusionDate;
     private Tourney.Status tourneyStatus;
+
+    private ArrayList<TopicDto> topics = new ArrayList<>();
 
     public TourneyDto(){}
 
@@ -17,9 +22,10 @@ public class TourneyDto implements Serializable {
         this.tourneyAvailableDate = tourney.getAvailableDate();
         this.tourneyConclusionDate = tourney.getConclusionDate();
         this.tourneyStatus = tourney.getStatus();
+        //TODO this.topics = tourney.getTopics();
     }
 
-    public int getTourneyNumberOfQuestions(){
+    public Integer getTourneyNumberOfQuestions(){
         return tourneyNumberOfQuestions;
     }
 
@@ -27,7 +33,7 @@ public class TourneyDto implements Serializable {
         this.tourneyNumberOfQuestions = tourneyNumberOfQuestions;
     }
 
-    public int getTourneyId(){
+    public Integer getTourneyId(){
         return tourneyId;
     }
 
@@ -35,19 +41,19 @@ public class TourneyDto implements Serializable {
         this.tourneyId = tourneyId;
     }
 
-    public LocalDateTime getTourneyAvailableDate(){
+    public String getTourneyAvailableDate(){
         return tourneyAvailableDate;
     }
 
-    public void setTourneyNumberOfQuestions(LocalDateTime tourneyAvailableDate){
+    public void setTourneyAvailableDate(String tourneyAvailableDate){
         this.tourneyAvailableDate = tourneyAvailableDate;
     }
 
-    public LocalDateTime getTourneyConclusionDate(){
+    public String getTourneyConclusionDate(){
         return tourneyConclusionDate;
     }
 
-    public void setTourneyConclusionDate(LocalDateTime tourneyConclusionDate){
+    public void setTourneyConclusionDate(String tourneyConclusionDate){
         this.tourneyConclusionDate = tourneyConclusionDate;
     }
 
@@ -57,5 +63,13 @@ public class TourneyDto implements Serializable {
 
     public void setTourneyStatus(Tourney.Status tourneyStatus){
         this.tourneyStatus = tourneyStatus;
+    }
+
+    public ArrayList<TopicDto> getTopics() {
+        return topics;
+    }
+
+    public void setTopics(ArrayList<TopicDto> topics) {
+        this.topics = topics;
     }
 }

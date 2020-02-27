@@ -16,29 +16,23 @@ public class Tourney {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Enumerated(EnumType.STRING)
     private Tourney.Status status;
 
-    private int numberOfQuestions;
+    private Integer numberOfQuestions;
 
-    private LocalDateTime availableDate, conclusionDate;
-
-    public List<Topic> getTopics() {
-        return topics;
-    }
-
-    public void setTopics(List<Topic> topics) {
-        this.topics = topics;
-    }
+    private String availableDate, conclusionDate;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "tourney", fetch=FetchType.LAZY, orphanRemoval=true)
     private List<Topic> topics = new ArrayList<>();
 
     public Tourney(){}
 
-    public int getNumberOfQuestions(){
+    public Tourney(TourneyDto tourneyDto){}
+
+    public Integer getNumberOfQuestions(){
         return numberOfQuestions;
     }
 
@@ -46,7 +40,7 @@ public class Tourney {
         this.numberOfQuestions = numberOfQuestions;
     }
 
-    public int getId(){
+    public Integer getId(){
         return id;
     }
 
@@ -54,17 +48,17 @@ public class Tourney {
         this.id = id;
     }
 
-    public LocalDateTime getAvailableDate(){ return availableDate; }
+    public String getAvailableDate(){ return availableDate; }
 
-    public void setAvailableDate(LocalDateTime availableDate){
+    public void setAvailableDate(String availableDate){
         this.availableDate = availableDate;
     }
 
-    public LocalDateTime getConclusionDate(){
+    public String getConclusionDate(){
         return conclusionDate;
     }
 
-    public void setConclusionDate(LocalDateTime conclusionDate){
+    public void setConclusionDate(String conclusionDate){
         this.conclusionDate = conclusionDate;
     }
 
@@ -77,5 +71,13 @@ public class Tourney {
     }
 
     public void closeTourney() {}
+
+    public List<Topic> getTopics() {
+        return topics;
+    }
+
+    public void setTopics(List<Topic> topics) {
+        this.topics = topics;
+    }
 
 }
