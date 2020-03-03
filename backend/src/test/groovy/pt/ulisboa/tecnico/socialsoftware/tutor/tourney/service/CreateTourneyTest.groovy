@@ -3,10 +3,9 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.tourney.service
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.TopicConjunction
-import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.Tourney
-import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyConjunction
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyService
@@ -48,7 +47,7 @@ class CreateTourneyTest extends Specification{
     }
 
     def "create a tourney"(){
-        given: "creating a new tourney"
+        given: "new tourney creation"
         tourney.setTourneyNumberOfQuestions(QUESTION_NUMBER)
 
         when:
@@ -66,28 +65,69 @@ class CreateTourneyTest extends Specification{
     }
 
     def "tourney with no start date"(){
-        // an exception is thrown
-        expect: false
+        given: "a tourney with no start date"
+        tourney.setTourneyNumberOfQuestions(QUESTION_NUMBER)
+        tourney.setTourneyAvailableDate(null)
+
+        when:
+        tourneyService.createTourney(tourney)
+
+        then:
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.TOURNEY_NOT_CONSISTENT
+        tourneyRepository.count() == 0L
     }
 
     def "tourney with no end date"(){
-        // an exception is thrown
-        expect: false
+        given: "a tourney with no end date"
+        tourney.setTourneyNumberOfQuestions(QUESTION_NUMBER)
+        tourney.setTourneyConclusionDate(null)
+
+        when:
+        tourneyService.createTourney(tourney)
+
+        then:
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.TOURNEY_NOT_CONSISTENT
+        tourneyRepository.count() == 0L
     }
 
     def "tourney with start date bigger than end date"(){
-        // an exception is thrown
-        expect: false
+        given: "a tourney with start date bigger than the end date"
+        tourney.setTourneyNumberOfQuestions(QUESTION_NUMBER)
+        tourney.setTourneyConclusionDate(getAvailableDate().minusDays(1).format(formatter))
+
+        when:
+        tourneyService.createTourney(tourney)
+
+        then:
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.TOURNEY_NOT_CONSISTENT
+        tourneyRepository.count() == 0L
     }
 
     def "tourney topic is empty"(){
-        // an exception is thrown
-        expect: false
+        given: "a tourney with no topics"
+        tourney.setTourneyNumberOfQuestions(QUESTION_NUMBER)
+        tourney.setTopics(null)
+
+        when:
+        tourneyService.createTourney(tourney)
+
+        then:
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.TOURNEY_NOT_CONSISTENT
+        tourneyRepository.count() == 0L
     }
 
     def "number of questions is empty"(){
-        // an exception is thrown
-        expect: false
+        when: "creating a tourney without a given number of questions"
+        tourneyService.createTourney(tourney)
+
+        then:
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.TOURNEY_NOT_CONSISTENT
+        tourneyRepository.count() == 0L
     }
 
     @TestConfiguration

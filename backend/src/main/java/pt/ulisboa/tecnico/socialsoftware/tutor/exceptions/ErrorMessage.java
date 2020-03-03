@@ -53,7 +53,9 @@ public enum ErrorMessage {
     FENIX_CONFIGURATION_ERROR("Incorrect server configuration files for fenix"),
 
 
-    ACCESS_DENIED("You do not have permission to view this resource");
+    ACCESS_DENIED("You do not have permission to view this resource"),
+
+    TOURNEY_NOT_CONSISTENT("Field %s of tourney is not consistent.");
 
     public final String label;
 
