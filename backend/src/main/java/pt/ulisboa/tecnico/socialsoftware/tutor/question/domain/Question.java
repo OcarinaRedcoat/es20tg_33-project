@@ -70,6 +70,10 @@ public class Question {
     @JoinColumn(name = "course_id")
     private Course course;
 
+    @ManyToOne
+    @JoinColumn(name = "thread_id")
+    private Thread thread;
+
     public Question() {
     }
 
@@ -183,6 +187,14 @@ public class Question {
         this.creationDate = creationDate;
     }
 
+    public Thread getThread() {
+        return thread;
+    }
+
+    public void setThread(Thread thread) {
+        this.thread = thread;
+    }
+
     public Course getCourse() {
         return course;
     }
@@ -222,8 +234,12 @@ public class Question {
                 ", numberOfCorrect=" + numberOfCorrect +
                 ", status=" + status +
                 ", image=" + image +
+                ", creationDate=" + creationDate +
                 ", options=" + options +
+                ", quizQuestions=" + quizQuestions +
                 ", topics=" + topics +
+                ", course=" + course +
+                ", thread=" + thread +
                 '}';
     }
 

@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.question.dto;
 
 import org.springframework.data.annotation.Transient;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Thread;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
 
 import java.io.Serializable;
@@ -26,6 +27,7 @@ public class QuestionDto implements Serializable {
     private ImageDto image;
     private List<TopicDto> topics = new ArrayList<>();
     private Integer sequence;
+    private Thread thread;
 
     @Transient
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -44,6 +46,7 @@ public class QuestionDto implements Serializable {
         this.status = question.getStatus().name();
         this.options = question.getOptions().stream().map(OptionDto::new).collect(Collectors.toList());
         this.topics = question.getTopics().stream().sorted(Comparator.comparing(Topic::getName)).map(TopicDto::new).collect(Collectors.toList());
+        this.thread = question.getThread();
 
         if (question.getImage() != null)
             this.image = new ImageDto(question.getImage());
@@ -156,21 +159,31 @@ public class QuestionDto implements Serializable {
         this.creationDate = creationDate;
     }
 
+    public Thread getThread() {
+        return thread;
+    }
+
+    public void setThread(Thread thread) {
+        this.thread = thread;
+    }
+
     @Override
     public String toString() {
         return "QuestionDto{" +
                 "id=" + id +
-                ", id=" + id +
+                ", key=" + key +
                 ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
                 ", difficulty=" + difficulty +
                 ", numberOfAnswers=" + numberOfAnswers +
                 ", numberOfCorrect=" + numberOfCorrect +
+                ", creationDate='" + creationDate + '\'' +
                 ", status='" + status + '\'' +
                 ", options=" + options +
                 ", image=" + image +
                 ", topics=" + topics +
                 ", sequence=" + sequence +
+                ", thread=" + thread +
                 '}';
     }
 }
