@@ -1,12 +1,14 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.tourney.service
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.Tourney
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyService
 import spock.lang.Specification
 
-public class GetOpenTourneysTest extends Specification {
+@DataJpaTest
+class GetOpenTourneysTest extends Specification {
 
 
     @Autowired
@@ -17,7 +19,7 @@ public class GetOpenTourneysTest extends Specification {
 
     def "no tourney open"(){
         when:
-        def result = tourneyConj.getOpenTourneys()
+        def result = tourneyService.getOpenTourneys()
 
         then:
         result.size() == 0
