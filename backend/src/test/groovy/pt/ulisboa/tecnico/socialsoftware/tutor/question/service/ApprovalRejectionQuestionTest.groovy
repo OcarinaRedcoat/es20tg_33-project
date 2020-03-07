@@ -1,53 +1,109 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.service
 
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
 import spock.lang.Specification
 
 class ApprovalRejectionQuestionTest extends Specification {
+    public static final String COURSE_NAME = "Software Architecture"
+    public static final String ACRONYM = "AS1"
+    public static final String ACADEMIC_TERM = "1 SEM"
+    public static final String QUESTION_TITLE = 'question title'
+    public static final String QUESTION_CONTENT = 'question content'
+    public static final String OPTION_CONTENT = "optionId content"
+    public static final String JUSTIFICATION_CONTENT = "justification content"
 
-    def questionService
+    @Autowired
+    QuestionService questionService
+
+    @Autowired
+    OptionRepository optionRepository
+
+    @Autowired
+    QuestionRepository questionRepository
+
+    def question
+    def option
+    def optionF
 
     def setup() {
-        questionService = new QuestionService()
+        given: "create a question"
+        question = new Question()
+        question.setKey(1)
+        question.setContent(QUESTION_TITLE)
+        question.setContent(QUESTION_CONTENT)
+        question.setStatus(Question.Status.PENDING)
+        and: 'and four options'
+        option = new Option()
+        option.setContent(OPTION_CONTENT)
+        option.setCorrect(true)
+        option.setQuestion(question)
+        question.addOption(option)
+        optionRepository.save(option)
+        optionF = new Option()      
+        optionF.setContent(OPTION_CONTENT)
+        optionF.setCorrect(false)
+        optionF.setQuestion(question)
+        question.addOption(optionF)
+        optionRepository.save(optionF)
+        questionRepository.save(question)
     }
 
-    def "approve a question"() {
-        //A teacher approves a valid question
-        expect: false
-    }
+    def "approve a valid question"() {
+        when:
+        questionService.approveQuestion(question.getId()) //TODO create method
 
-    def "an approved question is in the repository"() {
-        //An approved question is in the repository of available questions
-        expect: false
+        then: "the question is approved successfully"
+        questionRepository.count() == 1L
+        def result = questionRepository.findAll().get(0)
+        result.getId() != null
+        result.getKey() == 1
+        result.getStatus() == Question.Status.AVAILABLE
+        result.getTitle() == QUESTION_TITLE
+        result.getContent() == QUESTION_CONTENT
+        result.getOptions().size() == 2
     }
 
     def "reject a question with justification"() {
-        //A teacher rejects a valid question
-        expect: false
+        when:
+        questionService.rejectQuestion(question.getId(), JUSTIFICATION_CONTENT)   //TODO create method
+
+        then: "the question is rejected successfully"
+        questionRepository.count() == 1L
+        def result = questionRepository.findAll().get(0)
+        result.getId() != null
+        result.getKey() == 1
+        result.getStatus() == Question.Status.REJECTED
+        result.getTitle() == QUESTION_TITLE
+        result.getContent() == QUESTION_CONTENT
+        result.getJustification() == JUSTIFICATION_CONTENT //TODO create method
+        result.getOptions().size() == 2
     }
 
-    def "a rejected question is in the repository"() {
-        //The question rejected by the teacher is in the repository waiting for the students review and resubmit
-        expect: false
+    def "reject a question with invalid justification"() {
+        when:
+        questionService.rejectQuestion(question.getId(),null)
+
+        then: "an exception is thrown"
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.QUESTION_MISSING_JUSTIFICATION
+        questionRepository.count() == 0L
     }
 
-    def "reject a question without justification"() {
-        //The teacher rejects a question without justifying it, an exception is thrown
-        expect: false
-    }
+    @TestConfiguration
+    static class QuestionServiceImplTestContextConfiguration {
 
-    def "question approved without a title"() {
-        //The teacher tries to approve a question without a title, an exception is thrown
-        expect: false
-    }
-
-    def "question approved with less than four options"() {
-        //The teacher tries to approve a question without four options for the question, as exception is thrown
-        expect: false
-    }
-
-    def "question approved with more than one correct answer"() {
-        //The teacher tries to approve a question with more than one option as the correct one, an exception is thrown
-        expect: false
+        @Bean
+        QuestionService questionService() {
+            return new QuestionService()
+        }
     }
 }
