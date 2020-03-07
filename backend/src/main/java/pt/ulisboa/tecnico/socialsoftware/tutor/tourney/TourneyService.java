@@ -23,7 +23,7 @@ public class TourneyService {
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public List<TourneyDto> getOpenTourneys() {
-        return tourneyRepository.findByStatus(Tourney.Status.OPEN).stream()
+        return tourneyRepository.findByStatus(Tourney.Status.OPEN.name()).stream()
                 .map(TourneyDto::new)
                 .sorted(Comparator.comparing(TourneyDto::getTourneyAvailableDate))
                 .collect(Collectors.toList());

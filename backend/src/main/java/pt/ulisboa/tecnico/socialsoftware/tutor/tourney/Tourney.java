@@ -28,6 +28,13 @@ public class Tourney {
 
     public Tourney(){}
 
+    public Tourney(Integer numberOfQuestions, String availableDate, String conclusionDate){
+        this.numberOfQuestions = numberOfQuestions;
+        this.availableDate = availableDate;
+        this.conclusionDate = conclusionDate;
+        this.status = Tourney.Status.OPEN;
+    }
+
     public Tourney(TourneyDto tourneyDto){}
 
     public Integer getNumberOfQuestions(){

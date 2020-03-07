@@ -3,7 +3,6 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.tourney;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class TourneyDto implements Serializable {

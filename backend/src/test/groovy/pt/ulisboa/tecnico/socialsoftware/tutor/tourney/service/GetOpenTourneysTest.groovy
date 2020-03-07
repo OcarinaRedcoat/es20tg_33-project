@@ -2,6 +2,8 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.tourney.service
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.Tourney
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyService
@@ -10,6 +12,10 @@ import spock.lang.Specification
 @DataJpaTest
 class GetOpenTourneysTest extends Specification {
 
+    public static final Integer TOURNEY_ONE_NUMBER_QUESTIONS = 1
+    public static final Integer TOURNEY_TWO_NUMBER_QUESTIONS = 2
+    public static final String TOURNEY_AVAILABLE_DATE = "2020-01-01 21:12"
+    public static final String TOURNEY_CONCLUSION_DATE = "2020-01-06 21:12"
 
     @Autowired
     TourneyService tourneyService
@@ -27,11 +33,9 @@ class GetOpenTourneysTest extends Specification {
 
     def "two tourneys open"(){
         given: "two tourneys"
-        def tourney = new Tourney()
-        tourney.setId(1)
+        def tourney = new Tourney(TOURNEY_ONE_NUMBER_QUESTIONS, TOURNEY_AVAILABLE_DATE, TOURNEY_CONCLUSION_DATE)
         tourneyRepository.save(tourney)
-        tourney = new Tourney()
-        tourney.setId(2)
+        tourney = new Tourney(TOURNEY_TWO_NUMBER_QUESTIONS, TOURNEY_AVAILABLE_DATE, TOURNEY_CONCLUSION_DATE)
         tourneyRepository.save(tourney)
 
         when:
@@ -40,8 +44,17 @@ class GetOpenTourneysTest extends Specification {
         then:
         result.size() == 2
         and:
-        result.get(0).getId() == 1
-        result.get(1).getId() == 2
+        result.get(0).getTourneyNumberOfQuestions() == 1
+        result.get(1).getTourneyNumberOfQuestions() == 2
+    }
+
+    @TestConfiguration
+    static class TourneyServiceImplTestContextConfiguration {
+
+        @Bean
+        TourneyService tourneyService() {
+            return new TourneyService()
+        }
     }
 
 }
