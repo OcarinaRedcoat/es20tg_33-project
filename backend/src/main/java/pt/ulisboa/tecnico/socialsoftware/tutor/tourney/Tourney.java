@@ -35,7 +35,14 @@ public class Tourney {
         this.status = Tourney.Status.OPEN;
     }
 
-    public Tourney(TourneyDto tourneyDto){}
+    public Tourney(TourneyDto tourneyDto){
+        this.numberOfQuestions = tourneyDto.getTourneyNumberOfQuestions();
+        this.id = tourneyDto.getTourneyId();
+        this.availableDate = tourneyDto.getTourneyAvailableDate();
+        this.conclusionDate = tourneyDto.getTourneyConclusionDate();
+        this.status = tourneyDto.getTourneyStatus();
+        this.topics = tourneyDto.getTourneyTopics();
+    }
 
     public Integer getNumberOfQuestions(){
         return numberOfQuestions;

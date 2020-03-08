@@ -1,9 +1,10 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.tourney;
 
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 public class TourneyDto implements Serializable {
     private Integer tourneyNumberOfQuestions;
@@ -11,7 +12,7 @@ public class TourneyDto implements Serializable {
     private String tourneyAvailableDate, tourneyConclusionDate;
     private Tourney.Status tourneyStatus;
 
-    private ArrayList<TopicDto> topics = new ArrayList<>();
+    private List<Topic> topics = new ArrayList<>();
 
     public TourneyDto(){}
 
@@ -21,7 +22,7 @@ public class TourneyDto implements Serializable {
         this.tourneyAvailableDate = tourney.getAvailableDate();
         this.tourneyConclusionDate = tourney.getConclusionDate();
         this.tourneyStatus = tourney.getStatus();
-        //TODO this.topics = tourney.getTopics();
+        this.topics = tourney.getTopics();
     }
 
     public Integer getTourneyNumberOfQuestions(){
@@ -64,11 +65,11 @@ public class TourneyDto implements Serializable {
         this.tourneyStatus = tourneyStatus;
     }
 
-    public ArrayList<TopicDto> getTopics() {
+    public List<Topic> getTourneyTopics() {
         return topics;
     }
 
-    public void setTopics(ArrayList<TopicDto> topics) {
+    public void setTourneyTopics(List<Topic> topics) {
         this.topics = topics;
     }
 }

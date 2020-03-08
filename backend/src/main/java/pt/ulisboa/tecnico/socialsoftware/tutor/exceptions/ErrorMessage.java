@@ -55,7 +55,9 @@ public enum ErrorMessage {
 
     ACCESS_DENIED("You do not have permission to view this resource"),
 
-    TOURNEY_NOT_CONSISTENT("Field %s of tourney is not consistent.");
+    TOURNEY_NOT_CONSISTENT("Field %s of tourney is not consistent."),
+    TOURNEY_AVAILABLEDATE_BIGGER_THAN_CONCLUSIONDATE("Available date is bigger than Conclusion date."),
+    TOURNEY_DATE_WRONG_FORMAT("Date format not according to the expected.");
 
     public final String label;
 
