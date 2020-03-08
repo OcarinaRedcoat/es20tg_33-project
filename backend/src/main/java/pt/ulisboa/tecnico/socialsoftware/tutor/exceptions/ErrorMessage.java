@@ -61,8 +61,6 @@ public enum ErrorMessage {
 
     CANNOT_OPEN_FILE("Cannot open file");
 
-    CANNOT_OPEN_FILE("Cannot open file");
-
     public final String label;
 
     ErrorMessage(String label) {
