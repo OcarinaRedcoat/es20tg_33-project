@@ -32,11 +32,12 @@ public class Tourney {
 
     public Tourney(){}
 
-    public Tourney(Integer numberOfQuestions, String availableDate, String conclusionDate){
+    public Tourney(Integer numberOfQuestions, String availableDate, String conclusionDate, User creator){
         this.numberOfQuestions = numberOfQuestions;
         this.availableDate = availableDate;
         this.conclusionDate = conclusionDate;
         this.status = Tourney.Status.OPEN;
+        this.creator = creator;
     }
 
     public Tourney(TourneyDto tourneyDto, User user){

@@ -57,7 +57,9 @@ public enum ErrorMessage {
 
     TOURNEY_NOT_CONSISTENT("Field %s of tourney is not consistent."),
     TOURNEY_AVAILABLEDATE_BIGGER_THAN_CONCLUSIONDATE("Available date is bigger than Conclusion date."),
-    TOURNEY_DATE_WRONG_FORMAT("Date format not according to the expected.");
+    TOURNEY_DATE_WRONG_FORMAT("Date format not according to the expected."),
+
+    CANNOT_OPEN_FILE("Cannot open file");
 
     CANNOT_OPEN_FILE("Cannot open file");
 
