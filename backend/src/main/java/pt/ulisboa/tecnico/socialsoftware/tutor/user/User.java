@@ -8,6 +8,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.Importable;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
+import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.Tourney;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -56,6 +57,10 @@ public class User implements UserDetails, Importable {
 
     @ManyToMany
     private Set<CourseExecution> courseExecutions = new HashSet<>();
+
+    @OneToOne
+    @JoinColumn(name="tourney_id")
+    private Tourney tourney;
 
     public User() {
     }

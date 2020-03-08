@@ -1,19 +1,23 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.tourney.service
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.Tourney
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyService
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import spock.lang.Specification
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-
+@DataJpaTest
 class CreateTourneyTest extends Specification{
     static final int QUESTION_NUMBER = 5
 
@@ -29,6 +33,9 @@ class CreateTourneyTest extends Specification{
     @Autowired
     TourneyRepository tourneyRepository
 
+    @Autowired
+    UserRepository userRepository
+
 
     def setup(){
         tourney = new TourneyDto()
@@ -42,35 +49,40 @@ class CreateTourneyTest extends Specification{
 
         def topics = new ArrayList()
         topics.add(topicDto)
-        tourney.setTopics(topics)
+        tourney.setTourneyTopics(topics)
 
+        def user = new User("name", "username",1, User.Role.STUDENT)
+        userRepository.save(user)
     }
 
     def "create a tourney"(){
         given: "new tourney creation"
+        def userId = userRepository.findAll().get(0).getId()
         tourney.setTourneyNumberOfQuestions(QUESTION_NUMBER)
 
         when:
-        tourneyService.createTourney(tourney)
+        tourneyService.createTourney(tourney, userId)
 
         then:
         tourneyRepository.count() == 1L
         def result = tourneyRepository.findAll().get(0)
         result.getId() != null
-        result.getAvailableDate().format(formatter) == availableDate.format(formatter)
-        result.getConclusionDate().format(formatter) == conclusionDate.format(formatter)
+        result.getAvailableDate().equals(availableDate.format(formatter))
+        result.getConclusionDate().equals(conclusionDate.format(formatter))
         result.getTopics().size() == 1
         result.getStatus() == Tourney.Status.CLOSED
         result.getNumberOfQuestions() == QUESTION_NUMBER
+        result.getCreator().getKey() == userId
     }
 
     def "tourney with no start date"(){
         given: "a tourney with no start date"
+        def userId = userRepository.findAll().get(0).getId()
         tourney.setTourneyNumberOfQuestions(QUESTION_NUMBER)
         tourney.setTourneyAvailableDate(null)
 
         when:
-        tourneyService.createTourney(tourney)
+        tourneyService.createTourney(tourney, userId)
 
         then:
         def exception = thrown(TutorException)
@@ -80,11 +92,12 @@ class CreateTourneyTest extends Specification{
 
     def "tourney with no end date"(){
         given: "a tourney with no end date"
+        def userId = userRepository.findAll().get(0).getId()
         tourney.setTourneyNumberOfQuestions(QUESTION_NUMBER)
         tourney.setTourneyConclusionDate(null)
 
         when:
-        tourneyService.createTourney(tourney)
+        tourneyService.createTourney(tourney, userId)
 
         then:
         def exception = thrown(TutorException)
@@ -94,25 +107,27 @@ class CreateTourneyTest extends Specification{
 
     def "tourney with start date bigger than end date"(){
         given: "a tourney with start date bigger than the end date"
+        def userId = userRepository.findAll().get(0).getId()
         tourney.setTourneyNumberOfQuestions(QUESTION_NUMBER)
         tourney.setTourneyConclusionDate(getAvailableDate().minusDays(1).format(formatter))
 
         when:
-        tourneyService.createTourney(tourney)
+        tourneyService.createTourney(tourney, userId)
 
         then:
         def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.TOURNEY_NOT_CONSISTENT
+        exception.getErrorMessage() == ErrorMessage.TOURNEY_AVAILABLEDATE_BIGGER_THAN_CONCLUSIONDATE
         tourneyRepository.count() == 0L
     }
 
-    def "tourney topic is empty"(){
+    def "tourney topics is empty"(){
         given: "a tourney with no topics"
+        def userId = userRepository.findAll().get(0).getId()
         tourney.setTourneyNumberOfQuestions(QUESTION_NUMBER)
-        tourney.setTopics(null)
+        tourney.setTourneyTopics(new ArrayList<Topic>())
 
         when:
-        tourneyService.createTourney(tourney)
+        tourneyService.createTourney(tourney, userId)
 
         then:
         def exception = thrown(TutorException)
@@ -121,8 +136,11 @@ class CreateTourneyTest extends Specification{
     }
 
     def "number of questions is empty"(){
-        when: "creating a tourney without a given number of questions"
-        tourneyService.createTourney(tourney)
+        given: "a tourney without a given number of questions"
+        def userId = userRepository.findAll().get(0).getId()
+
+        when:
+        tourneyService.createTourney(tourney, userId)
 
         then:
         def exception = thrown(TutorException)

@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -23,6 +25,9 @@ public class TourneyService {
 
     @Autowired
     private TourneyRepository tourneyRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @PersistenceContext
     EntityManager entityManager;
@@ -42,9 +47,11 @@ public class TourneyService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public TourneyDto createTourney(TourneyDto tourneyDto) {
+    public TourneyDto createTourney(TourneyDto tourneyDto, Integer userId) {
         SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        Tourney tourney = new Tourney(tourneyDto);
+        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, userId));
+        Tourney tourney = new Tourney(tourneyDto, user);
+
         if(tourney.getAvailableDate() == null)  throw new TutorException(ErrorMessage.TOURNEY_NOT_CONSISTENT,"availableDate");
         if(tourney.getConclusionDate() == null)  throw new TutorException(ErrorMessage.TOURNEY_NOT_CONSISTENT, "conclusionDate");
         try{
@@ -52,6 +59,7 @@ public class TourneyService {
         }catch (ParseException e) {throw new TutorException(ErrorMessage.TOURNEY_DATE_WRONG_FORMAT);}
         if(tourney.getTopics().size() == 0)  throw new TutorException(ErrorMessage.TOURNEY_NOT_CONSISTENT, "topics");
         if(tourney.getNumberOfQuestions() == null) throw new TutorException(ErrorMessage.TOURNEY_NOT_CONSISTENT, "numberOfQuestions");
+
         entityManager.persist(tourney);
         return new TourneyDto(tourney);
 
