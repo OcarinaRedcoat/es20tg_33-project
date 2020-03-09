@@ -89,11 +89,7 @@ public class QuestionService {
     public QuestionDto createQuestion(int courseId, QuestionDto questionDto) {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new TutorException(COURSE_NOT_FOUND, courseId));
 
-        if (questionDto.getKey() == null) {
-            int maxQuestionNumber = questionRepository.getMaxQuestionNumber() != null ?
-                    questionRepository.getMaxQuestionNumber() : 0;
-            questionDto.setKey(maxQuestionNumber + 1);
-        }
+        checkQuestionKey(questionDto);
 
         Question question = new Question(course, questionDto);
         question.setCreationDate(LocalDateTime.now());
@@ -184,19 +180,28 @@ public class QuestionService {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new TutorException(COURSE_NOT_FOUND, courseId));
         User user = userRepository.findByUsername(username);
 
+        checkQuestionKey(questionDto);
+
+        Question question = new Question(course, questionDto);
+        question.setCreationDate(LocalDateTime.now());
+        checkIfPending(question);
+        question.setSubmittingUser(user);
+        user.addSubmittedQuestion(question);
+        this.entityManager.persist(question);
+        return new QuestionDto(question);
+    }
+
+    private void checkIfPending(Question question) {
+        if (question.getStatus() != Question.Status.PENDING)
+            question.setStatus(Question.Status.PENDING);
+    }
+
+    private void checkQuestionKey(QuestionDto questionDto) {
         if (questionDto.getKey() == null) {
             int maxQuestionNumber = questionRepository.getMaxQuestionNumber() != null ?
                     questionRepository.getMaxQuestionNumber() : 0;
             questionDto.setKey(maxQuestionNumber + 1);
         }
-
-        Question question = new Question(course, questionDto);
-        question.setCreationDate(LocalDateTime.now());
-        if (question.getStatus() != Question.Status.PENDING)
-            question.setStatus(Question.Status.PENDING);
-        question.setSubmittingUser(user);
-        this.entityManager.persist(question);
-        return new QuestionDto(question);
     }
 }
 

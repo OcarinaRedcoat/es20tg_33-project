@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
@@ -98,6 +97,7 @@ class SubmitQuestionTest extends Specification {
         result.getCourse().getName() == TEST_COURSE
         result.getSubmittingUser().getUsername() == USERNAME
         course.getQuestions().contains(result)
+        user.getSubmittedQuestions().get(0).getKey() == 1
     }
 
     def "question submitted without a title or content"() {
@@ -139,10 +139,19 @@ class SubmitQuestionTest extends Specification {
         when:
         questionService.submitQuestion(course.getId(), questionDto, user.getUsername())
 
-        then: "an exception is thrown"
-        def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.QUESTION_MISSING_DATA
-        questionRepository.count() == 0L
+        then: "the question is submitted successfully"
+        questionRepository.count() == 1L
+        def result = questionRepository.findAll().get(0)
+        result.getId() != null
+        result.getKey() == 1
+        result.getStatus() == Question.Status.PENDING
+        result.getTitle() == QUESTION_TITLE
+        result.getContent() == QUESTION_CONTENT
+        result.getOptions().size() == 2
+        result.getCourse().getName() == TEST_COURSE
+        result.getSubmittingUser().getUsername() == USERNAME
+        course.getQuestions().contains(result)
+        user.getSubmittedQuestions().get(0).getKey() == 1
     }
 
     def "question with two correct answers"() {

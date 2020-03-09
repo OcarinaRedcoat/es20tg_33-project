@@ -288,8 +288,7 @@ public class Question {
     }
 
     private void checkConsistentQuestion(QuestionDto questionDto) {
-        if (questionDto.getOptions().stream().anyMatch(optionDto -> optionDto.getContent().trim().length() == 0 ||
-                questionDto.getOptions().size() != 4)) {
+        if (questionDto.getOptions().stream().anyMatch(optionDto -> optionDto.getContent().trim().length() == 0)) {
             throw new TutorException(QUESTION_MISSING_DATA);
         }
 
