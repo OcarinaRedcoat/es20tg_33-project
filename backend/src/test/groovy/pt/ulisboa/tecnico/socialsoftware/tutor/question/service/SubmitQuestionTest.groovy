@@ -226,6 +226,36 @@ class SubmitQuestionTest extends Specification {
         questionRepository.count() == 0L
     }
 
+    def "question submitted by a teacher"() {
+        given: "a question dto"
+        def questionDto = new QuestionDto()
+        questionDto.setKey(1)
+        questionDto.setTitle(QUESTION_TITLE)
+        questionDto.setContent(QUESTION_CONTENT)
+        questionDto.setStatus(Question.Status.PENDING.name())
+        and: "two options"
+        def options = new ArrayList<OptionDto>()
+        def optionDto = new OptionDto()
+        optionDto.setContent(OPTION_CONTENT)
+        optionDto.setCorrect(true)
+        options.add(optionDto)
+        optionDto = new OptionDto()
+        optionDto.setContent(OPTION_CONTENT)
+        optionDto.setCorrect(false)
+        options.add(optionDto)
+        questionDto.setOptions(options)
+        and: "changing the user role to teacher"
+        user.setRole(User.Role.TEACHER)
+
+        when:
+        questionService.submitQuestion(course.getId(), questionDto, user.getUsername())
+
+        then: "an exception is thrown"
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.SUBMIT_QUESTION_NOT_STUDENT
+        questionRepository.count() == 0L
+    }
+
     @TestConfiguration
     static class QuestionServiceImplTestContextConfiguration {
 

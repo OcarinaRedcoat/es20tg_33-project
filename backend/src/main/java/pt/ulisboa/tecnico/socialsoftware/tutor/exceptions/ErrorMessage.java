@@ -56,6 +56,8 @@ public enum ErrorMessage {
 
     QUESTION_MISSING_JUSTIFICATION("Missing a justification in order to reject question"),
 
+    SUBMIT_QUESTION_NOT_STUDENT("Only students can submit questions"),
+
     ACCESS_DENIED("You do not have permission to view this resource");
 
     public final String label;

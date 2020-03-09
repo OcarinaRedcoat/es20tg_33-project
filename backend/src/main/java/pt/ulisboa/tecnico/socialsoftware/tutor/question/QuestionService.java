@@ -180,6 +180,8 @@ public class QuestionService {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new TutorException(COURSE_NOT_FOUND, courseId));
         User user = userRepository.findByUsername(username);
 
+        checkIfStudent(user);
+
         checkQuestionKey(questionDto);
 
         Question question = new Question(course, questionDto);
@@ -189,6 +191,12 @@ public class QuestionService {
         user.addSubmittedQuestion(question);
         this.entityManager.persist(question);
         return new QuestionDto(question);
+    }
+
+    private void checkIfStudent(User user) {
+        if (user.getRole() != User.Role.STUDENT) {
+            throw new TutorException(SUBMIT_QUESTION_NOT_STUDENT);
+        }
     }
 
     private void checkIfPending(Question question) {
