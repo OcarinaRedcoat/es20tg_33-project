@@ -7,6 +7,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.Importable;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -69,6 +70,9 @@ public class Question {
     @ManyToOne
     @JoinColumn(name = "course_id")
     private Course course;
+
+    @ManyToOne
+    private User submittingUser;
 
     public Question() {
     }
@@ -203,6 +207,10 @@ public class Question {
         topics.add(topic);
     }
 
+    public User getSubmittingUser() { return submittingUser; }
+
+    public void setSubmittingUser(User submittingUser) { this.submittingUser = submittingUser; }
+
     public void remove() {
         canRemove();
         getCourse().getQuestions().remove(this);
@@ -280,14 +288,23 @@ public class Question {
     }
 
     private void checkConsistentQuestion(QuestionDto questionDto) {
-        if (questionDto.getTitle().trim().length() == 0 ||
-                questionDto.getContent().trim().length() == 0 ||
-                questionDto.getOptions().stream().anyMatch(optionDto -> optionDto.getContent().trim().length() == 0)) {
+        if (questionDto.getOptions().stream().anyMatch(optionDto -> optionDto.getContent().trim().length() == 0 ||
+                questionDto.getOptions().size() != 4)) {
             throw new TutorException(QUESTION_MISSING_DATA);
         }
 
-        if (questionDto.getOptions().stream().filter(OptionDto::getCorrect).count() != 1) {
+        if (questionDto.getTitle() == null || questionDto.getTitle().trim().length() == 0 ||
+                questionDto.getContent().trim().length() == 0 ||
+                questionDto.getContent() == null) {
+            throw new TutorException(QUESTION_MISSING_TITLE_OR_CONTENT);
+        }
+
+        if (questionDto.getOptions().stream().filter(OptionDto::getCorrect).count() > 1) {
             throw new TutorException(QUESTION_MULTIPLE_CORRECT_OPTIONS);
+        }
+
+        if (questionDto.getOptions().stream().filter(OptionDto::getCorrect).count() < 1) {
+            throw new TutorException(QUESTION_MISSING_CORRECT_OPTION);
         }
 
         if (!questionDto.getOptions().stream().filter(OptionDto::getCorrect).findAny()

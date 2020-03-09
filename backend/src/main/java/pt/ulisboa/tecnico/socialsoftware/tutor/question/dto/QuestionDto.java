@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.question.dto;
 import org.springframework.data.annotation.Transient;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import java.io.Serializable;
 import java.time.format.DateTimeFormatter;
@@ -26,6 +27,7 @@ public class QuestionDto implements Serializable {
     private ImageDto image;
     private List<TopicDto> topics = new ArrayList<>();
     private Integer sequence;
+    private User submittingUser = null;
 
     @Transient
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -49,6 +51,8 @@ public class QuestionDto implements Serializable {
             this.image = new ImageDto(question.getImage());
         if (question.getCreationDate() != null)
             this.creationDate = question.getCreationDate().format(formatter);
+        if (question.getSubmittingUser() != null)
+            this.submittingUser = question.getSubmittingUser();
 
     }
 
@@ -154,6 +158,14 @@ public class QuestionDto implements Serializable {
 
     public void setCreationDate(String creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public User getSubmittingUser() {
+        return submittingUser;
+    }
+
+    public void setSubmittingUser(User submittingUser) {
+        this.submittingUser = submittingUser;
     }
 
     @Override

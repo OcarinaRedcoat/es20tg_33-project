@@ -22,6 +22,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizQuestionRepos
 import spock.lang.Specification
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.QUESTION_MISSING_DATA
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.QUESTION_MISSING_TITLE_OR_CONTENT
 
 @DataJpaTest
 class UpdateQuestionTest extends Specification {
@@ -161,7 +162,7 @@ class UpdateQuestionTest extends Specification {
 
         then: "the question an exception is thrown"
         def exception = thrown(TutorException)
-        exception.getErrorMessage() == QUESTION_MISSING_DATA
+        exception.getErrorMessage() == QUESTION_MISSING_TITLE_OR_CONTENT
     }
 
     def "update question with two options true"() {

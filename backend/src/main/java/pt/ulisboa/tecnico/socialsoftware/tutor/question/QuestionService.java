@@ -17,6 +17,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -30,6 +32,9 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 @Service
 public class QuestionService {
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Autowired
     private CourseRepository courseRepository;
@@ -173,6 +178,25 @@ public class QuestionService {
         QuestionsXmlImport xmlImporter = new QuestionsXmlImport();
 
         xmlImporter.importQuestions(questionsXML, this, courseRepository);
+    }
+
+    public QuestionDto submitQuestion(int courseId, QuestionDto questionDto, String username) {
+        Course course = courseRepository.findById(courseId).orElseThrow(() -> new TutorException(COURSE_NOT_FOUND, courseId));
+        User user = userRepository.findByUsername(username);
+
+        if (questionDto.getKey() == null) {
+            int maxQuestionNumber = questionRepository.getMaxQuestionNumber() != null ?
+                    questionRepository.getMaxQuestionNumber() : 0;
+            questionDto.setKey(maxQuestionNumber + 1);
+        }
+
+        Question question = new Question(course, questionDto);
+        question.setCreationDate(LocalDateTime.now());
+        if (question.getStatus() != Question.Status.PENDING)
+            question.setStatus(Question.Status.PENDING);
+        question.setSubmittingUser(user);
+        this.entityManager.persist(question);
+        return new QuestionDto(question);
     }
 }
 

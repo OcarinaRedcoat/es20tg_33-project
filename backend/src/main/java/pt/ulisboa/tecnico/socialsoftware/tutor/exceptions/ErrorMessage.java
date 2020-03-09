@@ -44,6 +44,8 @@ public enum ErrorMessage {
     NOT_ENOUGH_QUESTIONS("Not enough questions to create a quiz"),
     QUESTION_MISSING_DATA("Missing information for quiz"), // TODO check me
     QUESTION_MULTIPLE_CORRECT_OPTIONS("Questions can only have 1 correct option"),
+    QUESTION_MISSING_CORRECT_OPTION("Questions must have one correct option"),
+    QUESTION_MISSING_TITLE_OR_CONTENT("Questions need a title and content"),
     QUESTION_CHANGE_CORRECT_OPTION_HAS_ANSWERS("Can not change correct option of answered question"),
     QUIZ_HAS_ANSWERS("Quiz already has answers"),
     QUIZ_ALREADY_COMPLETED("Quiz already completed"),
