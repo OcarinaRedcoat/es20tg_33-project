@@ -74,6 +74,9 @@ public class Question {
     @ManyToOne
     private User submittingUser;
 
+    @Column
+    private String justification;
+
     public Question() {
     }
 
@@ -210,6 +213,10 @@ public class Question {
     public User getSubmittingUser() { return submittingUser; }
 
     public void setSubmittingUser(User submittingUser) { this.submittingUser = submittingUser; }
+
+    public String getJustification() { return justification; }
+
+    public void setJustification(String justification) { this.justification = justification; }
 
     public void remove() {
         canRemove();

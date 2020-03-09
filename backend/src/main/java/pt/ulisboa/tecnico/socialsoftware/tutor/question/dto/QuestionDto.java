@@ -28,6 +28,7 @@ public class QuestionDto implements Serializable {
     private List<TopicDto> topics = new ArrayList<>();
     private Integer sequence;
     private User submittingUser = null;
+    private String justification = null;
 
     @Transient
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -167,6 +168,10 @@ public class QuestionDto implements Serializable {
     public void setSubmittingUser(User submittingUser) {
         this.submittingUser = submittingUser;
     }
+
+    public String getJustification() { return justification; }
+
+    public void setJustification(String justification) { this.justification = justification; }
 
     @Override
     public String toString() {

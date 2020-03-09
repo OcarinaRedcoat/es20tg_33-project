@@ -193,6 +193,27 @@ public class QuestionService {
         return new QuestionDto(question);
     }
 
+    public void approveQuestion(int questionId) {
+        Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
+        question.setStatus(Question.Status.AVAILABLE);
+        this.entityManager.persist(question);
+    }
+
+    public void rejectQuestion(int questionId) {
+        Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
+        throw new TutorException(QUESTION_MISSING_JUSTIFICATION);
+    }
+
+    public void rejectQuestion(int questionId, String justification) {
+        if(justification==null || justification.trim().isEmpty()) {
+            throw new TutorException(QUESTION_MISSING_JUSTIFICATION);
+        }
+        Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
+        question.setStatus(Question.Status.REJECTED);
+        question.setJustification(justification);
+        this.entityManager.persist(question);
+    }
+
     private void checkIfStudent(User user) {
         if (user.getRole() != User.Role.STUDENT) {
             throw new TutorException(SUBMIT_QUESTION_NOT_STUDENT);
