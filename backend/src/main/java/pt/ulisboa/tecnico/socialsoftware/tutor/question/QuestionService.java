@@ -195,8 +195,13 @@ public class QuestionService {
 
     public void approveQuestion(int questionId) {
         Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
-        question.setStatus(Question.Status.AVAILABLE);
-        this.entityManager.persist(question);
+        if(question.getStatus().equals(Question.Status.PENDING)) {
+            question.setStatus(Question.Status.AVAILABLE);
+            this.entityManager.persist(question);
+        }
+        else {
+            throw new TutorException(QUESTION_NOT_PENDING);
+        }
     }
 
     public void rejectQuestion(int questionId) {
@@ -209,9 +214,14 @@ public class QuestionService {
             throw new TutorException(QUESTION_MISSING_JUSTIFICATION);
         }
         Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
-        question.setStatus(Question.Status.REJECTED);
-        question.setJustification(justification);
-        this.entityManager.persist(question);
+        if(question.getStatus().equals(Question.Status.PENDING)) {
+            question.setStatus(Question.Status.REJECTED);
+            question.setJustification(justification);
+            this.entityManager.persist(question);
+        }
+        else {
+            throw new TutorException(QUESTION_NOT_PENDING);
+        }
     }
 
     private void checkIfStudent(User user) {

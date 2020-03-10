@@ -55,6 +55,7 @@ public enum ErrorMessage {
     FENIX_CONFIGURATION_ERROR("Incorrect server configuration files for fenix"),
 
     QUESTION_MISSING_JUSTIFICATION("Missing a justification in order to reject question"),
+    QUESTION_NOT_PENDING("Question status not pending"),
 
     SUBMIT_QUESTION_NOT_STUDENT("Only students can submit questions"),
 

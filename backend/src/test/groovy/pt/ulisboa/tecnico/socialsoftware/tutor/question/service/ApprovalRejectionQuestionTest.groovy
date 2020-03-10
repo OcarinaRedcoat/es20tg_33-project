@@ -126,6 +126,26 @@ class ApprovalRejectionQuestionTest extends Specification {
         questionRepository.count() == 1L
     }
 
+    def "approve a question not in pending status"() {
+        given: "a question in rejected status"
+        question.setStatus(Question.Status.REJECTED)
+
+        when:
+        questionService.approveQuestion(question.getId())
+
+        then: "an exception is thrown"
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.QUESTION_NOT_PENDING
+        def result = questionRepository.findAll().get(0)
+        result.getId() != null
+        result.getKey() == 1
+        result.getStatus() == Question.Status.REJECTED
+        result.getTitle() == QUESTION_TITLE
+        result.getContent() == QUESTION_CONTENT
+        result.getJustification() == null
+        questionRepository.count() == 1L
+    }
+
     @TestConfiguration
     static class QuestionServiceImplTestContextConfiguration {
 
