@@ -205,7 +205,7 @@ public class QuestionService {
     }
 
     public void rejectQuestion(int questionId) {
-        Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
+        questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
         throw new TutorException(QUESTION_MISSING_JUSTIFICATION);
     }
 
