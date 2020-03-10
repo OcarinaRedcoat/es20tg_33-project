@@ -1,25 +1,10 @@
-package pt.ulisboa.tecnico.socialsoftware.tutor.question.dto;
+package pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto;
 
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
-import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
-import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
-import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.Importable;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Message;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Message;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 public class MessageDto implements Serializable {
     private Integer id;
@@ -67,6 +52,8 @@ public class MessageDto implements Serializable {
     public void setMessageDate(LocalDateTime messageDate) {
         this.messageDate = messageDate;
     }
+
+    public User.Role getUserRole(){ return user.getRole(); }
 
     @Override
     public String toString() {

@@ -1,28 +1,33 @@
-package pt.ulisboa.tecnico.socialsoftware.tutor.question.dto;
+package pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto;
 
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Message;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Thread;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Message;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Discussion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ThreadDto implements Serializable {
+public class DiscussionDto implements Serializable {
 
     private Integer id;
     private Message  studentMessage;
     private Message teacherMessage;
     private List<Message> threadListMessages= new ArrayList<>();
 
-    public  ThreadDto(){
+
+    private User student;
+    private User teacher;
+
+
+
+    public DiscussionDto(){
     }
 
-    public ThreadDto(Thread thread){
-        this.id=thread.getId();
-        this.studentMessage=thread.getStudentMessage();
-        this.teacherMessage=thread.getTeacherMessage();
+    public DiscussionDto(Discussion discussion){
+        this.id=discussion.getId();
+        this.studentMessage=discussion.getStudentMessage();
+        this.teacherMessage=discussion.getTeacherMessage();
     }
 
     public Integer getId() {
@@ -49,13 +54,22 @@ public class ThreadDto implements Serializable {
         this.teacherMessage = teacherMessage;
     }
 
-    public List<Message> getThreadListMessages() {
+    public List<Message> getDiscussionListMessages() {
         return threadListMessages;
     }
 
-    public void setThreadListMessages(List<Message> threadListMessages) {
+    public void setDiscussionListMessages(List<Message> threadListMessages) {
         this.threadListMessages = threadListMessages;
     }
+
+    public User getStudent() { return student; }
+
+    public void setStudent(User student) { this.student = student; }
+
+    public User getTeacher() { return teacher; }
+
+    public void setTeacher(User teacher) { this.teacher = teacher; }
+
 
     @Override
     public String toString() {

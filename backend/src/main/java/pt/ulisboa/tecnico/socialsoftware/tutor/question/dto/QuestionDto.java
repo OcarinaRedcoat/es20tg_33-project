@@ -1,7 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Thread;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Discussion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
 
 import java.io.Serializable;
@@ -25,7 +25,7 @@ public class QuestionDto implements Serializable {
     private ImageDto image;
     private List<TopicDto> topics = new ArrayList<>();
     private Integer sequence;
-    private Thread thread;
+    private Discussion thread;
 
     public QuestionDto() {
     }
@@ -41,7 +41,7 @@ public class QuestionDto implements Serializable {
         this.status = question.getStatus().name();
         this.options = question.getOptions().stream().map(OptionDto::new).collect(Collectors.toList());
         this.topics = question.getTopics().stream().sorted(Comparator.comparing(Topic::getName)).map(TopicDto::new).collect(Collectors.toList());
-        this.thread = question.getThread();
+        this.thread = question.getDiscussion();
 
         if (question.getImage() != null)
             this.image = new ImageDto(question.getImage());
@@ -154,11 +154,11 @@ public class QuestionDto implements Serializable {
         this.creationDate = creationDate;
     }
 
-    public Thread getThread() {
+    public Discussion getThread() {
         return thread;
     }
 
-    public void setThread(Thread thread) {
+    public void setThread(Discussion thread) {
         this.thread = thread;
     }
 

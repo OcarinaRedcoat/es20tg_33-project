@@ -1,24 +1,12 @@
 
-package pt.ulisboa.tecnico.socialsoftware.tutor.question.domain;
+package pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain;
 
-import org.apache.tomcat.jni.Local;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
-import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
-import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.Importable;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.MessageDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.MessageDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
@@ -37,11 +25,15 @@ public class Message {
     private String sentence;
 
     private LocalDateTime messageDate;
+    @OneToOne
+    @JoinColumn(name = "question:id")
+    private QuestionAnswer questionAnswer;
 
     public Message(){
     }
 
-    public Message(User user, String sentence, LocalDateTime messageDate){
+    public Message(MessageDto messageDto,User user, String sentence, LocalDateTime messageDate){
+        checkConsistentMessage(messageDto);
         this.user = user;
         this.sentence = sentence;
         this.messageDate= messageDate;
@@ -65,6 +57,14 @@ public class Message {
 
     public String displayMessage(){
         return user.getName() + "(" + user.getRole() + ") - " + getSentence() + getMessageDate();
+    }
+
+    private void checkConsistentMessage(MessageDto messageDto) {
+        if (!(messageDto.getMessageDate() == null || messageDto.getSentence() == null ||
+                messageDto.getSentence().trim().length() == 0)){
+            throw new TutorException(MESSAGE_MISSING_DATA);
+        }
+
     }
 
     @Override

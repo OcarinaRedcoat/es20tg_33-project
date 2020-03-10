@@ -1,6 +1,9 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.exceptions;
 
 public enum ErrorMessage {
+    MESSAGE_MISSING_DATA("Missing information for message"),
+    STUDENT_DID_NOT_ANSWER_QUESTION("Student did not answered this question"),
+
     QUIZ_NOT_FOUND("Quiz not found with id %d"),
     QUIZ_QUESTION_NOT_FOUND("Quiz question not found with id %d"),
     QUIZ_ANSWER_NOT_FOUND("Quiz answer not found with id %d"),

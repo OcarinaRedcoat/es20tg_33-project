@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.answer.service
 
+import org.postgresql.copy.CopyOut
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
@@ -14,7 +15,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Message
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Thread
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Discussion
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz
@@ -63,8 +64,17 @@ class ThreadQuizAnswer extends Specification {
     @Shared def thread
 
     def setup() {
+
+        user1 = new User("Rodrigo","gaylord",1,User.Role.STUDENT)
+        user2 = new User("Caetano","gaylordfucker",2,User.Role.TEACHER)
+
+
+        course = new Course()
+        course.setId(1)
+        course.()
         /*
         date = LocalDateTime.now()
+
         course = new Course(COURSE_NAME, Course.Type.TECNICO)
         courseRepository.save(course)
 
@@ -125,6 +135,10 @@ class ThreadQuizAnswer extends Specification {
     }
 
     def 'Send a empty teacher message' () {
+        expect:false;
+    }
+
+    def 'student answered the question'(){
         expect:false;
     }
 }

@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.domain;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Discussion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
@@ -70,8 +71,8 @@ public class Question {
     private Course course;
 
     @ManyToOne
-    @JoinColumn(name = "thread_id")
-    private Thread thread;
+    @JoinColumn(name = "discussion_id")
+    private Discussion discussion;
 
     public Question() {
     }
@@ -186,12 +187,12 @@ public class Question {
         this.creationDate = creationDate;
     }
 
-    public Thread getThread() {
-        return thread;
+    public Discussion getDiscussion() {
+        return discussion;
     }
 
-    public void setThread(Thread thread) {
-        this.thread = thread;
+    public void setDiscussion(Discussion discussion) {
+        this.discussion = discussion;
     }
 
     public Course getCourse() {
@@ -238,7 +239,7 @@ public class Question {
                 ", quizQuestions=" + quizQuestions +
                 ", topics=" + topics +
                 ", course=" + course +
-                ", thread=" + thread +
+                ", discussion=" + discussion +
                 '}';
     }
 
