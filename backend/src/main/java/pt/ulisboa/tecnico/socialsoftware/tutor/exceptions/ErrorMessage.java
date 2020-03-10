@@ -13,7 +13,7 @@ public enum ErrorMessage {
     TOPIC_CONJUNCTION_NOT_FOUND("Topic Conjunction not found with id %d"),
     COURSE_EXECUTION_NOT_FOUND("Course execution not found with name %d"),
 
-    COURSE_NOT_FOUND("Course not found with id %s"),
+    COURSE_NOT_FOUND("Course not found with name %s"),
     COURSE_NAME_IS_EMPTY("The course name is empty"),
     COURSE_TYPE_NOT_DEFINED("The course type is not defined"),
     COURSE_EXECUTION_ACRONYM_IS_EMPTY("The course execution acronym is empty"),
@@ -22,7 +22,7 @@ public enum ErrorMessage {
 
     QUIZ_USER_MISMATCH("Quiz %s is not assigned to student %s"),
     QUIZ_MISMATCH("Quiz Answer Quiz %d does not match Quiz Question Quiz %d"),
-    QUIZ_OPTION_MISMATCH("Quiz Question %d does not have option %d"),
+    QUESTION_OPTION_MISMATCH("Question %d does not have option %d"),
     COURSE_EXECUTION_MISMATCH("Course Execution %d does not have quiz %d"),
 
     DUPLICATE_TOPIC("Duplicate topic: %s"),
@@ -41,8 +41,9 @@ public enum ErrorMessage {
     QUIZ_NO_LONGER_AVAILABLE("This quiz is no longer available"),
     QUIZ_NOT_YET_AVAILABLE("This quiz is not yet available"),
 
+    NO_CORRECT_OPTION("Question does not have a correct option"),
     NOT_ENOUGH_QUESTIONS("Not enough questions to create a quiz"),
-    QUESTION_MISSING_DATA("Missing information for quiz"), // TODO check me
+    QUESTION_MISSING_DATA("Missing information for quiz"),
     QUESTION_MULTIPLE_CORRECT_OPTIONS("Questions can only have 1 correct option"),
     QUESTION_MISSING_CORRECT_OPTION("Questions must have one correct option"),
     QUESTION_MISSING_TITLE_OR_CONTENT("Questions need a title and content"),
@@ -58,8 +59,14 @@ public enum ErrorMessage {
     QUESTION_NOT_PENDING("Question status not pending"),
 
     SUBMIT_QUESTION_NOT_STUDENT("Only students can submit questions"),
+  
+    ACCESS_DENIED("You do not have permission to view this resource"),
 
-    ACCESS_DENIED("You do not have permission to view this resource");
+    TOURNEY_NOT_CONSISTENT("Field %s of tourney is not consistent."),
+    TOURNEY_AVAILABLEDATE_BIGGER_THAN_CONCLUSIONDATE("Available date is bigger than Conclusion date."),
+    TOURNEY_DATE_WRONG_FORMAT("Date format not according to the expected."),
+
+    CANNOT_OPEN_FILE("Cannot open file");
 
     public final String label;
 
