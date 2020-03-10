@@ -195,7 +195,7 @@ public class QuestionService {
 
     public void approveQuestion(int questionId) {
         Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
-        if(question.getStatus().equals(Question.Status.PENDING)) {
+        if(question.getStatus() == Question.Status.PENDING) {
             question.setStatus(Question.Status.AVAILABLE);
             this.entityManager.persist(question);
         }
@@ -214,7 +214,7 @@ public class QuestionService {
             throw new TutorException(QUESTION_MISSING_JUSTIFICATION);
         }
         Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
-        if(question.getStatus().equals(Question.Status.PENDING)) {
+        if(question.getStatus() == Question.Status.PENDING) {
             question.setStatus(Question.Status.REJECTED);
             question.setJustification(justification);
             this.entityManager.persist(question);
