@@ -176,11 +176,13 @@ public class QuestionService {
         xmlImporter.importQuestions(questionsXML, this, courseRepository);
     }
 
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public QuestionDto submitQuestion(int courseId, QuestionDto questionDto, String username) {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new TutorException(COURSE_NOT_FOUND, courseId));
         User user = userRepository.findByUsername(username);
-
-        checkIfStudent(user);
 
         checkQuestionKey(questionDto);
 
@@ -205,7 +207,7 @@ public class QuestionService {
     }
 
     public void rejectQuestion(int questionId) {
-        Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
+        questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
         throw new TutorException(QUESTION_MISSING_JUSTIFICATION);
     }
 
@@ -221,12 +223,6 @@ public class QuestionService {
         }
         else {
             throw new TutorException(QUESTION_NOT_PENDING);
-        }
-    }
-
-    private void checkIfStudent(User user) {
-        if (user.getRole() != User.Role.STUDENT) {
-            throw new TutorException(SUBMIT_QUESTION_NOT_STUDENT);
         }
     }
 
