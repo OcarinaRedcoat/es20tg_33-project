@@ -58,6 +58,9 @@ public class User implements UserDetails {
     @ManyToMany
     private Set<CourseExecution> courseExecutions = new HashSet<>();
 
+    @OneToMany
+    private List<Question> submittedQuestions = new ArrayList<>();
+  
     @OneToOne
     @JoinColumn(name="tourney_id")
     private Tourney tourney;
@@ -158,6 +161,10 @@ public class User implements UserDetails {
     public void setCourseExecutions(Set<CourseExecution> courseExecutions) {
         this.courseExecutions = courseExecutions;
     }
+
+    public List<Question> getSubmittedQuestions() { return submittedQuestions; }
+
+    public void setSubmittedQuestions(List<Question> submittedQuestions) { this.submittedQuestions = submittedQuestions; }
 
     public Integer getNumberOfTeacherQuizzes() {
         if (this.numberOfTeacherQuizzes == null)
@@ -352,6 +359,8 @@ public class User implements UserDetails {
     public void addCourse(CourseExecution course) {
         this.courseExecutions.add(course);
     }
+
+    public void addSubmittedQuestion(Question question) { this.submittedQuestions.add(question); }
 
     @Override
     public String toString() {

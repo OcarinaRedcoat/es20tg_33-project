@@ -6,6 +6,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -26,7 +27,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 public class Question {
     @SuppressWarnings("unused")
     public enum Status {
-        DISABLED, REMOVED, AVAILABLE
+        DISABLED, REMOVED, AVAILABLE, REJECTED, PENDING
     }
 
     @Id
@@ -68,6 +69,12 @@ public class Question {
     @ManyToOne
     @JoinColumn(name = "course_id")
     private Course course;
+
+    @ManyToOne
+    private User submittingUser;
+
+    @Column
+    private String justification;
 
     public Question() {
     }
@@ -202,6 +209,14 @@ public class Question {
         topics.add(topic);
     }
 
+    public User getSubmittingUser() { return submittingUser; }
+
+    public void setSubmittingUser(User submittingUser) { this.submittingUser = submittingUser; }
+
+    public String getJustification() { return justification; }
+
+    public void setJustification(String justification) { this.justification = justification; }
+
     public void remove() {
         canRemove();
         getCourse().getQuestions().remove(this);
@@ -267,14 +282,22 @@ public class Question {
     }
 
     private void checkConsistentQuestion(QuestionDto questionDto) {
-        if (questionDto.getTitle().trim().length() == 0 ||
-                questionDto.getContent().trim().length() == 0 ||
-                questionDto.getOptions().stream().anyMatch(optionDto -> optionDto.getContent().trim().length() == 0)) {
+        if (questionDto.getOptions().stream().anyMatch(optionDto -> optionDto.getContent().trim().length() == 0)) {
             throw new TutorException(QUESTION_MISSING_DATA);
         }
 
-        if (questionDto.getOptions().stream().filter(OptionDto::getCorrect).count() != 1) {
+        if (questionDto.getTitle() == null || questionDto.getTitle().trim().length() == 0 ||
+                questionDto.getContent().trim().length() == 0 ||
+                questionDto.getContent() == null) {
+            throw new TutorException(QUESTION_MISSING_TITLE_OR_CONTENT);
+        }
+
+        if (questionDto.getOptions().stream().filter(OptionDto::getCorrect).count() > 1) {
             throw new TutorException(QUESTION_MULTIPLE_CORRECT_OPTIONS);
+        }
+
+        if (questionDto.getOptions().stream().filter(OptionDto::getCorrect).count() < 1) {
+            throw new TutorException(QUESTION_MISSING_CORRECT_OPTION);
         }
 
         if (!questionDto.getOptions().stream().filter(OptionDto::getCorrect).findAny()
