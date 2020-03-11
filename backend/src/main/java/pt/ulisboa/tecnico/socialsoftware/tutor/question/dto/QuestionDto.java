@@ -3,6 +3,8 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.question.dto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Discussion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import java.io.Serializable;
@@ -18,7 +20,9 @@ public class QuestionDto implements Serializable {
     private String title;
     private String content;
     private Integer difficulty;
-    private int numberOfAnswers;
+    private int numberOfAnswers = 0;
+    private int numberOfGeneratedQuizzes = 0;
+    private int numberOfNonGeneratedQuizzes = 0;
     private int numberOfCorrect;
     private String creationDate = null;
     private String status;
@@ -40,6 +44,13 @@ public class QuestionDto implements Serializable {
         this.content = question.getContent();
         this.difficulty = question.getDifficulty();
         this.numberOfAnswers = question.getNumberOfAnswers();
+        if (!question.getQuizQuestions().isEmpty()) {
+            this.numberOfGeneratedQuizzes = (int) question.getQuizQuestions().stream()
+                    .map(QuizQuestion::getQuiz)
+                    .filter(quiz -> quiz.getType().equals(Quiz.QuizType.GENERATED))
+                    .count();
+        }
+        this.numberOfNonGeneratedQuizzes = question.getQuizQuestions().size() - this.numberOfGeneratedQuizzes;
         this.numberOfCorrect = question.getNumberOfCorrect();
         this.status = question.getStatus().name();
         this.options = question.getOptions().stream().map(OptionDto::new).collect(Collectors.toList());
@@ -70,6 +81,14 @@ public class QuestionDto implements Serializable {
         this.key = key;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public String getContent() {
         return content;
     }
@@ -92,6 +111,22 @@ public class QuestionDto implements Serializable {
 
     public void setNumberOfAnswers(int numberOfAnswers) {
         this.numberOfAnswers = numberOfAnswers;
+    }
+
+    public int getNumberOfGeneratedQuizzes() {
+        return numberOfGeneratedQuizzes;
+    }
+
+    public void setNumberOfGeneratedQuizzes(int numberOfGeneratedQuizzes) {
+        this.numberOfGeneratedQuizzes = numberOfGeneratedQuizzes;
+    }
+
+    public int getNumberOfNonGeneratedQuizzes() {
+        return numberOfNonGeneratedQuizzes;
+    }
+
+    public void setNumberOfNonGeneratedQuizzes(int numberOfNonGeneratedQuizzes) {
+        this.numberOfNonGeneratedQuizzes = numberOfNonGeneratedQuizzes;
     }
 
     public int getNumberOfCorrect() {
@@ -124,14 +159,6 @@ public class QuestionDto implements Serializable {
 
     public void setImage(ImageDto image) {
         this.image = image;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public List<TopicDto> getTopics() {
@@ -187,6 +214,8 @@ public class QuestionDto implements Serializable {
                 ", content='" + content + '\'' +
                 ", difficulty=" + difficulty +
                 ", numberOfAnswers=" + numberOfAnswers +
+                ", numberOfGeneratedQuizzes=" + numberOfGeneratedQuizzes +
+                ", numberOfNonGeneratedQuizzes=" + numberOfNonGeneratedQuizzes +
                 ", numberOfCorrect=" + numberOfCorrect +
                 ", creationDate='" + creationDate + '\'' +
                 ", status='" + status + '\'' +

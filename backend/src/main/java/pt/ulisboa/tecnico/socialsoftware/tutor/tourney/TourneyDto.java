@@ -15,6 +15,7 @@ public class TourneyDto implements Serializable {
     private StudentDto tourneyCreator;
 
     private List<Topic> topics = new ArrayList<>();
+    private List<StudentDto> tourneyEnrolledStudents = new ArrayList<>();
 
     public TourneyDto(){}
 
@@ -82,5 +83,13 @@ public class TourneyDto implements Serializable {
 
     public void setTourneyCreator(StudentDto tourneyCreator) {
         this.tourneyCreator = tourneyCreator;
+    }
+
+    public List<StudentDto> getTourneyEnrolledStudents() {
+        return tourneyEnrolledStudents;
+    }
+
+    public void setTourneyEnrolledStudents(List<StudentDto> tourneyEnrolledStudents) {
+        this.tourneyEnrolledStudents = tourneyEnrolledStudents;
     }
 }
