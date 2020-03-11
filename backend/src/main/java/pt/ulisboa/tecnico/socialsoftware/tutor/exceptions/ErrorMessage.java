@@ -66,7 +66,6 @@ public enum ErrorMessage {
     TOURNEY_AVAILABLEDATE_BIGGER_THAN_CONCLUSIONDATE("Available date is bigger than Conclusion date."),
     TOURNEY_DATE_WRONG_FORMAT("Date format not according to the expected."),
     TOURNEY_NOT_FOUND("Tourney execution not found"),
-    TOURNEY_DATE_WRONG_FORMAT("Date format not according to the expected."),
 
     USER_NOT_STUDENT("The user is not a student"),
 

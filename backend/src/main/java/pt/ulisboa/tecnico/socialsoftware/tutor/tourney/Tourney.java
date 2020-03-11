@@ -27,6 +27,9 @@ public class Tourney {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "tourney", fetch=FetchType.LAZY, orphanRemoval=true)
     private List<Topic> topics = new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tourney", fetch=FetchType.LAZY, orphanRemoval=true)
+    private List<User> enrolledStudents = new ArrayList<>();
+
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "tourney")
     private User creator;
 
@@ -106,6 +109,7 @@ public class Tourney {
         this.creator = creator;
     }
 
-    public List<User> getEnrolledStudents() {return new ArrayList<>();}
+    public List<User> getEnrolledStudents() {return this.enrolledStudents;}
+    public void enrollStudent(User user) {this.enrolledStudents.add(user);}
 
 }

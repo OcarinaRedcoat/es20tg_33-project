@@ -69,7 +69,16 @@ public class TourneyService {
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public TourneyDto enrollStudent(Integer tourneyId, Integer studentId) {
-        return new TourneyDto();
+        Tourney tourney = tourneyRepository.findById(tourneyId).orElseThrow(() -> new TutorException(ErrorMessage.TOURNEY_NOT_FOUND));
+        User user = userRepository.findById(studentId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, studentId));
+
+        if(user.getRole() != User.Role.STUDENT) {
+            throw new TutorException(ErrorMessage.USER_NOT_STUDENT);
+        }
+
+        tourney.enrollStudent(user);
+
+        return new TourneyDto(tourney);
     }
 
 }
