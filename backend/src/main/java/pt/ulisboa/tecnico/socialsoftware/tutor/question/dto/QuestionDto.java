@@ -4,6 +4,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import java.io.Serializable;
 import java.time.format.DateTimeFormatter;
@@ -28,6 +29,8 @@ public class QuestionDto implements Serializable {
     private ImageDto image;
     private List<TopicDto> topics = new ArrayList<>();
     private Integer sequence;
+    private User submittingUser = null;
+    private String justification = null;
 
     public QuestionDto() {
     }
@@ -55,7 +58,8 @@ public class QuestionDto implements Serializable {
             this.image = new ImageDto(question.getImage());
         if (question.getCreationDate() != null)
             this.creationDate = question.getCreationDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-
+        if (question.getSubmittingUser() != null)
+            this.submittingUser = question.getSubmittingUser();
     }
 
     public Integer getId() {
@@ -177,6 +181,26 @@ public class QuestionDto implements Serializable {
     public void setSequence(Integer sequence) {
         this.sequence = sequence;
     }
+
+    public String getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(String creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public User getSubmittingUser() {
+        return submittingUser;
+    }
+
+    public void setSubmittingUser(User submittingUser) {
+        this.submittingUser = submittingUser;
+    }
+
+    public String getJustification() { return justification; }
+
+    public void setJustification(String justification) { this.justification = justification; }
 
     @Override
     public String toString() {
