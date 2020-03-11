@@ -204,6 +204,10 @@ public class QuestionService {
         return new QuestionDto(question);
     }
 
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void approveQuestion(int questionId, String justification) {
         Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
         if(question.getStatus() == Question.Status.PENDING) {
@@ -216,13 +220,12 @@ public class QuestionService {
         }
     }
 
-    public void rejectQuestion(int questionId) {
-        questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
-        throw new TutorException(QUESTION_MISSING_JUSTIFICATION);
-    }
-
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void rejectQuestion(int questionId, String justification) {
-        if(justification==null || justification.trim().isEmpty()) {
+        if(justification == null || justification.trim().isEmpty()) {
             throw new TutorException(QUESTION_MISSING_JUSTIFICATION);
         }
         Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
