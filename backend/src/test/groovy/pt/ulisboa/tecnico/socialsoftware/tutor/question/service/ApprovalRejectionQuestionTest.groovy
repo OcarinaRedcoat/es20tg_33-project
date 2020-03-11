@@ -63,7 +63,22 @@ class ApprovalRejectionQuestionTest extends Specification {
 
     def "approve a valid question"() {
         when:
-        questionService.approveQuestion(question.getId())
+        questionService.approveQuestion(question.getId(), null)
+        // verify if person approving is teacher
+        then: "the question is approved successfully"
+        questionRepository.count() == 1L
+        def result = questionRepository.findAll().get(0)
+        result.getId() != null
+        result.getKey() == 1
+        result.getStatus() == Question.Status.AVAILABLE
+        result.getTitle() == QUESTION_TITLE
+        result.getContent() == QUESTION_CONTENT
+        result.getOptions().size() == 2
+    }
+
+    def "approve a valid question with justification"() {
+        when:
+        questionService.approveQuestion(question.getId(), JUSTIFICATION_CONTENT)
         // verify if person approving is teacher
         then: "the question is approved successfully"
         questionRepository.count() == 1L
@@ -131,7 +146,7 @@ class ApprovalRejectionQuestionTest extends Specification {
         question.setStatus(Question.Status.REJECTED)
 
         when:
-        questionService.approveQuestion(question.getId())
+        questionService.approveQuestion(question.getId(), null)
 
         then: "an exception is thrown"
         def exception = thrown(TutorException)
