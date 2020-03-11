@@ -106,4 +106,6 @@ public class Tourney {
         this.creator = creator;
     }
 
+    public List<User> getEnrolledStudents() {return new ArrayList<>();}
+
 }

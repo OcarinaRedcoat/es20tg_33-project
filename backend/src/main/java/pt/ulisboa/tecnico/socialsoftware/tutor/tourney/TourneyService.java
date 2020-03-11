@@ -62,7 +62,14 @@ public class TourneyService {
 
         entityManager.persist(tourney);
         return new TourneyDto(tourney);
-
-
     }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public TourneyDto enrollStudent(Integer tourneyId, Integer studentId) {
+        return new TourneyDto();
+    }
+
 }
