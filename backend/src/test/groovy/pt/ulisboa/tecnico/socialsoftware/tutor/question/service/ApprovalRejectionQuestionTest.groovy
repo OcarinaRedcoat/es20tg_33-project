@@ -109,7 +109,7 @@ class ApprovalRejectionQuestionTest extends Specification {
 
     def "reject a question without justification"() {
         when:
-        questionService.rejectQuestion(question.getId())
+        questionService.rejectQuestion(question.getId(), null)
 
         then: "an exception is thrown"
         def exception = thrown(TutorException)
