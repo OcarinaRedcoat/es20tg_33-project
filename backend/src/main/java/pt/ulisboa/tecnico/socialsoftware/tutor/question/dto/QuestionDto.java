@@ -134,14 +134,6 @@ public class QuestionDto implements Serializable {
         this.numberOfCorrect = numberOfCorrect;
     }
 
-    public String getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(String creationDate) {
-        this.creationDate = creationDate;
-    }
-
     public String getStatus() {
         return status;
     }
