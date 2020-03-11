@@ -48,6 +48,8 @@ public enum ErrorMessage {
     NOT_ENOUGH_QUESTIONS("Not enough questions to create a quiz"),
     QUESTION_MISSING_DATA("Missing information for quiz"),
     QUESTION_MULTIPLE_CORRECT_OPTIONS("Questions can only have 1 correct option"),
+    QUESTION_MISSING_CORRECT_OPTION("Questions must have one correct option"),
+    QUESTION_MISSING_TITLE_OR_CONTENT("Questions need a title and content"),
     QUESTION_CHANGE_CORRECT_OPTION_HAS_ANSWERS("Can not change correct option of answered question"),
     QUIZ_HAS_ANSWERS("Quiz already has answers"),
     QUIZ_ALREADY_COMPLETED("Quiz already completed"),
@@ -56,8 +58,17 @@ public enum ErrorMessage {
     AUTHENTICATION_ERROR("Authentication Error"),
     FENIX_CONFIGURATION_ERROR("Incorrect server configuration files for fenix"),
 
+    QUESTION_MISSING_JUSTIFICATION("Missing a justification in order to reject question"),
+    QUESTION_NOT_PENDING("Question status not pending"),
 
+    SUBMIT_QUESTION_NOT_STUDENT("Only students can submit questions"),
+  
     ACCESS_DENIED("You do not have permission to view this resource"),
+
+    TOURNEY_NOT_CONSISTENT("Field %s of tourney is not consistent."),
+    TOURNEY_AVAILABLEDATE_BIGGER_THAN_CONCLUSIONDATE("Available date is bigger than Conclusion date."),
+    TOURNEY_DATE_WRONG_FORMAT("Date format not according to the expected."),
+
     CANNOT_OPEN_FILE("Cannot open file");
 
     public final String label;
