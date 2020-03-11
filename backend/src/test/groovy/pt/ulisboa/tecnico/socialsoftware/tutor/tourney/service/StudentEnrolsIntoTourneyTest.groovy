@@ -95,6 +95,23 @@ class StudentEnrolsIntoTourneyTest extends Specification{
         tourney.getEnrolledStudents().size() == 0
     }
 
+    def "tourney is closed"() {
+        given:
+        def userId = userRepository.findAll().get(1).getId()
+        def repoTourney = tourneyRepository.findAll().get(0)
+        repoTourney.closeTourney()
+        def tourneyId = repoTourney.getId()
+
+        when:
+        tourneyService.enrollStudent(tourneyId, userId)
+
+        then:
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.TOURNEY_CLOSED
+        def tourney = tourneyRepository.findAll().get(0)
+        tourney.getEnrolledStudents().size() == 0
+    }
+
     def "user doesn't exist"() {
         given:
         def userId = -1

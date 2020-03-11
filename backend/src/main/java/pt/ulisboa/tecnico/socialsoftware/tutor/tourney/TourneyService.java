@@ -72,6 +72,10 @@ public class TourneyService {
         Tourney tourney = tourneyRepository.findById(tourneyId).orElseThrow(() -> new TutorException(ErrorMessage.TOURNEY_NOT_FOUND));
         User user = userRepository.findById(studentId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, studentId));
 
+        if(tourney.getStatus() == Tourney.Status.CLOSED) {
+            throw new TutorException(ErrorMessage.TOURNEY_CLOSED);
+        }
+
         if(user.getRole() != User.Role.STUDENT) {
             throw new TutorException(ErrorMessage.USER_NOT_STUDENT);
         }
