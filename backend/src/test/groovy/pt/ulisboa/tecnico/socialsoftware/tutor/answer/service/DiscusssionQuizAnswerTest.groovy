@@ -6,6 +6,10 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.DiscussionDto
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.DiscussionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuizAnswerRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
@@ -13,13 +17,15 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Message
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Message
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Discussion
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Discussion
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import spock.lang.Shared
@@ -28,7 +34,7 @@ import spock.lang.Specification
 import java.time.LocalDateTime
 
 @DataJpaTest
-class ThreadQuizAnswer extends Specification {
+class DiscussionQuizAnswer extends Specification {
     public static final String COURSE_NAME = "Software Architecture"
     public static final String ACRONYM = "AS1"
     public static final String ACADEMIC_TERM = "1 SEM"
@@ -54,70 +60,107 @@ class ThreadQuizAnswer extends Specification {
     @Autowired
     UserRepository userRepository
 
-    @Shared def course
+    @Autowired
+    DiscussionRepository discussionRepository
+
     @Shared def courseExecution
-    @Shared def date
-    @Shared def user1
-    @Shared def user2
-    @Shared def message1
-    @Shared def message2
-    @Shared def thread
+
+    @Shared def discussionDto
+    @Shared def discussion
+    @Shared def questionDto
+
+    @Shared def course
+    @Shared def question
+    @Shared def quizAnswer
+    @Shared def quizQuestion
+    @Shared def user_student
+    @Shared def quiz
+    @Shared def option1
+
 
     def setup() {
 
-        user1 = new User("Rodrigo","gaylord",1,User.Role.STUDENT)
-        user2 = new User("Caetano","gaylordfucker",2,User.Role.TEACHER)
 
+        quiz = new Quiz()
+        quiz.setKey(1)
+        quiz.setType(Quiz.QuizType.GENERATED)
 
-        course = new Course()
-        course.setId(1)
-        course.()
-        /*
-        date = LocalDateTime.now()
+        user_student = new User("Rodrigo","gaylord",1,User.Role.STUDENT)
+
+        quizAnswer = new QuizAnswer(user_student, quiz)
 
         course = new Course(COURSE_NAME, Course.Type.TECNICO)
+
+        questionDto = new QuestionDto()
+        questionDto.setKey(1)
+        questionDto.setTitle(QUESTION_TITLE)
+
+        question = new Question(course, questionDto)
+
+
+        quizQuestion = new QuizQuestion(quiz, question, 1)
+
+        question.addQuizQuestion(quizQuestion)
+
+        option1 = new Option()
+        option1.setContent(OPTION_CONTENT)
+
+        questionAnswer = new QuestionAnswer(quizAnswer , quizQuestion, 1, option1, 1)
+
+        userRepository.save(user_student)
+        questionRepository.save(question)
         courseRepository.save(course)
 
         courseExecution = new CourseExecution(course, ACRONYM, ACADEMIC_TERM, Course.Type.TECNICO)
         courseExecutionRepository.save(courseExecution)
-
-        user1 = new User("Rodrigo","gaylord",1,User.Role.STUDENT)
-        user2 = new User("Caetano","gaylordfucker",2,User.Role.TEACHER)
-
-        user1.getCourseExecutions().add(courseExecution)
-        courseExecution.getUsers().add(user1)
-
-        user2.getCourseExecutions().add(courseExecution)
-        courseExecution.getUsers().add(user2)
-
-        message1= new Message(user1,STUDENTANSWER,date)
-        message2=new Message(user2,TEACHERANSWER,date)
-
-        thread = new Thread(1,message1,message2)
-
-        def quiz= new Quiz()
-        quiz.setKey(1)
-        quiz.setType(Quiz.QuizType.GENERATED)
         quiz.setCourseExecution(courseExecution)
+
+
+        user_student.getCourseExecutions().add(courseExecution)
+        courseExecution.getUsers().add(user_student)
+
         courseExecution.addQuiz(quiz)
 
-        def question = new Question()
-        question.setKey(1)
-        question.setCourse(course)
-        question.setThread(thread)
-        course.addQuestion(question)
+        questionService.createQuestion(course.getId(), questionDto)
 
+        discussion = new Discussion()
+        discussion.setId(1)
 
-        userRepository.save(user1)
-        userRepository.save(user2)
-        questionRepository.save(question)
-        
-         */
+        discussionDto = new DiscussionDto()
 
+        discussionRepository.save(discussionDto)
     }
 
-    def 'create a question thread' () {
-       expect:false
+    def 'create a question discussion' () {
+        given: "new discussion"
+
+
+
+
+        then:
+
+
+
+
+    /*
+        given: "new discussion"
+        discussion.setId(1)
+        discussion.setStudent(user1)
+
+        when:
+        questionService.createDiscussion() //FIXME
+
+        then:
+        quizAnswerRepository.findAll().size() == 1
+        def quizAnswer = quizAnswerRepository.findAll().get(0)
+        quizAnswer.getId() != null
+        !quizAnswer.isCompleted()
+        quizAnswer.getUser().getId() == userId
+        quizAnswer.getUser().getQuizAnswers().contains(quizAnswer)
+        quizAnswer.getQuiz().getId() == quizId
+        quizAnswer.getQuiz().getQuizAnswers().contains(quizAnswer)*/
+
+        expect:false;
     }
 
 
@@ -125,20 +168,17 @@ class ThreadQuizAnswer extends Specification {
         expect:false;
     }
 
-    def 'Send a null professor message' () {
-        expect:false;
-
-    }
 
     def 'Send a empty student message' () {
         expect:false;
     }
 
-    def 'Send a empty teacher message' () {
+
+    def 'student did not answered the question'(){
         expect:false;
     }
 
-    def 'student answered the question'(){
+    def 'student answered with null date'(){
         expect:false;
     }
 }
