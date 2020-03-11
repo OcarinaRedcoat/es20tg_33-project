@@ -91,7 +91,9 @@ public class Tourney {
         this.status = status;
     }
 
-    public void closeTourney() {}
+    public void closeTourney() {
+        this.status = Status.CLOSED;
+    }
 
     public List<Topic> getTopics() {
         return topics;

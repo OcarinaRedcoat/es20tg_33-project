@@ -44,10 +44,10 @@ class StudentEnrolsIntoTourneyTest extends Specification{
         def availableDate = LocalDateTime.now()
         def conclusionDate = LocalDateTime.now().plusDays(1)
 
-        tourney.setTourneyStatus(Tourney.Status.CLOSED)
         tourney.setTourneyAvailableDate(availableDate.format(formatter))
         tourney.setTourneyConclusionDate(conclusionDate.format(formatter))
         tourney.setTourneyNumberOfQuestions(NUMBER_QUESTIONS)
+        tourney.setTourneyStatus(Tourney.Status.OPEN)
 
         def topics = new ArrayList()
         topics.add(topicDto)
@@ -95,23 +95,6 @@ class StudentEnrolsIntoTourneyTest extends Specification{
         tourney.getEnrolledStudents().size() == 0
     }
 
-    def "tourney is closed"() {
-        given:
-        def userId = userRepository.findAll().get(1).getId()
-        def repoTourney = tourneyRepository.findAll().get(0)
-        repoTourney.closeTourney()
-        def tourneyId = repoTourney.getId()
-
-        when:
-        tourneyService.enrollStudent(tourneyId, userId)
-
-        then:
-        def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.TOURNEY_CLOSED
-        def tourney = tourneyRepository.findAll().get(0)
-        tourney.getEnrolledStudents().size() == 0
-    }
-
     def "user doesn't exist"() {
         given:
         def userId = -1
@@ -141,6 +124,24 @@ class StudentEnrolsIntoTourneyTest extends Specification{
         def tourney = tourneyRepository.findAll().get(0)
         tourney.getEnrolledStudents().size() == 0
     }
+
+    def "tourney is closed"() {
+        given:
+        def userId = userRepository.findAll().get(1).getId()
+        def newTourney = tourneyRepository.findAll().get(0)
+        newTourney.closeTourney()
+        def tourneyId = newTourney.getId()
+
+        when:
+        tourneyService.enrollStudent(tourneyId, userId)
+
+        then:
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.TOURNEY_CLOSED
+        def tourney = tourneyRepository.findAll().get(0)
+        tourney.getEnrolledStudents().size() == 0
+    }
+
 
     @TestConfiguration
     static class TourneyServiceImplTestContextConfiguration{
