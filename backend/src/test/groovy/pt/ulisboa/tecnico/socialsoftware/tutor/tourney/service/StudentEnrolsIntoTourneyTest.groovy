@@ -80,7 +80,7 @@ class StudentEnrolsIntoTourneyTest extends Specification{
         enrolledStudents.size() == 1
     }
 
-    def "tourney not found"() {
+    def "tourney doesn't exist"() {
         given:
         def userId = userRepository.findAll().get(1).getId()
         def tourneyId = -1
@@ -95,7 +95,7 @@ class StudentEnrolsIntoTourneyTest extends Specification{
         tourney.getEnrolledStudents().size() == 0
     }
 
-    def "user not found"() {
+    def "user doesn't exist"() {
         given:
         def userId = -1
         def tourneyId = tourneyRepository.findAll().get(0).getId()
