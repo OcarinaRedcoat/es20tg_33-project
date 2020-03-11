@@ -204,10 +204,11 @@ public class QuestionService {
         return new QuestionDto(question);
     }
 
-    public void approveQuestion(int questionId) {
+    public void approveQuestion(int questionId, String justification) {
         Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
         if(question.getStatus() == Question.Status.PENDING) {
             question.setStatus(Question.Status.AVAILABLE);
+            question.setJustification(justification);
             this.entityManager.persist(question);
         }
         else {
