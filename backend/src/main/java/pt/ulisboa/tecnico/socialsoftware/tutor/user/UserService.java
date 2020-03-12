@@ -12,6 +12,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.UsersXmlExport;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.UsersXmlImport;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -19,8 +20,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.COURSE_EXECUTION_NOT_FOUND;
-import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.DUPLICATE_USER;
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 @Service
 public class UserService {
@@ -109,5 +109,46 @@ public class UserService {
 
     public User getDemoAdmin() {
         return this.userRepository.findByUsername("Demo-Admin");
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void getSubmittedQuestionsStats(String username) {
+        User user = userRepository.findByUsername(username);
+        checkUserFound(user);
+
+        user.clearSubmittedQuestionsStatus();
+
+        checkSubmittedQuestions(user);
+
+        List<Question> questions = user.getSubmittedQuestions();
+
+        countUserQuestions(user, questions);
+    }
+
+    private void countUserQuestions(User user, List<Question> questions) {
+        for (Question question : questions) {
+            if (question.getStatus() == Question.Status.PENDING)
+                user.increaseNumberOfSubmittedQuestions();
+            else if (question.getStatus() == Question.Status.REJECTED) {
+                user.increaseNumberOfSubmittedQuestions();
+                user.increaseNumberOfRejectedQuestions();
+            } else {
+                user.increaseNumberOfSubmittedQuestions();
+                user.increaseNumberOfApprovedQuestions();
+            }
+        }
+    }
+
+    private void checkSubmittedQuestions(User user) {
+        if (user.getSubmittedQuestions().isEmpty())
+            throw new TutorException(USER_WITHOUT_SUBMITTED_QUESTIONS);
+    }
+
+    private void checkUserFound(User user) {
+        if (user == null)
+            throw new TutorException(USERNAME_NOT_FOUND);
     }
 }
