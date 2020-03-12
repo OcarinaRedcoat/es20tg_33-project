@@ -60,10 +60,12 @@ public class User implements UserDetails {
 
     @OneToMany
     private List<Question> submittedQuestions = new ArrayList<>();
-  
-    @OneToOne
-    @JoinColumn(name="tourney_id")
-    private Tourney tourney;
+
+    @ManyToMany
+    private Set<Tourney> enrolledTourneys = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "creator", fetch = FetchType.LAZY, orphanRemoval=true)
+    private Set<Tourney> createdTourneys = new HashSet<>();
 
     public User() {
     }
@@ -165,6 +167,22 @@ public class User implements UserDetails {
     public List<Question> getSubmittedQuestions() { return submittedQuestions; }
 
     public void setSubmittedQuestions(List<Question> submittedQuestions) { this.submittedQuestions = submittedQuestions; }
+
+    public Set<Tourney> getEnrolledTourneys() {
+        return enrolledTourneys;
+    }
+
+    public void addEnrolledTourneys(Tourney enrolledTourney) {
+        this.enrolledTourneys.add(enrolledTourney);
+    }
+
+    public Set<Tourney> getCreatedTourneys() {
+        return createdTourneys;
+    }
+
+    public void addCreatedTourneys(Tourney createdTourney) {
+        this.createdTourneys.add(createdTourney);
+    }
 
     public Integer getNumberOfTeacherQuizzes() {
         if (this.numberOfTeacherQuizzes == null)

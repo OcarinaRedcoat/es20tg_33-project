@@ -81,6 +81,7 @@ public class TourneyService {
         }
 
         tourney.enrollStudent(user);
+        user.addEnrolledTourneys(tourney);
 
         return new TourneyDto(tourney);
     }
