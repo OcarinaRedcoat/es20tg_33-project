@@ -1,10 +1,13 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.tourney;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.*;
 
 @Entity
@@ -24,7 +27,7 @@ public class Tourney {
 
     private String availableDate, conclusionDate;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tourney", fetch=FetchType.LAZY, orphanRemoval=true)
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "topicTourneys", fetch=FetchType.LAZY)
     private List<Topic> topics = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "tourney", fetch=FetchType.LAZY, orphanRemoval=true)
@@ -49,7 +52,7 @@ public class Tourney {
         this.availableDate = tourneyDto.getTourneyAvailableDate();
         this.conclusionDate = tourneyDto.getTourneyConclusionDate();
         this.status = tourneyDto.getTourneyStatus();
-        this.topics = tourneyDto.getTourneyTopics();
+        this.topics = tourneyDto.getTourneyTopics().stream().map(Topic::new).collect(Collectors.toList());
         this.creator = user;
     }
 
