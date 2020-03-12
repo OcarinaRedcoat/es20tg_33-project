@@ -35,9 +35,6 @@ class GetSubmittedQuestionsStatus extends Specification {
 
     def userWithQuestions
     def userWithoutQuestions
-    def question1
-    def question2
-    def question3
 
     def setup() {
         userWithQuestions = new User(PERSON_NAME, USERNAME_1, 1, User.Role.STUDENT)
@@ -45,63 +42,38 @@ class GetSubmittedQuestionsStatus extends Specification {
 
         userWithoutQuestions = new User(PERSON_NAME, USERNAME_2, 2, User.Role.STUDENT)
         userRepository.save(userWithoutQuestions)
-
-        question1 = new Question()
-        question1.setKey(1)
-        question1.setTitle(QUESTION_TITLE1)
-        question1.setContent(QUESTION_CONTENT)
-        question1.setStatus(Question.Status.PENDING)
-        question1.setSubmittingUser(userWithQuestions)
-        userWithQuestions.addSubmittedQuestion(question1)
-        questionRepository.save(question1)
-
-        question2 = new Question()
-        question2.setKey(2)
-        question2.setTitle(QUESTION_TITLE2)
-        question2.setContent(QUESTION_CONTENT)
-        question2.setStatus(Question.Status.PENDING)
-        question2.setSubmittingUser(userWithQuestions)
-        userWithQuestions.addSubmittedQuestion(question2)
-        questionRepository.save(question2)
-
-        question3 = new Question()
-        question3.setKey(3)
-        question3.setTitle(QUESTION_TITLE3)
-        question3.setContent(QUESTION_CONTENT)
-        question3.setStatus(Question.Status.AVAILABLE)
-        question3.setSubmittingUser(userWithQuestions)
-        userWithQuestions.addSubmittedQuestion(question3)
-        questionRepository.save(question3)
     }
 
     def "a student tries to get the state of his submitted questions"() {
+        given:
+        def question = new Question()
+        question.setKey(key)
+        question.setTitle(title)
+        question.setContent(content)
+        question.setStatus(status)
+        userWithQuestions.addSubmittedQuestion(question)
+        questionRepository.save(question)
+
         when: "the student tries to see the stats about his submitted questions"
         userService.getSubmittedQuestionsStats(USERNAME_1)
 
         then: "the correct information is stored"
         def result = userRepository.findByUsername(USERNAME_1)
-        result.numberOfSubmittedQuestions == 3
-        result.numberOfApprovedQuestions == 1
+        result.numberOfSubmittedQuestions == 1
+        result.numberOfApprovedQuestions == nrApprQ
         def questions = result.getSubmittedQuestions()
-        questions.size() == 3
-        def resQuestion1 = questions.get(0)
-        resQuestion1.getKey() == 1
-        resQuestion1.getTitle() == QUESTION_TITLE1
-        resQuestion1.getContent() == QUESTION_CONTENT
-        resQuestion1.getStatus() == Question.Status.PENDING
-        resQuestion1.getSubmittingUser().getUsername() == USERNAME_1
-        def resQuestion2 = questions.get(1)
-        resQuestion2.getKey() == 2
-        resQuestion2.getTitle() == QUESTION_TITLE2
-        resQuestion2.getContent() == QUESTION_CONTENT
-        resQuestion2.getStatus() == Question.Status.PENDING
-        resQuestion2.getSubmittingUser().getUsername() == USERNAME_1
-        def resQuestion3 = questions.get(2)
-        resQuestion3.getKey() == 3
-        resQuestion3.getTitle() == QUESTION_TITLE3
-        resQuestion3.getContent() == QUESTION_CONTENT
-        resQuestion3.getStatus() == Question.Status.AVAILABLE
-        resQuestion3.getSubmittingUser().getUsername() == USERNAME_1
+        questions.size() == 1
+        def resQuestion = questions.get(0)
+        resQuestion.getKey() == resK
+        resQuestion.getTitle() == resTitle
+        resQuestion.getContent() == resContent
+        resQuestion.getStatus() == resStatus
+
+        where:
+        key | title           | content          | status                    | resK | resTitle        | resContent       | resStatus                 | nrApprQ
+        1   | QUESTION_TITLE1 | QUESTION_CONTENT | Question.Status.PENDING   | 1    | QUESTION_TITLE1 | QUESTION_CONTENT | Question.Status.PENDING   | 0
+        2   | QUESTION_TITLE2 | QUESTION_CONTENT | Question.Status.PENDING   | 2    | QUESTION_TITLE2 | QUESTION_CONTENT | Question.Status.PENDING   | 0
+        3   | QUESTION_TITLE3 | QUESTION_CONTENT | Question.Status.AVAILABLE | 3    | QUESTION_TITLE3 | QUESTION_CONTENT | Question.Status.AVAILABLE | 1
     }
 
     def "the student doesn't have submitted questions"() {
