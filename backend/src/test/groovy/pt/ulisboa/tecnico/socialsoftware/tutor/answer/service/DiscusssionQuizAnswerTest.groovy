@@ -1,33 +1,28 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.answer.service
 
-import org.postgresql.copy.CopyOut
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
-import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.DiscussionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.DiscussionRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuizAnswerRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Message
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Discussion
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion
-import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.MessageDto
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -46,7 +41,7 @@ class DiscussionQuizAnswer extends Specification {
     public static final String TEACHERANSWER="Vai po caralho!"
 
     @Autowired
-    QuestionService questionService
+    AnswerService answerService
 
     @Autowired
     CourseRepository courseRepository
@@ -69,6 +64,7 @@ class DiscussionQuizAnswer extends Specification {
     @Shared def discussion
     @Shared def questionDto
 
+    @Shared def questionAnswer
     @Shared def course
     @Shared def question
     @Shared def quizAnswer
@@ -105,7 +101,7 @@ class DiscussionQuizAnswer extends Specification {
         option1 = new Option()
         option1.setContent(OPTION_CONTENT)
 
-        questionAnswer = new QuestionAnswer(quizAnswer , quizQuestion, 1, option1, 1)
+        questionAnswer = new QuestionAnswer(quizAnswer , quizQuestion, 1)
 
         userRepository.save(user_student)
         questionRepository.save(question)
@@ -128,58 +124,100 @@ class DiscussionQuizAnswer extends Specification {
 
         discussionDto = new DiscussionDto()
 
-        discussionRepository.save(discussionDto)
+        //discussionRepository.save(discussionDto)
     }
 
     def 'create a question discussion' () {
         given: "new discussion"
-
-
-
-
-        then:
-
-
-
-
-    /*
-        given: "new discussion"
-        discussion.setId(1)
-        discussion.setStudent(user1)
+        //def user_student1 = new User("Rodrigo","gaylord",1,User.Role.STUDENT)
+        def userId = userRepository.findAll().get(0).getId()
 
         when:
-        questionService.createDiscussion() //FIXME
+        answerService.createDiscussion(userId, discussionDto)
 
         then:
-        quizAnswerRepository.findAll().size() == 1
-        def quizAnswer = quizAnswerRepository.findAll().get(0)
-        quizAnswer.getId() != null
-        !quizAnswer.isCompleted()
-        quizAnswer.getUser().getId() == userId
-        quizAnswer.getUser().getQuizAnswers().contains(quizAnswer)
-        quizAnswer.getQuiz().getId() == quizId
-        quizAnswer.getQuiz().getQuizAnswers().contains(quizAnswer)*/
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.STUDENT_DID_NOT_ANSWER_QUESTION
 
-        expect:false;
     }
 
 
     def 'Send a null student message' () {
-        expect:false;
+        given:
+        def messageDto = new MessageDto()
+        def user_student1 = new User("Rodrigo","gaylord",1,User.Role.STUDENT)
+        messageDto.setUser(user_student1)
+        messageDto.setId(user_student1.getId())
+        messageDto.setSentence(STUDENTANSWER)
+        def qAId = questionAnswer.getId()
+        def date = new LocalDateTime()
+        messageDto.setMessageDate(date)
+
+        when:
+        answerService.submitMessage(qAId, user_student1.getId(),discussionDto, messageDto)
+
+        then:
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.MESSAGE_NULL
     }
 
 
     def 'Send a empty student message' () {
-        expect:false;
+        given:
+        def messageDto = new MessageDto()
+        def user_student1 = new User("Rodrigo","gaylord",1,User.Role.STUDENT)
+        messageDto.setUser(user_student1)
+        messageDto.setId(user_student1.getId())
+        messageDto.setSentence(STUDENTANSWER)
+        def qAId = questionAnswer.getId()
+        def date = new LocalDateTime()
+        messageDto.setMessageDate(date)
+
+        when:
+        answerService.submitMessage(qAId, user_student1.getId(),discussionDto, messageDto)
+
+        then:
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.MESSAGE_EMPTY
     }
 
 
     def 'student did not answered the question'(){
-        expect:false;
+        given:
+        def messageDto = new MessageDto()
+        def user_student1 = new User("Rodrigo","gaylord",1,User.Role.STUDENT)
+        messageDto.setUser(user_student1)
+        messageDto.setId(user_student1.getId())
+        messageDto.setSentence(STUDENTANSWER)
+        def qAId = questionAnswer.getId()
+        def date = new LocalDateTime()
+        messageDto.setMessageDate(date)
+
+        when:
+        answerService.submitMessage(qAId, user_student1.getId(),discussionDto, messageDto)
+
+        then:
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.STUDENT_DID_NOT_ANSWER_QUESTION
     }
 
     def 'student answered with null date'(){
-        expect:false;
+        given:
+        def messageDto = new MessageDto()
+        def user_student1 = new User("Rodrigo","gaylord",1,User.Role.STUDENT)
+        messageDto.setUser(user_student1)
+        messageDto.setId(user_student1.getId())
+        messageDto.setSentence(STUDENTANSWER)
+        def qAId = questionAnswer.getId()
+        def date = new LocalDateTime()
+        messageDto.setMessageDate(date)
+
+        when:
+        answerService.submitMessage(qAId, user_student1.getId(),discussionDto, messageDto)
+
+        then:
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.MESSAGE_DATE_NULL
     }
 }
 

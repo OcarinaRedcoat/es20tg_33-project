@@ -1,7 +1,9 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.exceptions;
 
 public enum ErrorMessage {
-    MESSAGE_MISSING_DATA("Missing information for message"),
+    MESSAGE_NULL("Cannot send a null message"),
+    MESSAGE_EMPTY("Cannot send a empty message"),
+    MESSAGE_DATE_NULL("Cannot send a message with a null date"),
     STUDENT_DID_NOT_ANSWER_QUESTION("Student did not answered this question"),
 
     QUIZ_NOT_FOUND("Quiz not found with id %d"),

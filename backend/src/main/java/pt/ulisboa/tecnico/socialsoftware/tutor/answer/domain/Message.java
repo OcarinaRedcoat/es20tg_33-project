@@ -67,9 +67,14 @@ public class Message {
     }
 
     public void checkConsistentMessage(MessageDto messageDto) {
-        if (!(messageDto.getMessageDate() == null || messageDto.getSentence() == null ||
-                messageDto.getSentence().trim().length() == 0)){
-            throw new TutorException(MESSAGE_MISSING_DATA);
+        if (messageDto.getMessageDate() == null){
+            throw new TutorException(MESSAGE_DATE_NULL);
+        }
+        if (messageDto.getSentence() == null ){
+            throw new TutorException(MESSAGE_NULL);
+        }
+        if (messageDto.getSentence().trim().length() == 0){
+            throw new TutorException(MESSAGE_EMPTY);
         }
 
     }

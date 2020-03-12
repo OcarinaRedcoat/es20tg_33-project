@@ -13,5 +13,6 @@ import java.util.Optional;
 @Repository
 @Transactional
 public interface DiscussionRepository extends JpaRepository<Discussion, Integer> {
+
 }
 
