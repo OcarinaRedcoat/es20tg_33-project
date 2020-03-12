@@ -258,15 +258,16 @@ class DiscussionQuizAnswerTest extends Specification {
         expect:false
     }
 
+    def 'professor message with null date'(){
+        expect:false
+    }
+
 
     def 'Send a null professor message'(){
         expect:false
     }
 
-
-    def 'professor message with null date'(){
-        expect:false
-    }
+    
 
     @TestConfiguration
     static class AnswerServiceImplTestContextConfiguration{
