@@ -117,9 +117,9 @@ public class UserService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void getSubmittedQuestionsStats(String username) {
         User user = userRepository.findByUsername(username);
-        checkUserFound(user);
-        
         user.clearSubmittedQuestionsStatus();
+
+        checkUserFound(user);
 
         checkSubmittedQuestions(user);
 
