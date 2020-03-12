@@ -394,6 +394,12 @@ public class User implements UserDetails {
         this.numberOfRejectedQuestions ++;
     }
 
+    public void clearSubmittedQuestionsStatus() {
+        this.numberOfSubmittedQuestions = 0;
+        this.numberOfApprovedQuestions = 0;
+        this.numberOfRejectedQuestions = 0;
+    }
+
     public void addQuizAnswer(QuizAnswer quizAnswer) {
         this.quizAnswers.add(quizAnswer);
     }
