@@ -17,11 +17,11 @@ public class Discussion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "student_str")
     private Message studentMessage;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "teacher_str")
     private Message teacherMessage;
 
@@ -33,19 +33,18 @@ public class Discussion {
     @JoinColumn(name = "teacher_id")
     private User teacher;
 
-    @OneToOne
-    @JoinColumn(name = "questionAnswer_id")
-    private QuestionAnswer questionAnswer;
+    @Column(nullable = false)
+    private Integer questionAnswerId;
 
-    @OneToMany(cascade = CascadeType.ALL,fetch=FetchType.LAZY, orphanRemoval=true)
-    private List<Message> threadListMessages = new ArrayList<>();
+    @OneToMany
+    private List<Message> discussionListMessages = new ArrayList<>();
 
     public Discussion(){
     }
 
-    public Discussion(QuestionAnswer questionAnswer, DiscussionDto discussionDto){
+    public Discussion(QuestionAnswer questionAnswerId, DiscussionDto discussionDto){
         checkConsistentDiscussion(discussionDto);
-        this.questionAnswer = questionAnswer;
+        this.questionAnswerId = questionAnswerId.getId();
 
     }
 
@@ -81,33 +80,31 @@ public class Discussion {
         this.teacherMessage = teacherMessage;
     }
 
-    public List<Message> getThreadListMessages() {
-        return threadListMessages;
+    public List<Message> getDiscussionListMessages() {
+        return discussionListMessages;
     }
 
-    public void setThreadListMessages(List<Message> threadListMessages) {
-        this.threadListMessages = threadListMessages;
+    public void setDiscussionListMessages(List<Message> threadListMessages) {
+        this.discussionListMessages = threadListMessages;
     }
 
     public void saveStudentMessage(){
-        this.threadListMessages.add(this.studentMessage);
+        this.discussionListMessages.add(this.studentMessage);
     }
 
     public void saveTeacherMessage(){
-        this.threadListMessages.add(this.teacherMessage);
+        this.discussionListMessages.add(this.teacherMessage);
     }
 
     public String displayThread(){
-        return threadListMessages.get(0).displayMessage() + "\n" +
-                threadListMessages.get(1).displayMessage();
+        return discussionListMessages.get(0).displayMessage() + "\n" +
+                discussionListMessages.get(1).displayMessage();
     }
 
     public void checkConsistentDiscussion(DiscussionDto discussionDto){
-        //TODO need to check if the student answered the question which this discussion is about
-        //check if the questionAnswer id is a questionAnswer of the student in question, only if is a Student
         for (QuizAnswer qzA: student.getQuizAnswers()) {
             for (QuestionAnswer qA: qzA.getQuestionAnswers()) {
-                if (qA.getId() == questionAnswer.getId()){
+                if (qA.getId().equals(questionAnswerId)){
                     return;
                 }
             }
@@ -122,7 +119,7 @@ public class Discussion {
                 "id=" + id +
                 ", studentMessage=" + studentMessage +
                 ", teacherMessage=" + teacherMessage +
-                ", threadListMessages=" + threadListMessages +
+                ", threadListMessages=" + discussionListMessages +
                 '}';
     }
 

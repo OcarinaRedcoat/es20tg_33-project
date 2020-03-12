@@ -6,14 +6,18 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Discussion;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Message;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.CorrectAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.DiscussionDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.MessageDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.QuizAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.DiscussionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuestionAnswerRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuizAnswerRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlExport;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport;
@@ -196,16 +200,48 @@ public class AnswerService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public void createDiscussion(int questionAnswerId, DiscussionDto discussionDto){
-        //TODO verificar se a question answer existe caso nao lançar exceçao
-        // return new DiscussionDto(discussionDto);; //FIXME discussion not discssionDto
+    public DiscussionDto createDiscussion(Integer questionAnswerId, DiscussionDto discussionDto){
+        QuestionAnswer questionAnswer= questionAnswerRepository.findById(questionAnswerId).orElseThrow(() -> new TutorException(ErrorMessage.QUESTION_ANSWER_NOT_FOUND));
+        Discussion discussion= new Discussion(questionAnswer,discussionDto);
+
+        entityManager.persist(discussion);
+
+        return new DiscussionDto(discussion);
     }
 
     @Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public void submitMessage(){
+    public DiscussionDto submitMessage(Integer questionAnswerId, Integer UserId, DiscussionDto discussionDto, MessageDto messageDto){
+        QuestionAnswer questionAnswer= questionAnswerRepository.findById(questionAnswerId).orElseThrow(() -> new TutorException(ErrorMessage.QUESTION_ANSWER_NOT_FOUND));
+        User user = userRepository.findById(UserId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND,UserId));
+        Discussion discussion= new Discussion(questionAnswer,discussionDto);
+
+        discussion.checkConsistentDiscussion(discussionDto);
+
+        if(discussion.getDiscussionListMessages().isEmpty()) {
+            if (!(user.getRole().equals(User.Role.STUDENT))) {
+                throw new TutorException(ErrorMessage.USER_NOT_STUDENT);
+            }
+        }
+
+        Message message = new Message(messageDto,user);
+
+        if(user.getRole().equals(User.Role.STUDENT)){
+            discussion.setStudentMessage(message);
+            discussion.getStudentMessage().checkConsistentMessage(messageDto);
+            discussion.saveStudentMessage();
+        }else {
+            discussion.setTeacherMessage(message);
+            discussion.getTeacherMessage().checkConsistentMessage(messageDto);
+            discussion.saveTeacherMessage();
+
+        }
+
+        entityManager.persist(discussion);
+
+        return new DiscussionDto(discussion);
     }
 
     @Retryable(

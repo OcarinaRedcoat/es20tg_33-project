@@ -25,18 +25,17 @@ public class Message {
     private String sentence;
 
     private LocalDateTime messageDate;
-    @OneToOne
-    @JoinColumn(name = "question:id")
-    private QuestionAnswer questionAnswer;
+
+    @ManyToOne(cascade = CascadeType.ALL,fetch=FetchType.LAZY)
+    private Discussion discussion;
 
     public Message(){
     }
 
-    public Message(MessageDto messageDto,User user, String sentence, LocalDateTime messageDate){
+    public Message(MessageDto messageDto,User user){
         checkConsistentMessage(messageDto);
         this.user = user;
-        this.sentence = sentence;
-        this.messageDate= messageDate;
+
     }
 
     public Integer getId() {return this.id;}
@@ -55,11 +54,19 @@ public class Message {
 
     public void setMessageDate(LocalDateTime messageDate) {this.messageDate=messageDate;}
 
+    public Discussion getDiscussion() {
+        return discussion;
+    }
+
+    public void setDiscussion(Discussion discussion) {
+        this.discussion = discussion;
+    }
+
     public String displayMessage(){
         return user.getName() + "(" + user.getRole() + ") - " + getSentence() + getMessageDate();
     }
 
-    private void checkConsistentMessage(MessageDto messageDto) {
+    public void checkConsistentMessage(MessageDto messageDto) {
         if (!(messageDto.getMessageDate() == null || messageDto.getSentence() == null ||
                 messageDto.getSentence().trim().length() == 0)){
             throw new TutorException(MESSAGE_MISSING_DATA);
