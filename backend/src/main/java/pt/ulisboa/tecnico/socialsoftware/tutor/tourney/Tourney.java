@@ -5,6 +5,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.*;
 
 @Entity
@@ -24,13 +25,14 @@ public class Tourney {
 
     private String availableDate, conclusionDate;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tourney", fetch=FetchType.LAZY, orphanRemoval=true)
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "topicTourneys", fetch=FetchType.LAZY)
     private List<Topic> topics = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tourney", fetch=FetchType.LAZY, orphanRemoval=true)
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "enrolledTourneys", fetch=FetchType.LAZY)
     private List<User> enrolledStudents = new ArrayList<>();
 
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "tourney")
+    @ManyToOne
+    @JoinColumn(name="user_id")
     private User creator;
 
     public Tourney(){}
@@ -41,6 +43,8 @@ public class Tourney {
         this.conclusionDate = conclusionDate;
         this.status = Tourney.Status.OPEN;
         this.creator = creator;
+
+        this.creator.addCreatedTourneys(this);
     }
 
     public Tourney(TourneyDto tourneyDto, User user){
@@ -49,7 +53,7 @@ public class Tourney {
         this.availableDate = tourneyDto.getTourneyAvailableDate();
         this.conclusionDate = tourneyDto.getTourneyConclusionDate();
         this.status = tourneyDto.getTourneyStatus();
-        this.topics = tourneyDto.getTourneyTopics();
+        this.topics = tourneyDto.getTourneyTopics().stream().map(Topic::new).collect(Collectors.toList());
         this.creator = user;
     }
 
@@ -107,11 +111,9 @@ public class Tourney {
         return creator;
     }
 
-    public void setCreator(User creator) {
-        this.creator = creator;
-    }
-
     public List<User> getEnrolledStudents() {return this.enrolledStudents;}
-    public void enrollStudent(User user) {this.enrolledStudents.add(user);}
+    public void enrollStudent(User user) {
+        this.enrolledStudents.add(user);
+    }
 
 }

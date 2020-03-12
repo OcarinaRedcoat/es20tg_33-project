@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.Tourney
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyRepository
@@ -47,6 +48,8 @@ class CreateTourneyTest extends Specification{
         tourney.setTourneyAvailableDate(availableDate.format(formatter))
         tourney.setTourneyConclusionDate(conclusionDate.format(formatter))
 
+        topicDto = new TopicDto()
+        topicDto.setName("topic")
         def topics = new ArrayList()
         topics.add(topicDto)
         tourney.setTourneyTopics(topics)
