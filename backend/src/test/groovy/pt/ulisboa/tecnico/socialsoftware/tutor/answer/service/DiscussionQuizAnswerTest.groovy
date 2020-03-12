@@ -29,7 +29,7 @@ import spock.lang.Specification
 import java.time.LocalDateTime
 
 @DataJpaTest
-class DiscussionQuizAnswer extends Specification {
+class DiscussionQuizAnswerTest extends Specification {
     public static final String COURSE_NAME = "Software Architecture"
     public static final String ACRONYM = "AS1"
     public static final String ACADEMIC_TERM = "1 SEM"
