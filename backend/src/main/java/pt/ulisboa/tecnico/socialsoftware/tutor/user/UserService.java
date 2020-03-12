@@ -117,14 +117,17 @@ public class UserService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void getSubmittedQuestionsStats(String username) {
         User user = userRepository.findByUsername(username);
-        if (user == null)
-            throw new TutorException(USERNAME_NOT_FOUND);
 
-        if (user.getSubmittedQuestions().isEmpty())
-            throw new TutorException(USER_WITHOUT_SUBMITTED_QUESTIONS);
+        checkUserFound(user);
+
+        checkSubmittedQuestions(user);
 
         List<Question> questions = user.getSubmittedQuestions();
 
+        countUserQuestions(user, questions);
+    }
+
+    private void countUserQuestions(User user, List<Question> questions) {
         for (Question question : questions) {
             if (question.getStatus() == Question.Status.PENDING)
                 user.increaseNumberOfSubmittedQuestions();
@@ -136,5 +139,15 @@ public class UserService {
                 user.increaseNumberOfApprovedQuestions();
             }
         }
+    }
+
+    private void checkSubmittedQuestions(User user) {
+        if (user.getSubmittedQuestions().isEmpty())
+            throw new TutorException(USER_WITHOUT_SUBMITTED_QUESTIONS);
+    }
+
+    private void checkUserFound(User user) {
+        if (user == null)
+            throw new TutorException(USERNAME_NOT_FOUND);
     }
 }
