@@ -43,8 +43,11 @@ public class Discussion {
     }
 
     public Discussion(QuestionAnswer questionAnswerId, DiscussionDto discussionDto){
-        checkConsistentDiscussion(discussionDto);
         this.questionAnswerId = questionAnswerId.getId();
+        this.student =  discussionDto.getStudent();
+        checkConsistentDiscussion(discussionDto);
+        //this.questionAnswerId = questionAnswerId.getId();
+        //this.student =  discussionDto.getStudent();
 
     }
 
@@ -102,9 +105,9 @@ public class Discussion {
     }
 
     public void checkConsistentDiscussion(DiscussionDto discussionDto){
-        for (QuizAnswer qzA: student.getQuizAnswers()) {
-            for (QuestionAnswer qA: qzA.getQuestionAnswers()) {
-                if (qA.getId().equals(questionAnswerId)){
+        for (QuizAnswer qzA : student.getQuizAnswers()) {
+            for (QuestionAnswer qA : qzA.getQuestionAnswers()) {
+                if (qA.getId().equals(questionAnswerId)) {
                     return;
                 }
             }
