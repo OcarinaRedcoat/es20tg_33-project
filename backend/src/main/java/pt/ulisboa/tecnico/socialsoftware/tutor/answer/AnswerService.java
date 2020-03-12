@@ -219,14 +219,7 @@ public class AnswerService {
         User user = userRepository.findById(UserId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, UserId));
         Discussion discussion = new Discussion(questionAnswer, discussionDto);
 
-        //discussion.checkConsistentDiscussion(discussionDto);
-
-
-        if (discussion.getDiscussionListMessages().isEmpty()) {
-            if (!(user.getRole().equals(User.Role.STUDENT))) {
-                throw new TutorException(ErrorMessage.USER_NOT_STUDENT);
-            }
-        }
+        checkFirstMessageStudent(user, discussion);
 
         Message message = new Message(messageDto, user);
 
@@ -246,6 +239,14 @@ public class AnswerService {
         entityManager.persist(discussion);
 
         return new DiscussionDto(discussion);
+    }
+
+    private void checkFirstMessageStudent(User user, Discussion discussion) {
+        if (discussion.getDiscussionListMessages().isEmpty()) {
+            if (!(user.getRole().equals(User.Role.STUDENT))) {
+                throw new TutorException(ErrorMessage.USER_NOT_STUDENT);
+            }
+        }
     }
 
 
