@@ -17,6 +17,7 @@ import spock.lang.Specification
 class GetSubmittedQuestionsStatus extends Specification {
     public static final String USERNAME_1 = "user1"
     public static final String USERNAME_2 = "user2"
+    public static final String USERNAME_3 = "user3"
     public static final String PERSON_NAME = "Name"
     public static final String QUESTION_TITLE1 = "qTitle1"
     public static final String QUESTION_TITLE2 = "qTitle2"
@@ -27,7 +28,7 @@ class GetSubmittedQuestionsStatus extends Specification {
     UserRepository userRepository
 
     @Autowired
-    UserRepository userService
+    UserService userService
 
     @Autowired
     QuestionRepository questionRepository
@@ -39,18 +40,10 @@ class GetSubmittedQuestionsStatus extends Specification {
     def question3
 
     def setup() {
-        userWithQuestions = new User()
-        userWithQuestions.setKey(1)
-        userWithQuestions.setUsername(USERNAME_1)
-        userWithQuestions.setName(PERSON_NAME)
-        userWithQuestions.setRole(User.Role.STUDENT)
+        userWithQuestions = new User(PERSON_NAME, USERNAME_1, 1, User.Role.STUDENT)
         userRepository.save(userWithQuestions)
 
-        userWithoutQuestions = new User()
-        userWithoutQuestions.setKey(2)
-        userWithoutQuestions.setUsername(USERNAME_2)
-        userWithoutQuestions.setName(PERSON_NAME)
-        userWithoutQuestions.setRole(User.Role.STUDENT)
+        userWithoutQuestions = new User(PERSON_NAME, USERNAME_2, 2, User.Role.STUDENT)
         userRepository.save(userWithoutQuestions)
 
         question1 = new Question()
@@ -83,10 +76,10 @@ class GetSubmittedQuestionsStatus extends Specification {
 
     def "a student tries to get the state of his submitted questions"() {
         when: "the student tries to see the stats about his submitted questions"
-        userService.getSubmittedQuestionsStats(userWithQuestions)
+        userService.getSubmittedQuestionsStats(USERNAME_1)
 
         then: "the correct information is stored"
-        def result = userRepository.findByUsername(userWithQuestions)
+        def result = userRepository.findByUsername(USERNAME_1)
         result.numberOfSubmittedQuestions == 3
         result.numberOfApprovedQuestions == 1
         def questions = result.getSubmittedQuestions()
@@ -113,11 +106,20 @@ class GetSubmittedQuestionsStatus extends Specification {
 
     def "the student doesn't have submitted questions"() {
         when: "the student tries to see the stats about his submitted questions"
-        userService.getSubmittedQuestionsStats(userWithoutQuestions)
+        userService.getSubmittedQuestionsStats(USERNAME_2)
 
         then: "an exception is thrown"
         def exception = thrown(TutorException)
         exception.getErrorMessage() == ErrorMessage.USER_WITHOUT_SUBMITTED_QUESTIONS
+    }
+
+    def "the student doesn't exist"() {
+        when: "the student tries to see the stats about his submitted questions"
+        userService.getSubmittedQuestionsStats(USERNAME_3)
+
+        then: "an exception is thrown"
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.USERNAME_NOT_FOUND
     }
 
     @TestConfiguration

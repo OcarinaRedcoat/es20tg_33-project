@@ -19,6 +19,9 @@ public class StudentDto implements Serializable {
     private Integer numberOfTeacherAnswers;
     private Integer numberOfInClassAnswers;
     private Integer numberOfStudentAnswers;
+    private Integer numberOfSubmittedQuestions;
+    private Integer numberOfApprovedQuestions;
+    private Integer numberOfRejectedQuestions;
     private int percentageOfCorrectAnswers = 0;
     private int percentageOfCorrectTeacherAnswers = 0;
     private int percentageOfCorrectInClassAnswers = 0;
@@ -39,6 +42,9 @@ public class StudentDto implements Serializable {
         this.numberOfTeacherAnswers = user.getNumberOfTeacherAnswers();
         this.numberOfInClassAnswers = user.getNumberOfInClassAnswers();
         this.numberOfStudentAnswers = user.getNumberOfStudentAnswers();
+        this.numberOfSubmittedQuestions = user.getNumberOfSubmittedQuestions();
+        this.numberOfApprovedQuestions = user.getNumberOfApprovedQuestions();
+        this.numberOfRejectedQuestions = user.getNumberOfRejectedQuestions();
 
         if (this.numberOfTeacherAnswers != 0)
             this.percentageOfCorrectTeacherAnswers = user.getNumberOfCorrectTeacherAnswers() * 100 / this.numberOfTeacherAnswers;
@@ -183,6 +189,30 @@ public class StudentDto implements Serializable {
         this.submittedQuestions = submittedQuestions;
     }
 
+    public Integer getNumberOfSubmittedQuestions() {
+        return numberOfSubmittedQuestions;
+    }
+
+    public void setNumberOfSubmittedQuestions(Integer numberOfSubmittedQuestions) {
+        this.numberOfSubmittedQuestions = numberOfSubmittedQuestions;
+    }
+
+    public Integer getNumberOfApprovedQuestions() {
+        return numberOfApprovedQuestions;
+    }
+
+    public void setNumberOfApprovedQuestions(Integer numberOfApprovedQuestions) {
+        this.numberOfApprovedQuestions = numberOfApprovedQuestions;
+    }
+
+    public Integer getNumberOfRejectedQuestions() {
+        return numberOfRejectedQuestions;
+    }
+
+    public void setNumberOfRejectedQuestions(Integer numberOfRejectedQuestions) {
+        this.numberOfRejectedQuestions = numberOfRejectedQuestions;
+    }
+
     @Override
     public String toString() {
         return "StudentDto{" +
@@ -194,6 +224,9 @@ public class StudentDto implements Serializable {
                 ", numberOfTeacherAnswers=" + numberOfTeacherAnswers +
                 ", percentageOfCorrectAnswers=" + percentageOfCorrectAnswers +
                 ", percentageOfCorrectTeacherAnswers=" + percentageOfCorrectTeacherAnswers +
+                ", numberOfSubmittedQuestions=" + numberOfSubmittedQuestions +
+                ", numberOfApprovedQuestions=" + numberOfApprovedQuestions +
+                ", numberOfRejectedQuestions=" + numberOfRejectedQuestions +
                 ", creationDate='" + creationDate + '\'' +
                 ", lastAccess='" + lastAccess + '\'' +
                 '}';

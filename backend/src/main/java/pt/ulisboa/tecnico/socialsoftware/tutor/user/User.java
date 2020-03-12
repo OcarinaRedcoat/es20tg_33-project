@@ -45,6 +45,9 @@ public class User implements UserDetails {
     private Integer numberOfCorrectTeacherAnswers;
     private Integer numberOfCorrectInClassAnswers;
     private Integer numberOfCorrectStudentAnswers;
+    private Integer numberOfSubmittedQuestions;
+    private Integer numberOfApprovedQuestions;
+    private Integer numberOfRejectedQuestions;
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
@@ -83,6 +86,9 @@ public class User implements UserDetails {
         this.numberOfCorrectTeacherAnswers = 0;
         this.numberOfCorrectInClassAnswers = 0;
         this.numberOfCorrectStudentAnswers = 0;
+        this.numberOfSubmittedQuestions = 0;
+        this.numberOfApprovedQuestions = 0;
+        this.numberOfRejectedQuestions = 0;
     }
 
     public Integer getId() {
@@ -165,6 +171,30 @@ public class User implements UserDetails {
     public List<Question> getSubmittedQuestions() { return submittedQuestions; }
 
     public void setSubmittedQuestions(List<Question> submittedQuestions) { this.submittedQuestions = submittedQuestions; }
+
+    public Integer getNumberOfSubmittedQuestions() {
+        return numberOfSubmittedQuestions;
+    }
+
+    public void setNumberOfSubmittedQuestions(Integer numberOfSubmittedQuestions) {
+        this.numberOfSubmittedQuestions = numberOfSubmittedQuestions;
+    }
+
+    public Integer getNumberOfApprovedQuestions() {
+        return numberOfApprovedQuestions;
+    }
+
+    public void setNumberOfApprovedQuestions(Integer numberOfApprovedQuestions) {
+        this.numberOfApprovedQuestions = numberOfApprovedQuestions;
+    }
+
+    public Integer getNumberOfRejectedQuestions() {
+        return numberOfRejectedQuestions;
+    }
+
+    public void setNumberOfRejectedQuestions(Integer numberOfRejectedQuestions) {
+        this.numberOfRejectedQuestions = numberOfRejectedQuestions;
+    }
 
     public Integer getNumberOfTeacherQuizzes() {
         if (this.numberOfTeacherQuizzes == null)
@@ -352,6 +382,18 @@ public class User implements UserDetails {
         }
     }
 
+    public void increaseNumberOfSubmittedQuestions() {
+        this.numberOfSubmittedQuestions ++;
+    }
+
+    public void increaseNumberOfApprovedQuestions() {
+        this.numberOfApprovedQuestions ++;
+    }
+
+    public void increaseNumberOfRejectedQuestions() {
+        this.numberOfRejectedQuestions ++;
+    }
+
     public void addQuizAnswer(QuizAnswer quizAnswer) {
         this.quizAnswers.add(quizAnswer);
     }
@@ -380,6 +422,9 @@ public class User implements UserDetails {
                 ", numberOfCorrectInClassAnswers=" + numberOfCorrectInClassAnswers +
                 ", numberOfStudentAnswers=" + numberOfStudentAnswers +
                 ", numberOfCorrectStudentAnswers=" + numberOfCorrectStudentAnswers +
+                ", numberOfSubmittedQuestions=" + numberOfSubmittedQuestions +
+                ", numberOfApprovedQuestions=" + numberOfApprovedQuestions +
+                ", numberOfRejectedQuestions=" + numberOfRejectedQuestions +
                 ", creationDate=" + creationDate +
                 ", courseExecutions=" + courseExecutions +
                 '}';
