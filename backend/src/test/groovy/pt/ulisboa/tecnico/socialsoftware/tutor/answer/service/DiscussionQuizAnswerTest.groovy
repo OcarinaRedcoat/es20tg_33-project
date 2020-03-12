@@ -237,11 +237,9 @@ class DiscussionQuizAnswerTest extends Specification {
         given:
         def messageDto4 = new MessageDto()
 
-        //user_student.setId(1)
-
         messageDto4.setUser(user_student)
         messageDto4.setId(user_student.getId())
-        messageDto4.setSentence(null)
+        messageDto4.setSentence(STUDENTANSWER)
 
         def qAId = questionAnswer.getId()
         def date = null
@@ -254,6 +252,20 @@ class DiscussionQuizAnswerTest extends Specification {
         then:
         def exception = thrown(TutorException)
         exception.getErrorMessage() == ErrorMessage.MESSAGE_DATE_NULL
+    }
+
+    def 'Send a empty professor message'(){
+        expect:false
+    }
+
+
+    def 'Send a null professor message'(){
+        expect:false
+    }
+
+
+    def 'professor message with null date'(){
+        expect:false
     }
 
     @TestConfiguration
