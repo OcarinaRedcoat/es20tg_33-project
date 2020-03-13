@@ -62,8 +62,7 @@ public enum ErrorMessage {
 
     QUESTION_MISSING_JUSTIFICATION("Missing a justification in order to reject question"),
     QUESTION_NOT_PENDING("Question status not pending"),
-
-    SUBMIT_QUESTION_NOT_STUDENT("Only students can submit questions"),
+    USER_WITHOUT_SUBMITTED_QUESTIONS("This user doesn't have any submitted questions"),
   
     ACCESS_DENIED("You do not have permission to view this resource"),
 

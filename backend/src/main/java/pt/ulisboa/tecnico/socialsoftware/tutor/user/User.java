@@ -45,6 +45,9 @@ public class User implements UserDetails {
     private Integer numberOfCorrectTeacherAnswers;
     private Integer numberOfCorrectInClassAnswers;
     private Integer numberOfCorrectStudentAnswers;
+    private Integer numberOfSubmittedQuestions;
+    private Integer numberOfApprovedQuestions;
+    private Integer numberOfRejectedQuestions;
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
@@ -60,10 +63,12 @@ public class User implements UserDetails {
 
     @OneToMany
     private List<Question> submittedQuestions = new ArrayList<>();
-  
-    @OneToOne
-    @JoinColumn(name="tourney_id")
-    private Tourney tourney;
+
+    @ManyToMany
+    private Set<Tourney> enrolledTourneys = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "creator", fetch = FetchType.LAZY, orphanRemoval=true)
+    private Set<Tourney> createdTourneys = new HashSet<>();
 
     public User() {
     }
@@ -83,6 +88,9 @@ public class User implements UserDetails {
         this.numberOfCorrectTeacherAnswers = 0;
         this.numberOfCorrectInClassAnswers = 0;
         this.numberOfCorrectStudentAnswers = 0;
+        this.numberOfSubmittedQuestions = 0;
+        this.numberOfApprovedQuestions = 0;
+        this.numberOfRejectedQuestions = 0;
     }
 
     public Integer getId() {
@@ -165,6 +173,46 @@ public class User implements UserDetails {
     public List<Question> getSubmittedQuestions() { return submittedQuestions; }
 
     public void setSubmittedQuestions(List<Question> submittedQuestions) { this.submittedQuestions = submittedQuestions; }
+
+    public Set<Tourney> getEnrolledTourneys() {
+        return enrolledTourneys;
+    }
+
+    public void addEnrolledTourneys(Tourney enrolledTourney) {
+        this.enrolledTourneys.add(enrolledTourney);
+    }
+
+    public Set<Tourney> getCreatedTourneys() {
+        return createdTourneys;
+    }
+
+    public void addCreatedTourneys(Tourney createdTourney) {
+        this.createdTourneys.add(createdTourney);
+    }
+    
+    public Integer getNumberOfSubmittedQuestions() {
+        return numberOfSubmittedQuestions;
+    }
+
+    public void setNumberOfSubmittedQuestions(Integer numberOfSubmittedQuestions) {
+        this.numberOfSubmittedQuestions = numberOfSubmittedQuestions;
+    }
+
+    public Integer getNumberOfApprovedQuestions() {
+        return numberOfApprovedQuestions;
+    }
+
+    public void setNumberOfApprovedQuestions(Integer numberOfApprovedQuestions) {
+        this.numberOfApprovedQuestions = numberOfApprovedQuestions;
+    }
+
+    public Integer getNumberOfRejectedQuestions() {
+        return numberOfRejectedQuestions;
+    }
+
+    public void setNumberOfRejectedQuestions(Integer numberOfRejectedQuestions) {
+        this.numberOfRejectedQuestions = numberOfRejectedQuestions;
+    }
 
     public Integer getNumberOfTeacherQuizzes() {
         if (this.numberOfTeacherQuizzes == null)
@@ -352,6 +400,24 @@ public class User implements UserDetails {
         }
     }
 
+    public void increaseNumberOfSubmittedQuestions() {
+        this.numberOfSubmittedQuestions ++;
+    }
+
+    public void increaseNumberOfApprovedQuestions() {
+        this.numberOfApprovedQuestions ++;
+    }
+
+    public void increaseNumberOfRejectedQuestions() {
+        this.numberOfRejectedQuestions ++;
+    }
+
+    public void clearSubmittedQuestionsStatus() {
+        this.numberOfSubmittedQuestions = 0;
+        this.numberOfApprovedQuestions = 0;
+        this.numberOfRejectedQuestions = 0;
+    }
+
     public void addQuizAnswer(QuizAnswer quizAnswer) {
         this.quizAnswers.add(quizAnswer);
     }
@@ -380,6 +446,9 @@ public class User implements UserDetails {
                 ", numberOfCorrectInClassAnswers=" + numberOfCorrectInClassAnswers +
                 ", numberOfStudentAnswers=" + numberOfStudentAnswers +
                 ", numberOfCorrectStudentAnswers=" + numberOfCorrectStudentAnswers +
+                ", numberOfSubmittedQuestions=" + numberOfSubmittedQuestions +
+                ", numberOfApprovedQuestions=" + numberOfApprovedQuestions +
+                ", numberOfRejectedQuestions=" + numberOfRejectedQuestions +
                 ", creationDate=" + creationDate +
                 ", courseExecutions=" + courseExecutions +
                 '}';
