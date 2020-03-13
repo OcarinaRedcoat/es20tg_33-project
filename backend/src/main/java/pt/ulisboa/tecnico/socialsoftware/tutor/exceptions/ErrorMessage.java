@@ -1,6 +1,14 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.exceptions;
 
 public enum ErrorMessage {
+    MESSAGE_NULL("Cannot send a null message"),
+    MESSAGE_EMPTY("Cannot send a empty message"),
+    MESSAGE_DATE_NULL("Cannot send a message with a null date"),
+    STUDENT_DID_NOT_ANSWER_QUESTION("Student did not answered this question"),
+    STUDENT_DOESNT_HAVE_PERMISSION("Student does not have permission to see a discussion clarification without " +
+            "answering the corresponding question"),
+    TEACHER_CANNOT_SEE_TEACHER_CLARIFICATION("Permission only for student, only user can see teacher clarification"),
+
     QUIZ_NOT_FOUND("Quiz not found with id %d"),
     QUIZ_QUESTION_NOT_FOUND("Quiz question not found with id %d"),
     QUIZ_ANSWER_NOT_FOUND("Quiz answer not found with id %d"),
