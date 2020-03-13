@@ -252,16 +252,22 @@ public class AnswerService {
         User user = userRepository.findById(UserId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, UserId));
         Discussion discussion = discussionRepository.findById(discussionDto.getId()).orElseThrow(() -> new TutorException(STUDENT_DOESNT_HAVE_PERMISSION));
 
-        List<Message> messagesList = new ArrayList<>();
-        if (!user.getRole().equals(User.Role.STUDENT)){
-            throw new TutorException(TEACHER_CANNOT_SEE_TEACHER_CLARIFICATION);
+        List<Message> messagesList = getTeacherClarification(discussion);
+
+        if (messagesList.isEmpty()){
+            throw new TutorException(TEACHER_DID_NOT_CLARIFIED);
         }
 
-         for (Message message: discussion.getDiscussionListMessages()){
-            if (message.getUser().getRole().equals(User.Role.TEACHER)){
-                messagesList.add(message);
-            }
-         }
          return messagesList;
+    }
+
+    private List<Message> getTeacherClarification(Discussion discussion) {
+        List<Message> messagesList = new ArrayList<>();
+        for (Message message: discussion.getDiscussionListMessages()){
+           if (message.getUser().getRole().equals(User.Role.TEACHER)){
+               messagesList.add(message);
+           }
+        }
+        return messagesList;
     }
 }
