@@ -89,7 +89,7 @@ class DiscussionQuizAnswerTest extends Specification {
         quiz.setKey(1)
         quiz.setType(Quiz.QuizType.GENERATED)
 
-        user_student = new User("Rodrigo","gaylord",1,User.Role.STUDENT)
+        user_student = new User("Rodrigo","rcosta1944",1,User.Role.STUDENT)
         user_teacher = new User('Rito Silva','Ocarina',2,User.Role.TEACHER)
 
         quizAnswer = new QuizAnswer(user_student, quiz)
