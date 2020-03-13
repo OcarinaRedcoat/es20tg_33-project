@@ -8,6 +8,7 @@ public enum ErrorMessage {
     STUDENT_DOESNT_HAVE_PERMISSION("Student does not have permission to see a discussion clarification without " +
             "answering the corresponding question"),
     TEACHER_CANNOT_SEE_TEACHER_CLARIFICATION("Permission only for student, only user can see teacher clarification"),
+    TEACHER_DID_NOT_CLARIFIED("Theacher did not clarified the discussion yet"),
 
     QUIZ_NOT_FOUND("Quiz not found with id %d"),
     QUIZ_QUESTION_NOT_FOUND("Quiz question not found with id %d"),
