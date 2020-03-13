@@ -6,6 +6,7 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import pt.ulisboa.tecnico.socialsoftware.tutor.TutorApplication;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Discussion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Message;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
@@ -247,6 +248,20 @@ public class AnswerService {
     @Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
-    public void displayDiscussion(){
+    public List<Message> displayDiscussion(Integer UserId, DiscussionDto discussionDto){
+        User user = userRepository.findById(UserId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, UserId));
+        Discussion discussion = discussionRepository.findById(discussionDto.getId()).orElseThrow(() -> new TutorException(STUDENT_DOESNT_HAVE_PERMISSION));
+
+        List<Message> messagesList = new ArrayList<>();
+        if (!user.getRole().equals(User.Role.STUDENT)){
+            throw new TutorException(TEACHER_CANNOT_SEE_TEACHER_CLARIFICATION);
+        }
+
+         for (Message message: discussion.getDiscussionListMessages()){
+            if (message.getUser().getRole().equals(User.Role.TEACHER)){
+                messagesList.add(message);
+            }
+         }
+         return messagesList;
     }
 }
