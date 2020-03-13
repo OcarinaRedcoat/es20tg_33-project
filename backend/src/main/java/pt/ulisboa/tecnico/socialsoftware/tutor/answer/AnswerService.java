@@ -223,6 +223,14 @@ public class AnswerService {
 
         message.checkConsistentMessage(messageDto);
 
+        saveMessage(messageDto, user, discussion, message);
+
+        entityManager.persist(discussion);
+
+        return new DiscussionDto(discussion);
+    }
+
+    private void saveMessage(MessageDto messageDto, User user, Discussion discussion, Message message) {
         if (user.getRole().equals(User.Role.STUDENT)) {
             discussion.setStudentMessage(message);
             discussion.getStudentMessage().checkConsistentMessage(messageDto);
@@ -233,10 +241,6 @@ public class AnswerService {
             discussion.saveTeacherMessage();
 
         }
-
-        entityManager.persist(discussion);
-
-        return new DiscussionDto(discussion);
     }
 
 
