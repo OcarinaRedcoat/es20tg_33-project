@@ -219,15 +219,6 @@ public class AnswerService {
         User user = userRepository.findById(UserId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, UserId));
         Discussion discussion = new Discussion(questionAnswer, discussionDto);
 
-        //discussion.checkConsistentDiscussion(discussionDto);
-
-
-        if (discussion.getDiscussionListMessages().isEmpty()) {
-            if (!(user.getRole().equals(User.Role.STUDENT))) {
-                throw new TutorException(ErrorMessage.USER_NOT_STUDENT);
-            }
-        }
-
         Message message = new Message(messageDto, user);
 
         message.checkConsistentMessage(messageDto);

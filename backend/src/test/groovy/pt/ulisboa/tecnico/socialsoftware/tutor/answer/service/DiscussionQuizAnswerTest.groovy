@@ -41,9 +41,8 @@ class DiscussionQuizAnswerTest extends Specification {
     public static final String QUESTION_TITLE = 'question title'
     public static final String QUESTION_CONTENT = 'question content'
     public static final String OPTION_CONTENT = "optionId content"
-    public static final String URL = 'URL'
     public static final String STUDENTANSWER="Posso tirar uma dúvida?"
-    public static final String TEACHERANSWER="Vai po caralho!"
+    public static final String TEACHERANSWER="Vai ja!!"
 
     @Autowired
     AnswerService answerService
@@ -78,6 +77,7 @@ class DiscussionQuizAnswerTest extends Specification {
     @Shared def quizAnswer
     @Shared def quizQuestion
     @Shared def user_student
+    @Shared def user_teacher
     @Shared def quiz
     @Shared def option1
 
@@ -90,6 +90,7 @@ class DiscussionQuizAnswerTest extends Specification {
         quiz.setType(Quiz.QuizType.GENERATED)
 
         user_student = new User("Rodrigo","gaylord",1,User.Role.STUDENT)
+        user_teacher = new User('Rito Silva','Ocarina',2,User.Role.TEACHER)
 
         quizAnswer = new QuizAnswer(user_student, quiz)
 
@@ -97,11 +98,6 @@ class DiscussionQuizAnswerTest extends Specification {
 
         course = new Course(COURSE_NAME, Course.Type.TECNICO)
 
-        //questionDto = new QuestionDto()
-        //questionDto.setKey(1)
-        //questionDto.setTitle(QUESTION_TITLE)
-
-        //question = new Question(course, questionDto)
         question = new Question()
         question.setId(1)
         question.setTitle(QUESTION_TITLE)
@@ -119,7 +115,7 @@ class DiscussionQuizAnswerTest extends Specification {
         questionAnswer = new QuestionAnswer(quizAnswer , quizQuestion, 1)
 
         userRepository.save(user_student)
-        //questionRepository.save(question)
+        userRepository.save(user_teacher)
         courseRepository.save(course)
 
         courseExecution = new CourseExecution(course, ACRONYM, ACADEMIC_TERM, Course.Type.TECNICO)
@@ -129,10 +125,10 @@ class DiscussionQuizAnswerTest extends Specification {
 
         user_student.getCourseExecutions().add(courseExecution)
         courseExecution.getUsers().add(user_student)
+        courseExecution.getUsers().add(user_teacher)
 
         courseExecution.addQuiz(quiz)
 
-        //questionService.createQuestion(course.getId(), questionDto)
 
         discussion = new Discussion()
         discussion.setId(1)
@@ -140,16 +136,15 @@ class DiscussionQuizAnswerTest extends Specification {
         discussionDto = new DiscussionDto()
 
         discussionDto.setStudent(user_student)
+        discussionDto.setTeacher(user_teacher)
 
 
         formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
         availableDate = LocalDateTime.now()
     }
 
-    def 'create a question discussion' () {
+    def 'Create a question discussion' () {
         given: "new discussion"
-        //def user_student1 = new User("Rodrigo","gaylord",1,User.Role.STUDENT)
-        //def userId = userRepository.findAll().get(0).getId()
         def qAId = questionAnswer.getId()
         def discussionDto1 = new DiscussionDto()
         def user_student1 = new User("Rodrigo","gaylord",3,User.Role.STUDENT)
@@ -167,9 +162,6 @@ class DiscussionQuizAnswerTest extends Specification {
     def 'Send a null student message' () {
         given:
         def messageDto = new MessageDto()
-
-        //user_student.setId(1)
-
         messageDto.setUser(user_student)
         messageDto.setId(user_student.getId())
         messageDto.setSentence(null)
@@ -192,8 +184,6 @@ class DiscussionQuizAnswerTest extends Specification {
         given:
         def messageDto2 = new MessageDto()
 
-        //user_student.setId(1)
-
         messageDto2.setUser(user_student)
         messageDto2.setId(user_student.getId())
         messageDto2.setSentence("    ")
@@ -212,7 +202,7 @@ class DiscussionQuizAnswerTest extends Specification {
     }
 
 
-    def 'student did not answered the question'(){
+    def 'Student did not answered the question'(){
         given:
         def messageDto3 = new MessageDto()
         def user_student1 = new User("Rodrigo","gaylord",3,User.Role.STUDENT)
@@ -233,7 +223,7 @@ class DiscussionQuizAnswerTest extends Specification {
     }
 
 
-    def 'student answered with null date'(){
+    def 'Student answered with null date'(){
         given:
         def messageDto4 = new MessageDto()
 
@@ -254,19 +244,91 @@ class DiscussionQuizAnswerTest extends Specification {
         exception.getErrorMessage() == ErrorMessage.MESSAGE_DATE_NULL
     }
 
-    def 'Send a empty professor message'(){
-        expect:false
+    def 'Professor sends a null message'(){
+        given:
+        def messageDto2 = new MessageDto()
+        def messageDto3 = new MessageDto()
+
+        messageDto3.setUser(user_student)
+        messageDto3.setId(user_student.getId())
+        messageDto3.setSentence(STUDENTANSWER)
+
+        messageDto2.setUser(user_teacher)
+        messageDto2.setId(user_teacher.getId())
+        messageDto2.setSentence("  ")
+
+        def qAId = questionAnswer.getId()
+        def date = LocalDateTime.now()
+        def date1 = LocalDateTime.now().plusHours(2)
+        messageDto3.setMessageDate(date)
+        messageDto2.setMessageDate(date1)
+
+        when:
+        answerService.submitMessage(qAId, user_student.getId(),discussionDto, messageDto3)
+        answerService.submitMessage(qAId,user_teacher.getId(),discussionDto,messageDto2)
+
+        then:
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.MESSAGE_EMPTY
     }
 
-    def 'professor message with null date'(){
-        expect:false
+    def 'Professor message with null date'(){
+        given:
+        def messageDto4 = new MessageDto()
+        def messageDto5 = new MessageDto()
+
+        messageDto4.setUser(user_student)
+        messageDto5.setUser(user_teacher)
+        messageDto4.setId(user_student.getId())
+        messageDto5.setId(user_teacher.getId())
+        messageDto4.setSentence(STUDENTANSWER)
+        messageDto5.setSentence(TEACHERANSWER)
+
+
+        def qAId = questionAnswer.getId()
+        def date1 = LocalDateTime.now()
+        def date2 = null
+        messageDto4.setMessageDate(date1)
+        messageDto5.setMessageDate(date2)
+
+
+        when:
+        answerService.submitMessage(qAId, user_student.getId(),discussionDto, messageDto4)
+        answerService.submitMessage(qAId,user_teacher.getId(),discussionDto,messageDto5)
+
+        then:
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.MESSAGE_DATE_NULL
     }
 
 
     def 'Send a null professor message'(){
-        expect:false
-    }
+        given:
+        def messageDto2 = new MessageDto()
+        def messageDto3 = new MessageDto()
 
+        messageDto3.setUser(user_student)
+        messageDto3.setId(user_student.getId())
+        messageDto3.setSentence(STUDENTANSWER)
+
+        messageDto2.setUser(user_teacher)
+        messageDto2.setId(user_teacher.getId())
+        messageDto2.setSentence(null)
+
+        def qAId = questionAnswer.getId()
+        def date = LocalDateTime.now()
+        def date1 = LocalDateTime.now().plusHours(2)
+        messageDto3.setMessageDate(date)
+        messageDto2.setMessageDate(date1)
+
+        when:
+        answerService.submitMessage(qAId, user_student.getId(),discussionDto, messageDto3)
+        answerService.submitMessage(qAId,user_teacher.getId(),discussionDto,messageDto2)
+
+        then:
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.MESSAGE_NULL
+    }
     
 
     @TestConfiguration
