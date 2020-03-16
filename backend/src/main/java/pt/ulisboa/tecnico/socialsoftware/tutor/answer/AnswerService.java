@@ -6,12 +6,20 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import pt.ulisboa.tecnico.socialsoftware.tutor.TutorApplication;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Discussion;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Message;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.CorrectAnswerDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.DiscussionDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.MessageDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.QuizAnswerDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.MessageDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.DiscussionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuestionAnswerRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuizAnswerRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlExport;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport;
@@ -25,6 +33,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -56,6 +66,12 @@ public class AnswerService {
 
     @Autowired
     private AnswersXmlImport xmlImporter;
+
+    @Autowired
+    private DiscussionRepository discussionRepository;
+
+    @PersistenceContext
+    EntityManager entityManager;
 
     @Retryable(
       value = { SQLException.class },
@@ -179,5 +195,78 @@ public class AnswerService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void importAnswers(String answersXml) {
         xmlImporter.importAnswers(answersXml, this, questionRepository, quizRepository, quizAnswerRepository, userRepository);
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public DiscussionDto createDiscussion(Integer questionAnswerId, DiscussionDto discussionDto){
+        QuestionAnswer questionAnswer= questionAnswerRepository.findById(questionAnswerId).orElseThrow(() -> new TutorException(ErrorMessage.QUESTION_ANSWER_NOT_FOUND));
+        Discussion discussion= new Discussion(questionAnswer,discussionDto);
+
+        entityManager.persist(discussion);
+        discussionRepository.save(discussion);
+        return new DiscussionDto(discussion);
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public DiscussionDto submitMessage(Integer questionAnswerId, Integer UserId, DiscussionDto discussionDto, MessageDto messageDto) {
+        QuestionAnswer questionAnswer = questionAnswerRepository.findById(questionAnswerId).orElseThrow(() -> new TutorException(ErrorMessage.QUESTION_ANSWER_NOT_FOUND));
+        User user = userRepository.findById(UserId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, UserId));
+        Discussion discussion = new Discussion(questionAnswer, discussionDto);
+
+        Message message = new Message(messageDto, user);
+
+        message.checkConsistentMessage(messageDto);
+
+        saveMessage(messageDto, user, discussion, message);
+
+        entityManager.persist(discussion);
+
+        return new DiscussionDto(discussion);
+    }
+
+    private void saveMessage(MessageDto messageDto, User user, Discussion discussion, Message message) {
+        if (user.getRole().equals(User.Role.STUDENT)) {
+            discussion.setStudentMessage(message);
+            discussion.getStudentMessage().checkConsistentMessage(messageDto);
+            discussion.saveStudentMessage();
+        } else {
+            discussion.setTeacherMessage(message);
+            discussion.getTeacherMessage().checkConsistentMessage(messageDto);
+            discussion.saveTeacherMessage();
+
+        }
+    }
+
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    public List<Message> displayDiscussion(Integer UserId, DiscussionDto discussionDto){
+        User user = userRepository.findById(UserId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, UserId));
+        Discussion discussion = discussionRepository.findById(discussionDto.getId()).orElseThrow(() -> new TutorException(STUDENT_DOESNT_HAVE_PERMISSION));
+
+        List<Message> messagesList = getTeacherClarification(discussion);
+
+        if (messagesList.isEmpty()){
+            throw new TutorException(TEACHER_DID_NOT_CLARIFIED);
+        }
+
+         return messagesList;
+    }
+
+    private List<Message> getTeacherClarification(Discussion discussion) {
+        List<Message> messagesList = new ArrayList<>();
+        for (Message message: discussion.getDiscussionListMessages()){
+           if (message.getUser().getRole().equals(User.Role.TEACHER)){
+               messagesList.add(message);
+           }
+        }
+        return messagesList;
     }
 }
