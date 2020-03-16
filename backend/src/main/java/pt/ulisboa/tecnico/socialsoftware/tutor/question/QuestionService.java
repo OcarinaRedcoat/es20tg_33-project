@@ -22,6 +22,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicReposito
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -47,6 +49,9 @@ public class QuestionService {
 
     @Autowired
     private ImageRepository imageRepository;
+
+    @PersistenceContext
+    EntityManager entityManager;
 
     @Retryable(
       value = { SQLException.class },
