@@ -1,6 +1,15 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.exceptions;
 
 public enum ErrorMessage {
+    MESSAGE_NULL("Cannot send a null message"),
+    MESSAGE_EMPTY("Cannot send a empty message"),
+    MESSAGE_DATE_NULL("Cannot send a message with a null date"),
+    STUDENT_DID_NOT_ANSWER_QUESTION("Student did not answered this question"),
+    STUDENT_DOESNT_HAVE_PERMISSION("Student does not have permission to see a discussion clarification without " +
+            "answering the corresponding question"),
+    TEACHER_CANNOT_SEE_TEACHER_CLARIFICATION("Permission only for student, only user can see teacher clarification"),
+    TEACHER_DID_NOT_CLARIFIED("Theacher did not clarified the discussion yet"),
+
     QUIZ_NOT_FOUND("Quiz not found with id %d"),
     QUIZ_QUESTION_NOT_FOUND("Quiz question not found with id %d"),
     QUIZ_ANSWER_NOT_FOUND("Quiz answer not found with id %d"),
@@ -58,14 +67,17 @@ public enum ErrorMessage {
 
     QUESTION_MISSING_JUSTIFICATION("Missing a justification in order to reject question"),
     QUESTION_NOT_PENDING("Question status not pending"),
-
-    SUBMIT_QUESTION_NOT_STUDENT("Only students can submit questions"),
+    USER_WITHOUT_SUBMITTED_QUESTIONS("This user doesn't have any submitted questions"),
   
     ACCESS_DENIED("You do not have permission to view this resource"),
 
     TOURNEY_NOT_CONSISTENT("Field %s of tourney is not consistent."),
     TOURNEY_AVAILABLEDATE_BIGGER_THAN_CONCLUSIONDATE("Available date is bigger than Conclusion date."),
     TOURNEY_DATE_WRONG_FORMAT("Date format not according to the expected."),
+    TOURNEY_NOT_FOUND("Tourney not found"),
+    TOURNEY_CLOSED("Tourney closed"),
+
+    USER_NOT_STUDENT("The user is not a student"),
 
     CANNOT_OPEN_FILE("Cannot open file");
 

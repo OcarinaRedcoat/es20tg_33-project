@@ -22,7 +22,7 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-        @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING)
     private Type type;
 
     private String name;

@@ -1,11 +1,13 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.tourney;
 
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.StudentDto;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TourneyDto implements Serializable {
     private Integer tourneyNumberOfQuestions;
@@ -14,7 +16,8 @@ public class TourneyDto implements Serializable {
     private Tourney.Status tourneyStatus;
     private StudentDto tourneyCreator;
 
-    private List<Topic> topics = new ArrayList<>();
+    private List<TopicDto> topics = new ArrayList<>();
+    private List<StudentDto> tourneyEnrolledStudents = new ArrayList<>();
 
     public TourneyDto(){}
 
@@ -25,7 +28,7 @@ public class TourneyDto implements Serializable {
         this.tourneyConclusionDate = tourney.getConclusionDate();
         this.tourneyStatus = tourney.getStatus();
         this.tourneyCreator = new StudentDto(tourney.getCreator());
-        this.topics = tourney.getTopics();
+        this.topics = tourney.getTopics().stream().map(TopicDto::new).collect(Collectors.toList());;
     }
 
     public Integer getTourneyNumberOfQuestions(){
@@ -68,11 +71,11 @@ public class TourneyDto implements Serializable {
         this.tourneyStatus = tourneyStatus;
     }
 
-    public List<Topic> getTourneyTopics() {
+    public List<TopicDto> getTourneyTopics() {
         return topics;
     }
 
-    public void setTourneyTopics(List<Topic> topics) {
+    public void setTourneyTopics(List<TopicDto> topics) {
         this.topics = topics;
     }
 
@@ -82,5 +85,13 @@ public class TourneyDto implements Serializable {
 
     public void setTourneyCreator(StudentDto tourneyCreator) {
         this.tourneyCreator = tourneyCreator;
+    }
+
+    public List<StudentDto> getTourneyEnrolledStudents() {
+        return tourneyEnrolledStudents;
+    }
+
+    public void setTourneyEnrolledStudents(List<StudentDto> tourneyEnrolledStudents) {
+        this.tourneyEnrolledStudents = tourneyEnrolledStudents;
     }
 }

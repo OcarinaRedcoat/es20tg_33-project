@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Discussion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
@@ -29,6 +30,7 @@ public class QuestionDto implements Serializable {
     private ImageDto image;
     private List<TopicDto> topics = new ArrayList<>();
     private Integer sequence;
+    private Discussion thread;
     private User submittingUser = null;
     private String justification = null;
 
@@ -53,6 +55,7 @@ public class QuestionDto implements Serializable {
         this.status = question.getStatus().name();
         this.options = question.getOptions().stream().map(OptionDto::new).collect(Collectors.toList());
         this.topics = question.getTopics().stream().sorted(Comparator.comparing(Topic::getName)).map(TopicDto::new).collect(Collectors.toList());
+        this.thread = question.getDiscussion();
 
         if (question.getImage() != null)
             this.image = new ImageDto(question.getImage());
@@ -182,6 +185,14 @@ public class QuestionDto implements Serializable {
         this.creationDate = creationDate;
     }
 
+    public Discussion getThread() {
+        return thread;
+    }
+
+    public void setThread(Discussion thread) {
+        this.thread = thread;
+    }
+
     public User getSubmittingUser() {
         return submittingUser;
     }
@@ -212,6 +223,9 @@ public class QuestionDto implements Serializable {
                 ", image=" + image +
                 ", topics=" + topics +
                 ", sequence=" + sequence +
+                ", thread=" + thread +
+                ", submittingUser=" + submittingUser +
+                ", justification='" + justification + '\'' +
                 '}';
     }
 }
