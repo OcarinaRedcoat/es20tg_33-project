@@ -58,14 +58,17 @@ public enum ErrorMessage {
 
     QUESTION_MISSING_JUSTIFICATION("Missing a justification in order to reject question"),
     QUESTION_NOT_PENDING("Question status not pending"),
-
-    SUBMIT_QUESTION_NOT_STUDENT("Only students can submit questions"),
+    USER_WITHOUT_SUBMITTED_QUESTIONS("This user doesn't have any submitted questions"),
   
     ACCESS_DENIED("You do not have permission to view this resource"),
 
     TOURNEY_NOT_CONSISTENT("Field %s of tourney is not consistent."),
     TOURNEY_AVAILABLEDATE_BIGGER_THAN_CONCLUSIONDATE("Available date is bigger than Conclusion date."),
     TOURNEY_DATE_WRONG_FORMAT("Date format not according to the expected."),
+    TOURNEY_NOT_FOUND("Tourney not found"),
+    TOURNEY_CLOSED("Tourney closed"),
+
+    USER_NOT_STUDENT("The user is not a student"),
 
     CANNOT_OPEN_FILE("Cannot open file");
 
