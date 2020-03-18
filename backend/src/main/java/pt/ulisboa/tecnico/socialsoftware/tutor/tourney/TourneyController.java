@@ -2,10 +2,9 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.tourney;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 public class TourneyController {
@@ -19,5 +18,11 @@ public class TourneyController {
         return tourneyService.createTourney(tourneyDto, userId);
     }
 
+    @GetMapping("/tourneys/open")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public List<TourneyDto> getOpenTourneys() {
+        // TODO: Student should only see tourneys from his course execution
+        return tourneyService.getOpenTourneys();
+    }
 
 }
