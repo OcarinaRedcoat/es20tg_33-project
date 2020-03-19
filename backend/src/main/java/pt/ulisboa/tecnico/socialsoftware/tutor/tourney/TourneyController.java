@@ -12,7 +12,7 @@ public class TourneyController {
     @Autowired
     private TourneyService tourneyService;
 
-    @PostMapping("/tourneys/{userId}")
+    @PostMapping("/tourneys")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     public TourneyDto createTourney(@RequestBody TourneyDto tourneyDto, @PathVariable int userId){
         return tourneyService.createTourney(tourneyDto, userId);
