@@ -88,6 +88,7 @@ public class Discussion {
         this.discussionListMessages = threadListMessages;
     }
 
+
     public void saveStudentMessage(){
         this.discussionListMessages.add(this.studentMessage);
     }

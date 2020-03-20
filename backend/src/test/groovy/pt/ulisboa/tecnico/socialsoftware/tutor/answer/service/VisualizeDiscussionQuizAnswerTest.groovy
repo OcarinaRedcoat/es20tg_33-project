@@ -1,5 +1,5 @@
-package groovy.pt.ulisboa.tecnico.socialsoftware.tutor.answer.service
-/*
+package pt.ulisboa.tecnico.socialsoftware.tutor.answer.service
+
 import org.apache.tomcat.jni.Local
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
@@ -86,12 +86,13 @@ class VisualizeDiscussionQuizAnswerTest extends Specification {
     def setup() {
 
         quiz = new Quiz()
-        quiz.setKey(1)
+        quiz.setKey(3)
         quiz.setType(Quiz.QuizType.GENERATED)
 
-        user_student = new User("Rodrigo","rcosta1994",1,User.Role.STUDENT)
+        user_student = new User("Rodrigo","rcosta1944",1,User.Role.STUDENT)
         user_teacher = new User('Rito Silva','Ocarina',2,User.Role.TEACHER)
-
+        user_student.setId(1)
+        user_teacher.setId(1)
         quizAnswer = new QuizAnswer(user_student, quiz)
 
         user_student.addQuizAnswer(quizAnswer)
@@ -113,6 +114,7 @@ class VisualizeDiscussionQuizAnswerTest extends Specification {
         option1.setContent(OPTION_CONTENT)
 
         questionAnswer = new QuestionAnswer(quizAnswer , quizQuestion, 1)
+        questionAnswer.setId(1)
 
         userRepository.save(user_student)
         userRepository.save(user_teacher)
@@ -130,15 +132,15 @@ class VisualizeDiscussionQuizAnswerTest extends Specification {
         courseExecution.addQuiz(quiz)
 
 
-        discussion = new Discussion()
-        discussion.setId(1)
-
-        discussionRepository.save(discussion)
-
         discussionDto = new DiscussionDto()
 
         discussionDto.setStudent(user_student)
-        discussionDto.setTeacher(user_teacher)
+
+
+        def qAId3 = questionAnswer.getId()
+        discussionDto.setId(1)
+        answerService.createDiscussion(qAId3, discussionDto)
+
 
 
         formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
@@ -146,10 +148,15 @@ class VisualizeDiscussionQuizAnswerTest extends Specification {
 
     }
 
+
+
+
     def 'The teacher didnt reply yet' () {
         given:
         def messageDto4 = new MessageDto()
 
+
+        //discussionDto.setId(1)
         messageDto4.setUser(user_student)
         messageDto4.setId(user_student.getId())
         messageDto4.setSentence(STUDENTANSWER)
@@ -165,39 +172,42 @@ class VisualizeDiscussionQuizAnswerTest extends Specification {
         answerService.displayDiscussion(user_student.getId(),discussionDto)
 
         then:
-        def result = discussionRepository.findAll().get(0)
-        result.discussionListMessages.size() == 0
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.TEACHER_DID_NOT_CLARIFIED
     }
 
 
     def 'Student visualizes the message' () {
         given:
-        def messageDto4 = new MessageDto()
+        def messageDto6 = new MessageDto()
         def messageDto5 = new MessageDto()
 
-        messageDto4.setUser(user_student)
+        discussionDto.setStudent(user_student)
+        discussionDto.setTeacher(user_teacher)
+
+        messageDto6.setUser(user_student)
         messageDto5.setUser(user_teacher)
-        messageDto4.setId(user_student.getId())
+        messageDto6.setId(user_student.getId())
         messageDto5.setId(user_teacher.getId())
-        messageDto4.setSentence(STUDENTANSWER)
+        messageDto6.setSentence(STUDENTANSWER)
         messageDto5.setSentence(TEACHERANSWER)
 
 
-        def qAId = questionAnswer.getId()
+        def qAId1 = questionAnswer.getId()
         def date1 = LocalDateTime.now()
         def data2 = LocalDateTime.now().plusHours(1)
-        messageDto4.setMessageDate(date1)
+        messageDto6.setMessageDate(date1)
         messageDto5.setMessageDate(data2)
 
 
         when:
-        answerService.submitMessage(qAId, user_student.getId(),discussionDto, messageDto4)
-        answerService.submitMessage(qAId,user_teacher.getId(),discussionDto,messageDto5)
-        answerService.displayDiscussion(user_student.getId(),discussionDto)
+        answerService.submitMessage(qAId1, user_student.getId(), discussionDto, messageDto6)
+        answerService.submitMessage(qAId1, user_teacher.getId(), discussionDto, messageDto5)
+        def result = answerService.displayDiscussion(user_student.getId(),discussionDto)
 
         then:
-        def result = discussionRepository.findAll().get(0)
-        result.discussionListMessages.size() == 1
+        //def result = discussionRepository.findAll().get(0)
+        result.size() == 1
     }
 
 
@@ -216,6 +226,3 @@ class VisualizeDiscussionQuizAnswerTest extends Specification {
 
     }
 }
-
- */
-

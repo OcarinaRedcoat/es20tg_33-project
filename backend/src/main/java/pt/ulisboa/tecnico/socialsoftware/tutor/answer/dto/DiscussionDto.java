@@ -13,7 +13,7 @@ public class DiscussionDto implements Serializable {
     private Integer id;
     private Message  studentMessage;
     private Message teacherMessage;
-    private List<Message> threadListMessages= new ArrayList<>();
+    private List<MessageDto> discussionListMessages= new ArrayList<>();
 
 
     private User student;
@@ -54,12 +54,16 @@ public class DiscussionDto implements Serializable {
         this.teacherMessage = teacherMessage;
     }
 
-    public List<Message> getDiscussionListMessages() {
-        return threadListMessages;
+    public List<MessageDto> getDiscussionListMessages() {
+        return discussionListMessages;
     }
 
-    public void setDiscussionListMessages(List<Message> threadListMessages) {
-        this.threadListMessages = threadListMessages;
+    public void setDiscussionListMessages(List<MessageDto> threadListMessages) {
+        this.discussionListMessages = threadListMessages;
+    }
+
+    public void addDiscussionMessage(MessageDto messageDto){
+        this.discussionListMessages.add(messageDto);
     }
 
     public User getStudent() { return student; }
@@ -77,7 +81,7 @@ public class DiscussionDto implements Serializable {
                 "id=" + id +
                 ", studentMessage=" + studentMessage +
                 ", teacherMessage=" + teacherMessage +
-                ", threadListMessages=" + threadListMessages +
+                ", threadListMessages=" + discussionListMessages +
                 '}';
     }
 }

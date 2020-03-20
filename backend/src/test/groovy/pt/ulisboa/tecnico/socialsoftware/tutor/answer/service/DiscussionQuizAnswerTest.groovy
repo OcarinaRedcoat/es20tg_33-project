@@ -86,7 +86,7 @@ class DiscussionQuizAnswerTest extends Specification {
 
 
         quiz = new Quiz()
-        quiz.setKey(1)
+        quiz.setKey(3)
         quiz.setType(Quiz.QuizType.GENERATED)
 
         user_student = new User("Rodrigo","rcosta1944",1,User.Role.STUDENT)
@@ -143,19 +143,21 @@ class DiscussionQuizAnswerTest extends Specification {
         availableDate = LocalDateTime.now()
     }
 
-    def 'Create a question discussion' () {
+    def 'Create a new discussion' () {
         given: "new discussion"
         def qAId = questionAnswer.getId()
         def discussionDto1 = new DiscussionDto()
-        def user_student1 = new User("Rodrigo","gaylord",3,User.Role.STUDENT)
+        def user_student1 = new User("Rodrigo","st",1,User.Role.STUDENT)
+
+        user_student1.addQuizAnswer(quizAnswer)
+
         discussionDto1.setStudent(user_student1)
+        discussionDto1.setId(1)
         when:
-        answerService.createDiscussion(qAId, discussionDto1)
+        def result = answerService.createDiscussion(qAId, discussionDto1)
 
         then:
-        def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.STUDENT_DID_NOT_ANSWER_QUESTION
-
+        result.getId() == 1
     }
 
 
@@ -329,6 +331,7 @@ class DiscussionQuizAnswerTest extends Specification {
         def exception = thrown(TutorException)
         exception.getErrorMessage() == ErrorMessage.MESSAGE_NULL
     }
+
     
 
     @TestConfiguration
