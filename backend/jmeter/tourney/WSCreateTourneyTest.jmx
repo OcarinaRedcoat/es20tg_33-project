@@ -114,7 +114,7 @@
 	&quot;tourneyNumberOfQuestions&quot;: &quot;${tourneyNumberOfQuestions}&quot;,&#xd;
 	&quot;tourneyAvailableDate&quot;: &quot;${tourneyAvailableDate}&quot;,&#xd;
 	&quot;tourneyConclusionDate&quot;: &quot;${tourneyConclusionDate}&quot;,&#xd;
-	&quot;topics&quot;: &quot;${topics}&quot;&#xd;
+	&quot;tourneyTopics&quot;: [{&quot;id&quot;: 82 , &quot;name&quot;: &quot;Software Architecture&quot;, &quot;numberOfQuestions&quot;: 2}]&#xd;
 }&#xd;
 </stringProp>
                     <stringProp name="Argument.metadata">=</stringProp>
