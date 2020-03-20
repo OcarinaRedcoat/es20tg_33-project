@@ -50,6 +50,7 @@ public class TourneyService {
     public TourneyDto createTourney(TourneyDto tourneyDto, Integer userId) {
         SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, userId));
+        tourneyDto.setTourneyStatus(Tourney.Status.OPEN);
         Tourney tourney = new Tourney(tourneyDto, user);
 
         if(tourney.getAvailableDate() == null)  throw new TutorException(ErrorMessage.TOURNEY_NOT_CONSISTENT,"availableDate");
