@@ -77,20 +77,6 @@ class UpdateTourneyTest extends Specification {
         result.getTourneyStatus() == Tourney.Status.CANCELED
     }
 
-    def "user is not tourney's creator"(){
-        given: "a user"
-        def userId = userRepository.findAll().get(1).getId()
-
-        and: "a tourney"
-        def tourneyId = tourneyRepository.findAll().get(0).getId()
-
-        when:
-        tourneyService.cancelTournament(tourneyId, userId)
-
-        then:
-        def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.STUDENT_IS_NOT_TOURNEY_CREATOR
-    }
 
     @TestConfiguration
     static class TourneyServiceImplTestContextConfiguration{

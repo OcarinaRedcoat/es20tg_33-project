@@ -36,4 +36,10 @@ public class TourneyController {
         return tourneyService.getOpenTourneys(user.getId());
     }
 
+    @GetMapping("/tourneys/{tourneyId}/cancel")
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#tourneyId, 'TOURNEY.CREATOR')")
+    public TourneyDto getOpenTourneys(@PathVariable Integer tourneyId) {
+        return tourneyService.cancelTournament(tourneyId);
+    }
+
 }
