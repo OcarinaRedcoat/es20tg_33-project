@@ -122,6 +122,11 @@ public class TourneyService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public TourneyDto cancelTournament(Integer tourneyId, Integer studentId) {
         Tourney tourney = tourneyRepository.findById(tourneyId).orElseThrow(() -> new TutorException(ErrorMessage.TOURNEY_NOT_FOUND));
+        User user = userRepository.findById(studentId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, studentId));
+
+        if(user.getId() != tourney.getCreator().getId()) throw  new TutorException(ErrorMessage.STUDENT_IS_NOT_TOURNEY_CREATOR, tourneyId);
+
+        tourney.setStatus(Tourney.Status.CANCELED);
 
         return new TourneyDto(tourney);
     }

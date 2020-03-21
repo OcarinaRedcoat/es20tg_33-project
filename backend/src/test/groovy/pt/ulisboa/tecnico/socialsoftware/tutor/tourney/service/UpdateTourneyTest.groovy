@@ -10,9 +10,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.TopicService
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.Tourney
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyService
@@ -24,7 +21,6 @@ import spock.lang.Specification
 class UpdateTourneyTest extends Specification {
 
     public static final Integer TOURNEY_ONE_NUMBER_QUESTIONS = 1
-    public static final Integer TOURNEY_TWO_NUMBER_QUESTIONS = 2
     public static final String TOURNEY_AVAILABLE_DATE = "2020-01-01 21:12"
     public static final String TOURNEY_CONCLUSION_DATE = "2020-01-06 21:12"
 
@@ -53,15 +49,13 @@ class UpdateTourneyTest extends Specification {
         courseRepository.save(course)
         def courseExecution = new CourseExecution(course, "AC", "1", Course.Type.TECNICO)
         courseExecutionRepository.save(courseExecution)
-        def courseExecution2 = new CourseExecution(course, "AC", "2", Course.Type.TECNICO)
-        courseExecutionRepository.save(courseExecution2)
 
         def user1 = new User(NAME1, USERNAME1, 1, User.Role.STUDENT)
         user1.addCourse(courseExecution)
         userRepository.save(user1)
 
         def user2 = new User(NAME2, USERNAME2, 2, User.Role.STUDENT)
-        user1.addCourse(courseExecution)
+        user2.addCourse(courseExecution)
         userRepository.save(user2)
 
         def tourney = new Tourney(TOURNEY_ONE_NUMBER_QUESTIONS, TOURNEY_AVAILABLE_DATE, TOURNEY_CONCLUSION_DATE, user1)
