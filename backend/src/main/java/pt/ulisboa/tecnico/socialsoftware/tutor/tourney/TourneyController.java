@@ -31,9 +31,9 @@ public class TourneyController {
 
     @GetMapping("/tourneys/open")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
-    public List<TourneyDto> getOpenTourneys() {
-        // TODO: Student should only see tourneys from his course execution
-        return tourneyService.getOpenTourneys();
+    public List<TourneyDto> getOpenTourneys(Principal principal) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+        return tourneyService.getOpenTourneys(user.getId());
     }
 
 }

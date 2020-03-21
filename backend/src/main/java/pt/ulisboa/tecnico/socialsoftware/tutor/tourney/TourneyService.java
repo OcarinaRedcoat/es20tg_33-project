@@ -49,8 +49,10 @@ public class TourneyService {
             value = {SQLException.class},
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public List<TourneyDto> getOpenTourneys() {
+    public List<TourneyDto> getOpenTourneys(Integer userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, userId));
         return tourneyRepository.findByStatus(Tourney.Status.OPEN.name()).stream()
+                .filter(tourney -> (user.getCourseExecutions().stream().filter(courseExec -> courseExec.getId().equals(tourney.getId())).findFirst().isPresent()))
                 .map(TourneyDto::new)
                 .collect(Collectors.toList());
     }
