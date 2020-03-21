@@ -214,7 +214,7 @@ public class QuestionService {
         if(question.getStatus() == Question.Status.PENDING) {
             question.setStatus(Question.Status.AVAILABLE);
             question.setJustification(justification);
-            this.entityManager.persist(question);
+            questionRepository.save(question);
         }
         else {
             throw new TutorException(QUESTION_NOT_PENDING);
@@ -233,7 +233,7 @@ public class QuestionService {
         if(question.getStatus() == Question.Status.PENDING) {
             question.setStatus(Question.Status.REJECTED);
             question.setJustification(justification);
-            this.entityManager.persist(question);
+            questionRepository.save(question);
         }
         else {
             throw new TutorException(QUESTION_NOT_PENDING);

@@ -143,6 +143,22 @@ public class QuestionController {
         return user;
     }
 
+    @PutMapping("/questions/{questionId}")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'QUESTION.ACCESS')")
+    public ResponseEntity approveQuestionTopics(@PathVariable Integer questionId, @RequestParam("justification") String justification) {
+        questionService.approveQuestion(questionId, justification);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/questions/{questionId}")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'QUESTION.ACCESS')")
+    public ResponseEntity rejectQuestionTopics(@PathVariable Integer questionId, @RequestParam("justification") String justification) {
+        questionService.approveQuestion(questionId, justification);
+
+        return ResponseEntity.ok().build();
+    }
+
     private Path getTargetLocation(String url) {
         String fileLocation = figuresDir + url;
         return Paths.get(fileLocation);
