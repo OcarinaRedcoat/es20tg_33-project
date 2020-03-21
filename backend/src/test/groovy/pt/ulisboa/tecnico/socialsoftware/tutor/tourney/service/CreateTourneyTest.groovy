@@ -66,12 +66,10 @@ class CreateTourneyTest extends Specification{
         availableDate = LocalDateTime.now()
         conclusionDate = LocalDateTime.now().plusDays(1)
 
-        def courseExecutionDto = new CourseDto(courseExecution)
-
         tourney.setTourneyStatus(Tourney.Status.CLOSED)
         tourney.setTourneyAvailableDate(availableDate.format(formatter))
         tourney.setTourneyConclusionDate(conclusionDate.format(formatter))
-        tourney.setTourneyCourseExecution(courseExecutionDto)
+        tourney.setTourneyCourseExecution(new CourseDto(courseExecution))
 
         topicDto = new TopicDto()
         topicDto.setName("topic")

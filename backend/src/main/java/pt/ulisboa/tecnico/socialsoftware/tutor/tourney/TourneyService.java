@@ -107,6 +107,11 @@ public class TourneyService {
             throw new TutorException(ErrorMessage.USER_NOT_STUDENT);
         }
 
+        if(!user.getCourseExecutions().stream()
+                .map((courseExecution) -> (courseExecution.getId() == tourney.getCourseExecution().getId()))
+                .reduce(false, (acc, elem) -> acc || elem))
+            throw new TutorException(ErrorMessage.STUDENT_CANT_ACCESS_COURSE_EXECUTION, tourney.getCourseExecution().getAcronym());
+
         tourney.enrollStudent(user);
         user.addEnrolledTourneys(tourney);
 
