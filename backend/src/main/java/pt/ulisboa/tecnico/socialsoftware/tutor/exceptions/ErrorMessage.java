@@ -20,6 +20,7 @@ public enum ErrorMessage {
     TOPIC_NOT_FOUND("Topic not found with id %d"),
     ASSESSMENT_NOT_FOUND("Assessment not found with id %d"),
     TOPIC_CONJUNCTION_NOT_FOUND("Topic Conjunction not found with id %d"),
+    TOPICS_NOT_FROM_SAME_COURSE("Topics are not from the same course"),
     COURSE_EXECUTION_NOT_FOUND("Course execution not found with id %d"),
 
     COURSE_NOT_FOUND("Course not found with name %s"),
@@ -78,6 +79,7 @@ public enum ErrorMessage {
     TOURNEY_CLOSED("Tourney closed"),
 
     USER_NOT_STUDENT("The user is not a student"),
+    STUDENT_CANT_ACCESS_COURSE_EXECUTION("Student is not enrolled in the course execution: %s"),
 
     CANNOT_OPEN_FILE("Cannot open file");
 
