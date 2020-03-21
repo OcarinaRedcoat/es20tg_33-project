@@ -125,7 +125,7 @@ public class QuestionController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/courses/{courseId}/questions")
+    @PostMapping("/courses/{courseId}/questions/pending")
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#courseId, 'COURSE.ACCESS')")
     public QuestionDto submitQuestion(Principal principal, @PathVariable int courseId, @Valid @RequestBody QuestionDto question) {
         question.setStatus(Question.Status.PENDING.name());
@@ -143,18 +143,18 @@ public class QuestionController {
         return user;
     }
 
-    @PutMapping("/questions/{questionId}")
+    @PutMapping("/questions/{questionId}/approve")
     @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'QUESTION.ACCESS')")
-    public ResponseEntity approveQuestionTopics(@PathVariable Integer questionId, @RequestParam("justification") String justification) {
+    public ResponseEntity approveQuestion(@PathVariable Integer questionId, @Valid @RequestBody String justification) {
         questionService.approveQuestion(questionId, justification);
 
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/questions/{questionId}")
+    @PutMapping("/questions/{questionId}/reject")
     @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'QUESTION.ACCESS')")
-    public ResponseEntity rejectQuestionTopics(@PathVariable Integer questionId, @RequestParam("justification") String justification) {
-        questionService.approveQuestion(questionId, justification);
+    public ResponseEntity rejectQuestion(@PathVariable Integer questionId, @Valid @RequestBody String justification) {
+        questionService.rejectQuestion(questionId, justification);
 
         return ResponseEntity.ok().build();
     }
