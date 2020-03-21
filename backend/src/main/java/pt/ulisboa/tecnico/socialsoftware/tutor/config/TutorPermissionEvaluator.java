@@ -92,8 +92,8 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
     }
 
     private boolean userHasCreatedTheTourney(String username, int id) {
-        return userService.getCourseExecutions(username).stream()
-                .anyMatch(course -> course.getCourseId() == id);
+        return userService.getCreatedTourneys(username).stream()
+                .anyMatch(tourneyDto -> tourneyDto.getTourneyId() == id);
     }
 
 

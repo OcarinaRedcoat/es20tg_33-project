@@ -16,7 +16,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import spock.lang.Specification
 
 @DataJpaTest
-class GetOpenTourneysPerformanceTest extends Specification {
+class UpdateTourneyPerformanceTest extends Specification {
 
     public static final Integer TOURNEY_ONE_NUMBER_QUESTIONS = 1
     public static final String TOURNEY_AVAILABLE_DATE = "2020-01-01 21:12"
@@ -40,7 +40,7 @@ class GetOpenTourneysPerformanceTest extends Specification {
     @Autowired
     CourseRepository courseRepository
 
-    def "performance testing to get 10000 tourneys"() {
+    def "performance testing to cancel 10000 tourneys"() {
         given: "one course execution"
         def course = new Course()
         courseRepository.save(course)
@@ -62,7 +62,9 @@ class GetOpenTourneysPerformanceTest extends Specification {
         })
 
         when:
-        1.upto(1, { tourneyService.getOpenTourneys(userId)})
+        0.upto(0, {
+            tourneyService.cancelTournament(tourneyRepository.findAll().get(it).getId())
+        })
 
         then:
         true
@@ -77,5 +79,4 @@ class GetOpenTourneysPerformanceTest extends Specification {
             return new TourneyService()
         }
     }
-
 }
