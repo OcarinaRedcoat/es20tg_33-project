@@ -1,5 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.tourney;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
@@ -32,6 +34,10 @@ public class Tourney {
     private List<User> enrolledStudents = new ArrayList<>();
 
     @ManyToOne
+    @JoinColumn(name = "course_execution_id")
+    private CourseExecution courseExecution;
+
+    @ManyToOne
     @JoinColumn(name="user_id")
     private User creator;
 
@@ -53,7 +59,6 @@ public class Tourney {
         this.availableDate = tourneyDto.getTourneyAvailableDate();
         this.conclusionDate = tourneyDto.getTourneyConclusionDate();
         this.status = tourneyDto.getTourneyStatus();
-        this.topics = tourneyDto.getTourneyTopics().stream().map(Topic::new).collect(Collectors.toList());
         this.creator = user;
     }
 
@@ -116,4 +121,11 @@ public class Tourney {
         this.enrolledStudents.add(user);
     }
 
+    public CourseExecution getCourseExecution() {
+        return courseExecution;
+    }
+
+    public void setCourseExecution(CourseExecution courseExecution) {
+        this.courseExecution = courseExecution;
+    }
 }

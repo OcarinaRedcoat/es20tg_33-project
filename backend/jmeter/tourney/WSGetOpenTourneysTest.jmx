@@ -97,7 +97,8 @@
 	&quot;tourneyNumberOfQuestions&quot;: &quot;5&quot;,&#xd;
 	&quot;tourneyAvailableDate&quot;: &quot;2020-03-16 20:30&quot;,&#xd;
 	&quot;tourneyConclusionDate&quot;: &quot;2020-03-16 22:30&quot;,&#xd;
-	&quot;tourneyTopics&quot;: [{&quot;id&quot;: 82 , &quot;name&quot;: &quot;Software Architecture&quot;, &quot;numberOfQuestions&quot;: 2}]&#xd;
+	&quot;tourneyCourseExecution&quot;: {&quot;courseId&quot;: &quot;2&quot;, &quot;courseExecutionId&quot;: &quot;11&quot;, &quot;academic_term&quot;: &quot;1st Semester&quot;, &quot;acronym&quot;: &quot;DemoCourse&quot;, &quot;status&quot;:&quot;ACTIVE&quot;, &quot;courseType&quot;: &quot;TECNICO&quot;},&#xd;
+	&quot;tourneyTopics&quot;: [{&quot;id&quot;: &quot;82&quot;, &quot;name&quot;: &quot;Software Architecture&quot;, &quot;numberOfQuestions&quot;: 2}]&#xd;
 }&#xd;
 &#xd;
 </stringProp>
@@ -329,13 +330,13 @@
           <stringProp name="driver">org.postgresql.Driver</stringProp>
           <stringProp name="initQuery"></stringProp>
           <boolProp name="keepAlive">true</boolProp>
-          <stringProp name="password"></stringProp>
+          <stringProp name="password">username</stringProp>
           <stringProp name="poolMax">0</stringProp>
           <boolProp name="preinit">false</boolProp>
           <stringProp name="timeout">10000</stringProp>
           <stringProp name="transactionIsolation">DEFAULT</stringProp>
           <stringProp name="trimInterval">60000</stringProp>
-          <stringProp name="username">ars</stringProp>
+          <stringProp name="username">mgoulao</stringProp>
         </JDBCDataSource>
         <hashTree/>
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">

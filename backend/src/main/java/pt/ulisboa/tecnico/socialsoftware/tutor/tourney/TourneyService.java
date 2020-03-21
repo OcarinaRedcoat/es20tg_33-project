@@ -6,8 +6,11 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
@@ -16,9 +19,12 @@ import javax.persistence.PersistenceContext;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.COURSE_EXECUTION_NOT_FOUND;
 
 @Service
 public class TourneyService {
@@ -28,6 +34,13 @@ public class TourneyService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private TopicRepository topicRepository;
+
+    @Autowired
+    private CourseExecutionRepository courseExecutionRepository;
+
 
     @PersistenceContext
     EntityManager entityManager;
@@ -39,18 +52,13 @@ public class TourneyService {
     public List<TourneyDto> getOpenTourneys() {
         return tourneyRepository.findByStatus(Tourney.Status.OPEN.name()).stream()
                 .map(TourneyDto::new)
-                .sorted(Comparator.comparing(TourneyDto::getTourneyAvailableDate))
                 .collect(Collectors.toList());
     }
 
-    @Retryable(
-            value = { SQLException.class },
-            backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public TourneyDto createTourney(TourneyDto tourneyDto, Integer userId) {
         SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, userId));
-        tourneyDto.setTourneyStatus(Tourney.Status.OPEN);
         Tourney tourney = new Tourney(tourneyDto, user);
 
         if(tourney.getAvailableDate() == null)  throw new TutorException(ErrorMessage.TOURNEY_NOT_CONSISTENT,"availableDate");
@@ -58,8 +66,26 @@ public class TourneyService {
         try{
             if(date.parse(tourney.getConclusionDate()).before(date.parse(tourney.getAvailableDate())))  throw new TutorException(ErrorMessage.TOURNEY_AVAILABLEDATE_BIGGER_THAN_CONCLUSIONDATE);
         }catch (ParseException e) {throw new TutorException(ErrorMessage.TOURNEY_DATE_WRONG_FORMAT);}
+        if(tourney.getNumberOfQuestions() == null || tourney.getNumberOfQuestions() <= 0) throw new TutorException(ErrorMessage.TOURNEY_NOT_CONSISTENT, "numberOfQuestions");
+
+        System.out.println(tourneyDto.getTourneyTopics().size());
+
+        CourseDto courseExecutionDto = tourneyDto.getTourneyCourseExecution();
+        tourney.setCourseExecution(courseExecutionRepository.findById(courseExecutionDto.getCourseExecutionId()).orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND, courseExecutionDto.getCourseExecutionId())));
+        tourney.setTopics(tourneyDto.getTourneyTopics().stream().map(topicDto -> topicRepository.findTopicByName(tourney.getCourseExecution().getCourse().getId(), topicDto.getName())).collect(Collectors.toList()));
+
         if(tourney.getTopics().size() == 0)  throw new TutorException(ErrorMessage.TOURNEY_NOT_CONSISTENT, "topics");
-        if(tourney.getNumberOfQuestions() == null) throw new TutorException(ErrorMessage.TOURNEY_NOT_CONSISTENT, "numberOfQuestions");
+        if(!user.getCourseExecutions().stream()
+                .map((courseExecution) -> (courseExecution.getId() == tourney.getCourseExecution().getId()))
+                .reduce(false, (acc, elem) -> acc || elem))
+            throw new TutorException(ErrorMessage.STUDENT_CANT_ACCESS_COURSE_EXECUTION, tourney.getCourseExecution().getAcronym());
+
+        System.out.println(tourney.getTopics().get(0));
+
+        if(tourney.getTopics().stream()
+                .map((topic) -> (topic == null))
+                .reduce(false, (acc, elem) -> acc || elem))
+            throw new TutorException(ErrorMessage.TOPICS_NOT_FROM_SAME_COURSE);
 
         entityManager.persist(tourney);
         return new TourneyDto(tourney);

@@ -24,7 +24,9 @@ public class TourneyController {
         if(user==null){
             throw new TutorException(AUTHENTICATION_ERROR);
         }
-        return tourneyService.createTourney(tourneyDto, user.getId());
+        tourneyDto.setTourneyStatus(Tourney.Status.OPEN);
+        TourneyDto tourney = tourneyService.createTourney(tourneyDto, user.getId());
+        return tourney;
     }
 
     @GetMapping("/tourneys/open")
