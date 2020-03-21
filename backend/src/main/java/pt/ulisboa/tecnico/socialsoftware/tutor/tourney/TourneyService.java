@@ -52,7 +52,7 @@ public class TourneyService {
     public List<TourneyDto> getOpenTourneys(Integer userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, userId));
         return tourneyRepository.findByStatus(Tourney.Status.OPEN.name()).stream()
-                .filter(tourney -> (user.getCourseExecutions().stream().filter(courseExec -> courseExec.getId().equals(tourney.getId())).findFirst().isPresent()))
+                .filter(tourney -> (user.getCourseExecutions().stream().filter(courseExec -> courseExec.getId().equals(tourney.getCourseExecution().getId())).findFirst().isPresent()))
                 .map(TourneyDto::new)
                 .collect(Collectors.toList());
     }
@@ -70,8 +70,6 @@ public class TourneyService {
         }catch (ParseException e) {throw new TutorException(ErrorMessage.TOURNEY_DATE_WRONG_FORMAT);}
         if(tourney.getNumberOfQuestions() == null || tourney.getNumberOfQuestions() <= 0) throw new TutorException(ErrorMessage.TOURNEY_NOT_CONSISTENT, "numberOfQuestions");
 
-        System.out.println(tourneyDto.getTourneyTopics().size());
-
         CourseDto courseExecutionDto = tourneyDto.getTourneyCourseExecution();
         tourney.setCourseExecution(courseExecutionRepository.findById(courseExecutionDto.getCourseExecutionId()).orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND, courseExecutionDto.getCourseExecutionId())));
         tourney.setTopics(tourneyDto.getTourneyTopics().stream().map(topicDto -> topicRepository.findTopicByName(tourney.getCourseExecution().getCourse().getId(), topicDto.getName())).collect(Collectors.toList()));
@@ -81,8 +79,6 @@ public class TourneyService {
                 .map((courseExecution) -> (courseExecution.getId() == tourney.getCourseExecution().getId()))
                 .reduce(false, (acc, elem) -> acc || elem))
             throw new TutorException(ErrorMessage.STUDENT_CANT_ACCESS_COURSE_EXECUTION, tourney.getCourseExecution().getAcronym());
-
-        System.out.println(tourney.getTopics().get(0));
 
         if(tourney.getTopics().stream()
                 .map((topic) -> (topic == null))

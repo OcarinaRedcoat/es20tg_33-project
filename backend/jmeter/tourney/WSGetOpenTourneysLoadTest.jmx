@@ -87,9 +87,9 @@
             </collectionProp>
           </HeaderManager>
           <hashTree/>
-          <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Loop 1000 times" enabled="true">
+          <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Loop 100 times" enabled="true">
             <boolProp name="LoopController.continue_forever">true</boolProp>
-            <stringProp name="LoopController.loops">10</stringProp>
+            <stringProp name="LoopController.loops">100</stringProp>
           </LoopController>
           <hashTree>
             <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Data to create tourneys" enabled="true">
@@ -114,7 +114,8 @@
 	&quot;tourneyNumberOfQuestions&quot;: &quot;${tourneyNumberOfQuestions}&quot;,&#xd;
 	&quot;tourneyAvailableDate&quot;: &quot;${tourneyAvailableDate}&quot;,&#xd;
 	&quot;tourneyConclusionDate&quot;: &quot;${tourneyConclusionDate}&quot;,&#xd;
-	&quot;tourneyTopics&quot;: [{&quot;id&quot;: 82 , &quot;name&quot;: &quot;Software Architecture&quot;, &quot;numberOfQuestions&quot;: 2}]&#xd;
+	&quot;tourneyTopics&quot;: [{&quot;id&quot;: 82 , &quot;name&quot;: &quot;Software Architecture&quot;, &quot;numberOfQuestions&quot;: 2}],&#xd;
+	&quot;tourneyCourseExecution&quot;: {&quot;courseId&quot;:2,&quot;courseType&quot;:&quot;TECNICO&quot;,&quot;name&quot;:&quot;Demo Course&quot;,&quot;courseExecutionId&quot;:11,&quot;courseExecutionType&quot;:&quot;TECNICO&quot;,&quot;acronym&quot;:&quot;DemoCourse&quot;,&quot;academicTerm&quot;:&quot;1st Semester&quot;,&quot;status&quot;:&quot;ACTIVE&quot;}&#xd;
 }&#xd;
 </stringProp>
                     <stringProp name="Argument.metadata">=</stringProp>
@@ -213,13 +214,13 @@
         </ResultCollector>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="100 Users Thread Group" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="50 Users Thread Group" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">10</stringProp>
+        <stringProp name="ThreadGroup.num_threads">50</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
         <stringProp name="ThreadGroup.duration"></stringProp>
@@ -389,18 +390,18 @@
           <stringProp name="driver">org.postgresql.Driver</stringProp>
           <stringProp name="initQuery"></stringProp>
           <boolProp name="keepAlive">true</boolProp>
-          <stringProp name="password">username</stringProp>
+          <stringProp name="password"></stringProp>
           <stringProp name="poolMax">0</stringProp>
           <boolProp name="preinit">false</boolProp>
           <stringProp name="timeout">10000</stringProp>
           <stringProp name="transactionIsolation">DEFAULT</stringProp>
           <stringProp name="trimInterval">60000</stringProp>
-          <stringProp name="username">mgoulao</stringProp>
+          <stringProp name="username">ars</stringProp>
         </JDBCDataSource>
         <hashTree/>
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
           <stringProp name="dataSource">sampleReq</stringProp>
-          <stringProp name="query">DELETE FROM course_executions WHERE acronym LIKE &apos;EC%&apos;;</stringProp>
+          <stringProp name="query">DELETE FROM tourneys;</stringProp>
           <stringProp name="queryArguments"></stringProp>
           <stringProp name="queryArgumentsTypes"></stringProp>
           <stringProp name="queryTimeout"></stringProp>
