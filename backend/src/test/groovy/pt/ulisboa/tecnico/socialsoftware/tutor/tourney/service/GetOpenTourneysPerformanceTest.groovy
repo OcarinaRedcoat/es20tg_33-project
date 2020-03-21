@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
-import pt.ulisboa.tecnico.socialsoftware.tutor.administration.AdministrationService
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
@@ -61,12 +60,12 @@ class GetOpenTourneysPerformanceTest extends Specification {
         tourney.setCourseExecution(courseExecution)
 
         and: "a 10000 tourneys"
-        1.upto(10000, {
+        1.upto(1, {
             tourneyRepository.save(tourney)
         })
 
         when:
-        1.upto(10000, { tourneyService.getOpenTourneys(userId)})
+        1.upto(1, { tourneyService.getOpenTourneys(userId)})
 
         then:
         true

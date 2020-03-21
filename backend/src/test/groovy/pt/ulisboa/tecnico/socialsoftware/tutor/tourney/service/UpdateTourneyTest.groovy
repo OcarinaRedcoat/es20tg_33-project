@@ -8,8 +8,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
-import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.Tourney
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyService
@@ -64,14 +62,11 @@ class UpdateTourneyTest extends Specification {
     }
 
     def "creator cancels tourney"(){
-        given: "a user"
-        def userId = userRepository.findAll().get(0).getId()
-
-        and: "a tourney"
+        given: "a tourney"
         def tourneyId = tourneyRepository.findAll().get(0).getId()
 
         when:
-        def result = tourneyService.cancelTournament(tourneyId, userId)
+        def result = tourneyService.cancelTournament(tourneyId)
 
         then:
         result.getTourneyStatus() == Tourney.Status.CANCELED

@@ -19,9 +19,8 @@ import javax.persistence.PersistenceContext;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.COURSE_EXECUTION_NOT_FOUND;
@@ -52,7 +51,7 @@ public class TourneyService {
     public List<TourneyDto> getOpenTourneys(Integer userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, userId));
         return tourneyRepository.findByStatus(Tourney.Status.OPEN.name()).stream()
-                .filter(tourney -> (user.getCourseExecutions().stream().filter(courseExec -> courseExec.getId().equals(tourney.getCourseExecution().getId())).findFirst().isPresent()))
+                .filter(tourney -> (user.getCourseExecutions().stream().anyMatch(courseExec -> courseExec.getId().equals(tourney.getCourseExecution().getId()))))
                 .map(TourneyDto::new)
                 .collect(Collectors.toList());
     }
@@ -76,12 +75,12 @@ public class TourneyService {
 
         if(tourney.getTopics().size() == 0)  throw new TutorException(ErrorMessage.TOURNEY_NOT_CONSISTENT, "topics");
         if(!user.getCourseExecutions().stream()
-                .map((courseExecution) -> (courseExecution.getId() == tourney.getCourseExecution().getId()))
+                .map((courseExecution) -> (courseExecution.getId().equals(tourney.getCourseExecution().getId())))
                 .reduce(false, (acc, elem) -> acc || elem))
             throw new TutorException(ErrorMessage.STUDENT_CANT_ACCESS_COURSE_EXECUTION, tourney.getCourseExecution().getAcronym());
 
         if(tourney.getTopics().stream()
-                .map((topic) -> (topic == null))
+                .map(Objects::isNull)
                 .reduce(false, (acc, elem) -> acc || elem))
             throw new TutorException(ErrorMessage.TOPICS_NOT_FROM_SAME_COURSE);
 
@@ -106,7 +105,7 @@ public class TourneyService {
         }
 
         if(!user.getCourseExecutions().stream()
-                .map((courseExecution) -> (courseExecution.getId() == tourney.getCourseExecution().getId()))
+                .map((courseExecution) -> (courseExecution.getId().equals(tourney.getCourseExecution().getId())))
                 .reduce(false, (acc, elem) -> acc || elem))
             throw new TutorException(ErrorMessage.STUDENT_CANT_ACCESS_COURSE_EXECUTION, tourney.getCourseExecution().getAcronym());
 
