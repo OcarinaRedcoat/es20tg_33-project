@@ -192,6 +192,7 @@ public class QuestionService {
     public QuestionDto submitQuestion(int courseId, QuestionDto questionDto, String username) {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new TutorException(COURSE_NOT_FOUND, courseId));
         User user = userRepository.findByUsername(username);
+        checkUserFound(user);
 
         checkQuestionKey(questionDto);
 
@@ -200,7 +201,7 @@ public class QuestionService {
         checkIfPending(question);
         question.setSubmittingUser(user);
         user.addSubmittedQuestion(question);
-        this.entityManager.persist(question);
+        questionRepository.save(question);
         return new QuestionDto(question);
     }
 
@@ -250,6 +251,11 @@ public class QuestionService {
                     questionRepository.getMaxQuestionNumber() : 0;
             questionDto.setKey(maxQuestionNumber + 1);
         }
+    }
+
+    private void checkUserFound(User user) {
+        if (user == null)
+            throw new TutorException(USERNAME_NOT_FOUND);
     }
 }
 
