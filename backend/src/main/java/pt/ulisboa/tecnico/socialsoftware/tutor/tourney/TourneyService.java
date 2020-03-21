@@ -116,4 +116,14 @@ public class TourneyService {
         return new TourneyDto(tourney);
     }
 
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public TourneyDto cancelTournament(Integer tourneyId, Integer studentId) {
+        Tourney tourney = tourneyRepository.findById(tourneyId).orElseThrow(() -> new TutorException(ErrorMessage.TOURNEY_NOT_FOUND));
+
+        return new TourneyDto(tourney);
+    }
+
 }

@@ -7,6 +7,7 @@ public enum ErrorMessage {
     STUDENT_DID_NOT_ANSWER_QUESTION("Student did not answered this question"),
     STUDENT_DOESNT_HAVE_PERMISSION("Student does not have permission to see a discussion clarification without " +
             "answering the corresponding question"),
+    STUDENT_IS_NOT_TOURNEY_CREATOR("Only the Tourney %d creator can perform this action"),
     TEACHER_CANNOT_SEE_TEACHER_CLARIFICATION("Permission only for student, only user can see teacher clarification"),
     TEACHER_DID_NOT_CLARIFIED("Theacher did not clarified the discussion yet"),
 
