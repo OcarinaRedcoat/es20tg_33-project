@@ -33,3 +33,372 @@
 2020/03/21 22:50:35 INFO  - jmeter.samplers.SampleResult: sampleresult.default.encoding is set to ISO-8859-1 
 2020/03/21 22:50:35 INFO  - jmeter.samplers.SampleResult: sampleresult.useNanoTime=true 
 2020/03/21 22:50:35 INFO  - jmeter.samplers.SampleResult: sampleresult.nanoThreadSleep=5000 
+2020/03/21 23:31:43 INFO  - jmeter.services.FileServer: Default base='/home/nodo/Desktop/ESof/es20tg_33-project' 
+2020/03/21 23:31:43 INFO  - jmeter.gui.action.Load: Loading file: /home/nodo/Desktop/ESof/es20tg_33-project/backend/jmeter/administration/WSCreateExternalCourseExecutionTest.jmx 
+2020/03/21 23:31:43 INFO  - jmeter.services.FileServer: Set new base='/home/nodo/Desktop/ESof/es20tg_33-project/backend/jmeter/administration' 
+2020/03/21 23:31:43 INFO  - jmeter.save.SaveService: Testplan (JMX) version: 2.2. Testlog (JTL) version: 2.2 
+2020/03/21 23:31:43 INFO  - jmeter.save.SaveService: Using SaveService properties version 2.8 
+2020/03/21 23:31:43 INFO  - jmeter.save.SaveService: Using SaveService properties file version 1656252 
+2020/03/21 23:31:43 INFO  - jmeter.save.SaveService: Using SaveService properties file encoding UTF-8 
+2020/03/21 23:31:43 INFO  - jmeter.save.SaveService: All converter versions present and correct 
+2020/03/21 23:31:43 INFO  - jmeter.save.SaveService: Loading file: /home/nodo/Desktop/ESof/es20tg_33-project/backend/jmeter/administration/WSCreateExternalCourseExecutionTest.jmx 
+2020/03/21 23:31:43 WARN  - jmeter.gui.action.Load: Unexpected error java.lang.IllegalArgumentException: Problem loading XML from:'/home/nodo/Desktop/ESof/es20tg_33-project/backend/jmeter/administration/WSCreateExternalCourseExecutionTest.jmx', conversion error com.thoughtworks.xstream.converters.ConversionException: 
+---- Debugging information ----
+cause-exception     : com.thoughtworks.xstream.converters.ConversionException
+cause-message       : 
+first-jmeter-class  : org.apache.jmeter.save.converters.HashTreeConverter.unmarshal(HashTreeConverter.java:67)
+class               : org.apache.jmeter.save.ScriptWrapper
+required-type       : org.apache.jmeter.save.ScriptWrapper
+converter-type      : org.apache.jmeter.save.ScriptWrapperConverter
+path                : /jmeterTestPlan/hashTree/hashTree/hashTree[2]/hashTree/JSONPostProcessor
+line number         : 68
+version             : 2.13.20180731
+-------------------------------
+	at org.apache.jmeter.save.SaveService.readTree(SaveService.java:586)
+	at org.apache.jmeter.save.SaveService.loadTree(SaveService.java:537)
+	at org.apache.jmeter.gui.action.Load.loadProjectFile(Load.java:130)
+	at org.apache.jmeter.gui.action.Load.loadProjectFile(Load.java:102)
+	at org.apache.jmeter.gui.action.Load.doAction(Load.java:89)
+	at org.apache.jmeter.gui.action.ActionRouter.performAction(ActionRouter.java:81)
+	at org.apache.jmeter.gui.action.ActionRouter.access$000(ActionRouter.java:40)
+	at org.apache.jmeter.gui.action.ActionRouter$1.run(ActionRouter.java:63)
+	at java.desktop/java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:313)
+	at java.desktop/java.awt.EventQueue.dispatchEventImpl(EventQueue.java:770)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:721)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:715)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at java.base/java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:85)
+	at java.desktop/java.awt.EventQueue.dispatchEvent(EventQueue.java:740)
+	at java.desktop/java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:203)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:124)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:113)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:109)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.desktop/java.awt.EventDispatchThread.run(EventDispatchThread.java:90)
+Caused by: com.thoughtworks.xstream.converters.ConversionException: 
+---- Debugging information ----
+cause-exception     : com.thoughtworks.xstream.converters.ConversionException
+cause-message       : 
+first-jmeter-class  : org.apache.jmeter.save.converters.HashTreeConverter.unmarshal(HashTreeConverter.java:67)
+class               : org.apache.jmeter.save.ScriptWrapper
+required-type       : org.apache.jmeter.save.ScriptWrapper
+converter-type      : org.apache.jmeter.save.ScriptWrapperConverter
+path                : /jmeterTestPlan/hashTree/hashTree/hashTree[2]/hashTree/JSONPostProcessor
+line number         : 68
+version             : 2.13.20180731
+-------------------------------
+	at org.apache.jmeter.save.ScriptWrapperConverter.createConversionException(ScriptWrapperConverter.java:105)
+	at org.apache.jmeter.save.ScriptWrapperConverter.unmarshal(ScriptWrapperConverter.java:99)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convert(TreeUnmarshaller.java:72)
+	at com.thoughtworks.xstream.core.AbstractReferenceUnmarshaller.convert(AbstractReferenceUnmarshaller.java:72)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convertAnother(TreeUnmarshaller.java:66)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convertAnother(TreeUnmarshaller.java:50)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.start(TreeUnmarshaller.java:134)
+	at com.thoughtworks.xstream.core.AbstractTreeMarshallingStrategy.unmarshal(AbstractTreeMarshallingStrategy.java:32)
+	at com.thoughtworks.xstream.XStream.unmarshal(XStream.java:1487)
+	at com.thoughtworks.xstream.XStream.unmarshal(XStream.java:1467)
+	at com.thoughtworks.xstream.XStream.fromXML(XStream.java:1338)
+	at org.apache.jmeter.save.SaveService.readTree(SaveService.java:559)
+	... 20 more
+Caused by: com.thoughtworks.xstream.converters.ConversionException: 
+---- Debugging information ----
+cause-exception     : com.thoughtworks.xstream.mapper.CannotResolveClassException
+cause-message       : JSONPostProcessor
+class               : org.apache.jorphan.collections.ListedHashTree
+required-type       : org.apache.jorphan.collections.ListedHashTree
+converter-type      : org.apache.jmeter.save.converters.HashTreeConverter
+path                : /jmeterTestPlan/hashTree/hashTree/hashTree[2]/hashTree/JSONPostProcessor
+line number         : 68
+-------------------------------
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convert(TreeUnmarshaller.java:77)
+	at com.thoughtworks.xstream.core.AbstractReferenceUnmarshaller.convert(AbstractReferenceUnmarshaller.java:72)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convertAnother(TreeUnmarshaller.java:66)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convertAnother(TreeUnmarshaller.java:50)
+	at com.thoughtworks.xstream.converters.collections.AbstractCollectionConverter.readBareItem(AbstractCollectionConverter.java:132)
+	at com.thoughtworks.xstream.converters.collections.AbstractCollectionConverter.readItem(AbstractCollectionConverter.java:117)
+	at org.apache.jmeter.save.converters.HashTreeConverter.unmarshal(HashTreeConverter.java:67)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convert(TreeUnmarshaller.java:72)
+	at com.thoughtworks.xstream.core.AbstractReferenceUnmarshaller.convert(AbstractReferenceUnmarshaller.java:72)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convertAnother(TreeUnmarshaller.java:66)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convertAnother(TreeUnmarshaller.java:50)
+	at com.thoughtworks.xstream.converters.collections.AbstractCollectionConverter.readBareItem(AbstractCollectionConverter.java:132)
+	at com.thoughtworks.xstream.converters.collections.AbstractCollectionConverter.readItem(AbstractCollectionConverter.java:117)
+	at org.apache.jmeter.save.converters.HashTreeConverter.unmarshal(HashTreeConverter.java:67)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convert(TreeUnmarshaller.java:72)
+	at com.thoughtworks.xstream.core.AbstractReferenceUnmarshaller.convert(AbstractReferenceUnmarshaller.java:72)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convertAnother(TreeUnmarshaller.java:66)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convertAnother(TreeUnmarshaller.java:50)
+	at com.thoughtworks.xstream.converters.collections.AbstractCollectionConverter.readBareItem(AbstractCollectionConverter.java:132)
+	at com.thoughtworks.xstream.converters.collections.AbstractCollectionConverter.readItem(AbstractCollectionConverter.java:117)
+	at org.apache.jmeter.save.converters.HashTreeConverter.unmarshal(HashTreeConverter.java:67)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convert(TreeUnmarshaller.java:72)
+	at com.thoughtworks.xstream.core.AbstractReferenceUnmarshaller.convert(AbstractReferenceUnmarshaller.java:72)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convertAnother(TreeUnmarshaller.java:66)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convertAnother(TreeUnmarshaller.java:50)
+	at org.apache.jmeter.save.ScriptWrapperConverter.unmarshal(ScriptWrapperConverter.java:95)
+	... 30 more
+Caused by: com.thoughtworks.xstream.mapper.CannotResolveClassException: JSONPostProcessor
+	at com.thoughtworks.xstream.mapper.DefaultMapper.realClass(DefaultMapper.java:81)
+	at com.thoughtworks.xstream.mapper.MapperWrapper.realClass(MapperWrapper.java:125)
+	at com.thoughtworks.xstream.mapper.DynamicProxyMapper.realClass(DynamicProxyMapper.java:55)
+	at com.thoughtworks.xstream.mapper.MapperWrapper.realClass(MapperWrapper.java:125)
+	at com.thoughtworks.xstream.mapper.PackageAliasingMapper.realClass(PackageAliasingMapper.java:88)
+	at com.thoughtworks.xstream.mapper.MapperWrapper.realClass(MapperWrapper.java:125)
+	at com.thoughtworks.xstream.mapper.ClassAliasingMapper.realClass(ClassAliasingMapper.java:79)
+	at com.thoughtworks.xstream.mapper.MapperWrapper.realClass(MapperWrapper.java:125)
+	at com.thoughtworks.xstream.mapper.ArrayMapper.realClass(ArrayMapper.java:74)
+	at com.thoughtworks.xstream.mapper.MapperWrapper.realClass(MapperWrapper.java:125)
+	at com.thoughtworks.xstream.mapper.SecurityMapper.realClass(SecurityMapper.java:71)
+	at com.thoughtworks.xstream.mapper.MapperWrapper.realClass(MapperWrapper.java:125)
+	at org.apache.jmeter.save.SaveService$XStreamWrapper$1.realClass(SaveService.java:94)
+	at com.thoughtworks.xstream.mapper.MapperWrapper.realClass(MapperWrapper.java:125)
+	at com.thoughtworks.xstream.mapper.CachingMapper.realClass(CachingMapper.java:47)
+	at com.thoughtworks.xstream.core.util.HierarchicalStreams.readClassType(HierarchicalStreams.java:29)
+	at com.thoughtworks.xstream.converters.collections.AbstractCollectionConverter.readBareItem(AbstractCollectionConverter.java:131)
+	at com.thoughtworks.xstream.converters.collections.AbstractCollectionConverter.readItem(AbstractCollectionConverter.java:117)
+	at org.apache.jmeter.save.converters.HashTreeConverter.unmarshal(HashTreeConverter.java:67)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convert(TreeUnmarshaller.java:72)
+	... 55 more
+
+2020/03/21 23:31:52 INFO  - jmeter.gui.action.Load: Loading file: /home/nodo/Desktop/ESof/es20tg_33-project/backend/jmeter/administration/WSCreateExternalCourseExecutionLoadTest.jmx 
+2020/03/21 23:31:52 INFO  - jmeter.services.FileServer: Set new base='/home/nodo/Desktop/ESof/es20tg_33-project/backend/jmeter/administration' 
+2020/03/21 23:31:52 INFO  - jmeter.save.SaveService: Loading file: /home/nodo/Desktop/ESof/es20tg_33-project/backend/jmeter/administration/WSCreateExternalCourseExecutionLoadTest.jmx 
+2020/03/21 23:31:52 WARN  - jmeter.gui.action.Load: Unexpected error java.lang.IllegalArgumentException: Problem loading XML from:'/home/nodo/Desktop/ESof/es20tg_33-project/backend/jmeter/administration/WSCreateExternalCourseExecutionLoadTest.jmx', conversion error com.thoughtworks.xstream.converters.ConversionException: 
+---- Debugging information ----
+cause-exception     : com.thoughtworks.xstream.converters.ConversionException
+cause-message       : 
+first-jmeter-class  : org.apache.jmeter.save.converters.HashTreeConverter.unmarshal(HashTreeConverter.java:67)
+class               : org.apache.jmeter.save.ScriptWrapper
+required-type       : org.apache.jmeter.save.ScriptWrapper
+converter-type      : org.apache.jmeter.save.ScriptWrapperConverter
+path                : /jmeterTestPlan/hashTree/hashTree/hashTree[2]/hashTree/JSONPostProcessor
+line number         : 68
+version             : 2.13.20180731
+-------------------------------
+	at org.apache.jmeter.save.SaveService.readTree(SaveService.java:586)
+	at org.apache.jmeter.save.SaveService.loadTree(SaveService.java:537)
+	at org.apache.jmeter.gui.action.Load.loadProjectFile(Load.java:130)
+	at org.apache.jmeter.gui.action.Load.loadProjectFile(Load.java:102)
+	at org.apache.jmeter.gui.action.Load.doAction(Load.java:89)
+	at org.apache.jmeter.gui.action.ActionRouter.performAction(ActionRouter.java:81)
+	at org.apache.jmeter.gui.action.ActionRouter.access$000(ActionRouter.java:40)
+	at org.apache.jmeter.gui.action.ActionRouter$1.run(ActionRouter.java:63)
+	at java.desktop/java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:313)
+	at java.desktop/java.awt.EventQueue.dispatchEventImpl(EventQueue.java:770)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:721)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:715)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at java.base/java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:85)
+	at java.desktop/java.awt.EventQueue.dispatchEvent(EventQueue.java:740)
+	at java.desktop/java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:203)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:124)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:113)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:109)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.desktop/java.awt.EventDispatchThread.run(EventDispatchThread.java:90)
+Caused by: com.thoughtworks.xstream.converters.ConversionException: 
+---- Debugging information ----
+cause-exception     : com.thoughtworks.xstream.converters.ConversionException
+cause-message       : 
+first-jmeter-class  : org.apache.jmeter.save.converters.HashTreeConverter.unmarshal(HashTreeConverter.java:67)
+class               : org.apache.jmeter.save.ScriptWrapper
+required-type       : org.apache.jmeter.save.ScriptWrapper
+converter-type      : org.apache.jmeter.save.ScriptWrapperConverter
+path                : /jmeterTestPlan/hashTree/hashTree/hashTree[2]/hashTree/JSONPostProcessor
+line number         : 68
+version             : 2.13.20180731
+-------------------------------
+	at org.apache.jmeter.save.ScriptWrapperConverter.createConversionException(ScriptWrapperConverter.java:105)
+	at org.apache.jmeter.save.ScriptWrapperConverter.unmarshal(ScriptWrapperConverter.java:99)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convert(TreeUnmarshaller.java:72)
+	at com.thoughtworks.xstream.core.AbstractReferenceUnmarshaller.convert(AbstractReferenceUnmarshaller.java:72)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convertAnother(TreeUnmarshaller.java:66)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convertAnother(TreeUnmarshaller.java:50)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.start(TreeUnmarshaller.java:134)
+	at com.thoughtworks.xstream.core.AbstractTreeMarshallingStrategy.unmarshal(AbstractTreeMarshallingStrategy.java:32)
+	at com.thoughtworks.xstream.XStream.unmarshal(XStream.java:1487)
+	at com.thoughtworks.xstream.XStream.unmarshal(XStream.java:1467)
+	at com.thoughtworks.xstream.XStream.fromXML(XStream.java:1338)
+	at org.apache.jmeter.save.SaveService.readTree(SaveService.java:559)
+	... 20 more
+Caused by: com.thoughtworks.xstream.converters.ConversionException: 
+---- Debugging information ----
+cause-exception     : com.thoughtworks.xstream.mapper.CannotResolveClassException
+cause-message       : JSONPostProcessor
+class               : org.apache.jorphan.collections.ListedHashTree
+required-type       : org.apache.jorphan.collections.ListedHashTree
+converter-type      : org.apache.jmeter.save.converters.HashTreeConverter
+path                : /jmeterTestPlan/hashTree/hashTree/hashTree[2]/hashTree/JSONPostProcessor
+line number         : 68
+-------------------------------
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convert(TreeUnmarshaller.java:77)
+	at com.thoughtworks.xstream.core.AbstractReferenceUnmarshaller.convert(AbstractReferenceUnmarshaller.java:72)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convertAnother(TreeUnmarshaller.java:66)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convertAnother(TreeUnmarshaller.java:50)
+	at com.thoughtworks.xstream.converters.collections.AbstractCollectionConverter.readBareItem(AbstractCollectionConverter.java:132)
+	at com.thoughtworks.xstream.converters.collections.AbstractCollectionConverter.readItem(AbstractCollectionConverter.java:117)
+	at org.apache.jmeter.save.converters.HashTreeConverter.unmarshal(HashTreeConverter.java:67)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convert(TreeUnmarshaller.java:72)
+	at com.thoughtworks.xstream.core.AbstractReferenceUnmarshaller.convert(AbstractReferenceUnmarshaller.java:72)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convertAnother(TreeUnmarshaller.java:66)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convertAnother(TreeUnmarshaller.java:50)
+	at com.thoughtworks.xstream.converters.collections.AbstractCollectionConverter.readBareItem(AbstractCollectionConverter.java:132)
+	at com.thoughtworks.xstream.converters.collections.AbstractCollectionConverter.readItem(AbstractCollectionConverter.java:117)
+	at org.apache.jmeter.save.converters.HashTreeConverter.unmarshal(HashTreeConverter.java:67)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convert(TreeUnmarshaller.java:72)
+	at com.thoughtworks.xstream.core.AbstractReferenceUnmarshaller.convert(AbstractReferenceUnmarshaller.java:72)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convertAnother(TreeUnmarshaller.java:66)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convertAnother(TreeUnmarshaller.java:50)
+	at com.thoughtworks.xstream.converters.collections.AbstractCollectionConverter.readBareItem(AbstractCollectionConverter.java:132)
+	at com.thoughtworks.xstream.converters.collections.AbstractCollectionConverter.readItem(AbstractCollectionConverter.java:117)
+	at org.apache.jmeter.save.converters.HashTreeConverter.unmarshal(HashTreeConverter.java:67)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convert(TreeUnmarshaller.java:72)
+	at com.thoughtworks.xstream.core.AbstractReferenceUnmarshaller.convert(AbstractReferenceUnmarshaller.java:72)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convertAnother(TreeUnmarshaller.java:66)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convertAnother(TreeUnmarshaller.java:50)
+	at org.apache.jmeter.save.ScriptWrapperConverter.unmarshal(ScriptWrapperConverter.java:95)
+	... 30 more
+Caused by: com.thoughtworks.xstream.mapper.CannotResolveClassException: JSONPostProcessor
+	at com.thoughtworks.xstream.mapper.DefaultMapper.realClass(DefaultMapper.java:81)
+	at com.thoughtworks.xstream.mapper.MapperWrapper.realClass(MapperWrapper.java:125)
+	at com.thoughtworks.xstream.mapper.DynamicProxyMapper.realClass(DynamicProxyMapper.java:55)
+	at com.thoughtworks.xstream.mapper.MapperWrapper.realClass(MapperWrapper.java:125)
+	at com.thoughtworks.xstream.mapper.PackageAliasingMapper.realClass(PackageAliasingMapper.java:88)
+	at com.thoughtworks.xstream.mapper.MapperWrapper.realClass(MapperWrapper.java:125)
+	at com.thoughtworks.xstream.mapper.ClassAliasingMapper.realClass(ClassAliasingMapper.java:79)
+	at com.thoughtworks.xstream.mapper.MapperWrapper.realClass(MapperWrapper.java:125)
+	at com.thoughtworks.xstream.mapper.ArrayMapper.realClass(ArrayMapper.java:74)
+	at com.thoughtworks.xstream.mapper.MapperWrapper.realClass(MapperWrapper.java:125)
+	at com.thoughtworks.xstream.mapper.SecurityMapper.realClass(SecurityMapper.java:71)
+	at com.thoughtworks.xstream.mapper.MapperWrapper.realClass(MapperWrapper.java:125)
+	at org.apache.jmeter.save.SaveService$XStreamWrapper$1.realClass(SaveService.java:94)
+	at com.thoughtworks.xstream.mapper.MapperWrapper.realClass(MapperWrapper.java:125)
+	at com.thoughtworks.xstream.mapper.CachingMapper.realClass(CachingMapper.java:47)
+	at com.thoughtworks.xstream.core.util.HierarchicalStreams.readClassType(HierarchicalStreams.java:29)
+	at com.thoughtworks.xstream.converters.collections.AbstractCollectionConverter.readBareItem(AbstractCollectionConverter.java:131)
+	at com.thoughtworks.xstream.converters.collections.AbstractCollectionConverter.readItem(AbstractCollectionConverter.java:117)
+	at org.apache.jmeter.save.converters.HashTreeConverter.unmarshal(HashTreeConverter.java:67)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convert(TreeUnmarshaller.java:72)
+	... 55 more
+
+2020/03/21 23:32:13 INFO  - jmeter.gui.action.Load: Loading file: /home/nodo/Desktop/ESof/es20tg_33-project/backend/jmeter/administration/WSGetExternalCourseExecutionsTest.jmx 
+2020/03/21 23:32:13 INFO  - jmeter.services.FileServer: Set new base='/home/nodo/Desktop/ESof/es20tg_33-project/backend/jmeter/administration' 
+2020/03/21 23:32:13 INFO  - jmeter.save.SaveService: Loading file: /home/nodo/Desktop/ESof/es20tg_33-project/backend/jmeter/administration/WSGetExternalCourseExecutionsTest.jmx 
+2020/03/21 23:32:13 WARN  - jmeter.gui.action.Load: Unexpected error java.lang.IllegalArgumentException: Problem loading XML from:'/home/nodo/Desktop/ESof/es20tg_33-project/backend/jmeter/administration/WSGetExternalCourseExecutionsTest.jmx', conversion error com.thoughtworks.xstream.converters.ConversionException: 
+---- Debugging information ----
+cause-exception     : com.thoughtworks.xstream.converters.ConversionException
+cause-message       : 
+first-jmeter-class  : org.apache.jmeter.save.converters.HashTreeConverter.unmarshal(HashTreeConverter.java:67)
+class               : org.apache.jmeter.save.ScriptWrapper
+required-type       : org.apache.jmeter.save.ScriptWrapper
+converter-type      : org.apache.jmeter.save.ScriptWrapperConverter
+path                : /jmeterTestPlan/hashTree/hashTree/hashTree[2]/hashTree/JSONPostProcessor
+line number         : 68
+version             : 2.13.20180731
+-------------------------------
+	at org.apache.jmeter.save.SaveService.readTree(SaveService.java:586)
+	at org.apache.jmeter.save.SaveService.loadTree(SaveService.java:537)
+	at org.apache.jmeter.gui.action.Load.loadProjectFile(Load.java:130)
+	at org.apache.jmeter.gui.action.Load.loadProjectFile(Load.java:102)
+	at org.apache.jmeter.gui.action.Load.doAction(Load.java:89)
+	at org.apache.jmeter.gui.action.ActionRouter.performAction(ActionRouter.java:81)
+	at org.apache.jmeter.gui.action.ActionRouter.access$000(ActionRouter.java:40)
+	at org.apache.jmeter.gui.action.ActionRouter$1.run(ActionRouter.java:63)
+	at java.desktop/java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:313)
+	at java.desktop/java.awt.EventQueue.dispatchEventImpl(EventQueue.java:770)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:721)
+	at java.desktop/java.awt.EventQueue$4.run(EventQueue.java:715)
+	at java.base/java.security.AccessController.doPrivileged(Native Method)
+	at java.base/java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:85)
+	at java.desktop/java.awt.EventQueue.dispatchEvent(EventQueue.java:740)
+	at java.desktop/java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:203)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:124)
+	at java.desktop/java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:113)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:109)
+	at java.desktop/java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101)
+	at java.desktop/java.awt.EventDispatchThread.run(EventDispatchThread.java:90)
+Caused by: com.thoughtworks.xstream.converters.ConversionException: 
+---- Debugging information ----
+cause-exception     : com.thoughtworks.xstream.converters.ConversionException
+cause-message       : 
+first-jmeter-class  : org.apache.jmeter.save.converters.HashTreeConverter.unmarshal(HashTreeConverter.java:67)
+class               : org.apache.jmeter.save.ScriptWrapper
+required-type       : org.apache.jmeter.save.ScriptWrapper
+converter-type      : org.apache.jmeter.save.ScriptWrapperConverter
+path                : /jmeterTestPlan/hashTree/hashTree/hashTree[2]/hashTree/JSONPostProcessor
+line number         : 68
+version             : 2.13.20180731
+-------------------------------
+	at org.apache.jmeter.save.ScriptWrapperConverter.createConversionException(ScriptWrapperConverter.java:105)
+	at org.apache.jmeter.save.ScriptWrapperConverter.unmarshal(ScriptWrapperConverter.java:99)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convert(TreeUnmarshaller.java:72)
+	at com.thoughtworks.xstream.core.AbstractReferenceUnmarshaller.convert(AbstractReferenceUnmarshaller.java:72)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convertAnother(TreeUnmarshaller.java:66)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convertAnother(TreeUnmarshaller.java:50)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.start(TreeUnmarshaller.java:134)
+	at com.thoughtworks.xstream.core.AbstractTreeMarshallingStrategy.unmarshal(AbstractTreeMarshallingStrategy.java:32)
+	at com.thoughtworks.xstream.XStream.unmarshal(XStream.java:1487)
+	at com.thoughtworks.xstream.XStream.unmarshal(XStream.java:1467)
+	at com.thoughtworks.xstream.XStream.fromXML(XStream.java:1338)
+	at org.apache.jmeter.save.SaveService.readTree(SaveService.java:559)
+	... 20 more
+Caused by: com.thoughtworks.xstream.converters.ConversionException: 
+---- Debugging information ----
+cause-exception     : com.thoughtworks.xstream.mapper.CannotResolveClassException
+cause-message       : JSONPostProcessor
+class               : org.apache.jorphan.collections.ListedHashTree
+required-type       : org.apache.jorphan.collections.ListedHashTree
+converter-type      : org.apache.jmeter.save.converters.HashTreeConverter
+path                : /jmeterTestPlan/hashTree/hashTree/hashTree[2]/hashTree/JSONPostProcessor
+line number         : 68
+-------------------------------
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convert(TreeUnmarshaller.java:77)
+	at com.thoughtworks.xstream.core.AbstractReferenceUnmarshaller.convert(AbstractReferenceUnmarshaller.java:72)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convertAnother(TreeUnmarshaller.java:66)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convertAnother(TreeUnmarshaller.java:50)
+	at com.thoughtworks.xstream.converters.collections.AbstractCollectionConverter.readBareItem(AbstractCollectionConverter.java:132)
+	at com.thoughtworks.xstream.converters.collections.AbstractCollectionConverter.readItem(AbstractCollectionConverter.java:117)
+	at org.apache.jmeter.save.converters.HashTreeConverter.unmarshal(HashTreeConverter.java:67)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convert(TreeUnmarshaller.java:72)
+	at com.thoughtworks.xstream.core.AbstractReferenceUnmarshaller.convert(AbstractReferenceUnmarshaller.java:72)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convertAnother(TreeUnmarshaller.java:66)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convertAnother(TreeUnmarshaller.java:50)
+	at com.thoughtworks.xstream.converters.collections.AbstractCollectionConverter.readBareItem(AbstractCollectionConverter.java:132)
+	at com.thoughtworks.xstream.converters.collections.AbstractCollectionConverter.readItem(AbstractCollectionConverter.java:117)
+	at org.apache.jmeter.save.converters.HashTreeConverter.unmarshal(HashTreeConverter.java:67)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convert(TreeUnmarshaller.java:72)
+	at com.thoughtworks.xstream.core.AbstractReferenceUnmarshaller.convert(AbstractReferenceUnmarshaller.java:72)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convertAnother(TreeUnmarshaller.java:66)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convertAnother(TreeUnmarshaller.java:50)
+	at com.thoughtworks.xstream.converters.collections.AbstractCollectionConverter.readBareItem(AbstractCollectionConverter.java:132)
+	at com.thoughtworks.xstream.converters.collections.AbstractCollectionConverter.readItem(AbstractCollectionConverter.java:117)
+	at org.apache.jmeter.save.converters.HashTreeConverter.unmarshal(HashTreeConverter.java:67)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convert(TreeUnmarshaller.java:72)
+	at com.thoughtworks.xstream.core.AbstractReferenceUnmarshaller.convert(AbstractReferenceUnmarshaller.java:72)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convertAnother(TreeUnmarshaller.java:66)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convertAnother(TreeUnmarshaller.java:50)
+	at org.apache.jmeter.save.ScriptWrapperConverter.unmarshal(ScriptWrapperConverter.java:95)
+	... 30 more
+Caused by: com.thoughtworks.xstream.mapper.CannotResolveClassException: JSONPostProcessor
+	at com.thoughtworks.xstream.mapper.DefaultMapper.realClass(DefaultMapper.java:81)
+	at com.thoughtworks.xstream.mapper.MapperWrapper.realClass(MapperWrapper.java:125)
+	at com.thoughtworks.xstream.mapper.DynamicProxyMapper.realClass(DynamicProxyMapper.java:55)
+	at com.thoughtworks.xstream.mapper.MapperWrapper.realClass(MapperWrapper.java:125)
+	at com.thoughtworks.xstream.mapper.PackageAliasingMapper.realClass(PackageAliasingMapper.java:88)
+	at com.thoughtworks.xstream.mapper.MapperWrapper.realClass(MapperWrapper.java:125)
+	at com.thoughtworks.xstream.mapper.ClassAliasingMapper.realClass(ClassAliasingMapper.java:79)
+	at com.thoughtworks.xstream.mapper.MapperWrapper.realClass(MapperWrapper.java:125)
+	at com.thoughtworks.xstream.mapper.ArrayMapper.realClass(ArrayMapper.java:74)
+	at com.thoughtworks.xstream.mapper.MapperWrapper.realClass(MapperWrapper.java:125)
+	at com.thoughtworks.xstream.mapper.SecurityMapper.realClass(SecurityMapper.java:71)
+	at com.thoughtworks.xstream.mapper.MapperWrapper.realClass(MapperWrapper.java:125)
+	at org.apache.jmeter.save.SaveService$XStreamWrapper$1.realClass(SaveService.java:94)
+	at com.thoughtworks.xstream.mapper.MapperWrapper.realClass(MapperWrapper.java:125)
+	at com.thoughtworks.xstream.mapper.CachingMapper.realClass(CachingMapper.java:47)
+	at com.thoughtworks.xstream.core.util.HierarchicalStreams.readClassType(HierarchicalStreams.java:29)
+	at com.thoughtworks.xstream.converters.collections.AbstractCollectionConverter.readBareItem(AbstractCollectionConverter.java:131)
+	at com.thoughtworks.xstream.converters.collections.AbstractCollectionConverter.readItem(AbstractCollectionConverter.java:117)
+	at org.apache.jmeter.save.converters.HashTreeConverter.unmarshal(HashTreeConverter.java:67)
+	at com.thoughtworks.xstream.core.TreeUnmarshaller.convert(TreeUnmarshaller.java:72)
+	... 55 more
+
