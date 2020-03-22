@@ -42,7 +42,7 @@ public class TourneyController {
         return tourneyService.enrollStudent(tourneyId,user.getId());
     }
 
-    @GetMapping("/tourneys/{tourneyId}/cancel")
+    @PutMapping("/tourneys/{tourneyId}/cancel")
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#tourneyId, 'TOURNEY.CREATOR')")
     public TourneyDto cancelTourney(@PathVariable Integer tourneyId) {
         return tourneyService.cancelTournament(tourneyId);
