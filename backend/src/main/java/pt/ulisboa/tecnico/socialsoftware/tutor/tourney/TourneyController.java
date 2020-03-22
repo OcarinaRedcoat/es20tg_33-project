@@ -35,6 +35,13 @@ public class TourneyController {
         return tourneyService.getOpenTourneys(user.getId());
     }
 
+    @PutMapping("/tourneys/{tourneyId}/enroll")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public TourneyDto getOpenTourneys(@PathVariable Integer tourneyId, Principal principal) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+        return tourneyService.enrollStudent(tourneyId,user.getId());
+    }
+
     @GetMapping("/tourneys/{tourneyId}/cancel")
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#tourneyId, 'TOURNEY.CREATOR')")
     public TourneyDto getOpenTourneys(@PathVariable Integer tourneyId) {
