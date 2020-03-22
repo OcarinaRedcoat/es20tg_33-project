@@ -25,8 +25,7 @@ public class TourneyController {
             throw new TutorException(AUTHENTICATION_ERROR);
         }
         tourneyDto.setTourneyStatus(Tourney.Status.OPEN);
-        TourneyDto tourney = tourneyService.createTourney(tourneyDto, user.getId());
-        return tourney;
+        return tourneyService.createTourney(tourneyDto, user.getId());
     }
 
     @GetMapping("/tourneys/open")
@@ -34,6 +33,19 @@ public class TourneyController {
     public List<TourneyDto> getOpenTourneys(Principal principal) {
         User user = (User) ((Authentication) principal).getPrincipal();
         return tourneyService.getOpenTourneys(user.getId());
+    }
+
+    @PutMapping("/tourneys/{tourneyId}/enroll")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public TourneyDto getOpenTourneys(@PathVariable Integer tourneyId, Principal principal) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+        return tourneyService.enrollStudent(tourneyId,user.getId());
+    }
+
+    @GetMapping("/tourneys/{tourneyId}/cancel")
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#tourneyId, 'TOURNEY.CREATOR')")
+    public TourneyDto getOpenTourneys(@PathVariable Integer tourneyId) {
+        return tourneyService.cancelTournament(tourneyId);
     }
 
 }

@@ -62,6 +62,8 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
                     return courseDto.getName().equals("Demo Course");
                 case "COURSE.ACCESS":
                     return userHasAnExecutionOfTheCourse(username, id);
+                case "TOURNEY.CREATOR":
+                    return userHasCreatedTheTourney(username, id);
                 case "EXECUTION.ACCESS":
                     return userHasThisExecution(username, id);
                 case "QUESTION.ACCESS":
@@ -89,7 +91,13 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
                 .anyMatch(course -> course.getCourseExecutionId() == id);
     }
 
-     @Override
+    private boolean userHasCreatedTheTourney(String username, int id) {
+        return userService.getCreatedTourneys(username).stream()
+                .anyMatch(tourneyDto -> tourneyDto.getTourneyId() == id);
+    }
+
+
+    @Override
     public boolean hasPermission(Authentication authentication, Serializable serializable, String s, Object o) {
         return false;
     }

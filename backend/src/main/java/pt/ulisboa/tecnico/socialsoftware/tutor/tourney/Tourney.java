@@ -14,7 +14,7 @@ import javax.persistence.*;
 @Table(name = "tourneys")
 public class Tourney {
 
-    public enum Status {CLOSED, OPEN}
+    public enum Status {CLOSED, OPEN, CANCELED}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

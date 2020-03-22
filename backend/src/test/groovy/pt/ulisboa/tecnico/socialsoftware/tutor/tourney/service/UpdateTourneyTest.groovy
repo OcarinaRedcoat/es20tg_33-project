@@ -16,14 +16,16 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import spock.lang.Specification
 
 @DataJpaTest
-class GetOpenTourneysPerformanceTest extends Specification {
+class UpdateTourneyTest extends Specification {
 
     public static final Integer TOURNEY_ONE_NUMBER_QUESTIONS = 1
     public static final String TOURNEY_AVAILABLE_DATE = "2020-01-01 21:12"
     public static final String TOURNEY_CONCLUSION_DATE = "2020-01-06 21:12"
 
-    public static final String NAME = "name"
-    public static final String USERNAME = "username"
+    public static final String NAME1 = "name1"
+    public static final String USERNAME1 = "username1"
+    public static final String NAME2 = "name2"
+    public static final String USERNAME2 = "username2"
 
     @Autowired
     TourneyService tourneyService
@@ -40,42 +42,45 @@ class GetOpenTourneysPerformanceTest extends Specification {
     @Autowired
     CourseRepository courseRepository
 
-    def "performance testing to get 10000 tourneys"() {
-        given: "one course execution"
+    def  setup() {
         def course = new Course()
         courseRepository.save(course)
         def courseExecution = new CourseExecution(course, "AC", "1", Course.Type.TECNICO)
         courseExecutionRepository.save(courseExecution)
 
-        and: "one user"
+        def user1 = new User(NAME1, USERNAME1, 1, User.Role.STUDENT)
+        user1.addCourse(courseExecution)
+        userRepository.save(user1)
 
-        def user = new User(NAME, USERNAME, 1, User.Role.STUDENT)
-        user.addCourse(courseExecution)
-        userRepository.save(user)
-        def userId = userRepository.findAll().get(0).getId()
+        def user2 = new User(NAME2, USERNAME2, 2, User.Role.STUDENT)
+        user2.addCourse(courseExecution)
+        userRepository.save(user2)
 
-        and: "a 10000 tourneys"
-        1.upto(1, {
-            def tourney = new Tourney(TOURNEY_ONE_NUMBER_QUESTIONS, TOURNEY_AVAILABLE_DATE, TOURNEY_CONCLUSION_DATE, user)
-            tourney.setCourseExecution(courseExecution)
-            tourneyRepository.save(tourney)
-        })
+        def tourney = new Tourney(TOURNEY_ONE_NUMBER_QUESTIONS, TOURNEY_AVAILABLE_DATE, TOURNEY_CONCLUSION_DATE, user1)
+        tourney.setCourseExecution(courseExecution)
+        tourneyRepository.save(tourney)
+    }
+
+    def "creator cancels tourney"(){
+        given: "a tourney"
+        def tourneyId = tourneyRepository.findAll().get(0).getId()
 
         when:
-        1.upto(1, { tourneyService.getOpenTourneys(userId)})
+        def result = tourneyService.cancelTournament(tourneyId)
 
         then:
-        true
+        result.getTourneyStatus() == Tourney.Status.CANCELED
     }
 
 
     @TestConfiguration
-    static class TourneyServiceImplTestContextConfiguration {
+    static class TourneyServiceImplTestContextConfiguration{
 
         @Bean
-        TourneyService tourneyService() {
+        TourneyService tourneyService(){
             return new TourneyService()
         }
+
     }
 
 }
