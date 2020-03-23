@@ -192,7 +192,8 @@ public class QuestionService {
     public QuestionDto submitQuestion(int courseId, QuestionDto questionDto, String username) {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new TutorException(COURSE_NOT_FOUND, courseId));
         User user = userRepository.findByUsername(username);
-        checkUserFound(user);
+        if (user == null)
+            throw new TutorException(USERNAME_NOT_FOUND);
 
         checkQuestionKey(questionDto);
 
@@ -253,9 +254,5 @@ public class QuestionService {
         }
     }
 
-    private void checkUserFound(User user) {
-        if (user == null)
-            throw new TutorException(USERNAME_NOT_FOUND);
-    }
 }
 

@@ -128,10 +128,12 @@ public class QuestionController {
     @PostMapping("/courses/{courseId}/questions/pending")
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#courseId, 'COURSE.ACCESS')")
     public QuestionDto submitQuestion(Principal principal, @PathVariable int courseId, @Valid @RequestBody QuestionDto question) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+        if(user == null){
+            throw new TutorException(AUTHENTICATION_ERROR);
+        }
+
         question.setStatus(Question.Status.PENDING.name());
-
-        User user = getUser((Authentication) principal);
-
         return this.questionService.submitQuestion(courseId, question, user.getUsername());
     }
 
@@ -154,14 +156,6 @@ public class QuestionController {
     private Path getTargetLocation(String url) {
         String fileLocation = figuresDir + url;
         return Paths.get(fileLocation);
-    }
-
-    private User getUser(Authentication principal) {
-        User user = (User) principal.getPrincipal();
-        if(user == null){
-            throw new TutorException(AUTHENTICATION_ERROR);
-        }
-        return user;
     }
 
 }
