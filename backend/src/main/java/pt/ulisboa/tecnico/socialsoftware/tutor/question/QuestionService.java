@@ -210,12 +210,13 @@ public class QuestionService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public void approveQuestion(int questionId, String justification) {
+    public QuestionDto approveQuestion(int questionId, String justification) {
         Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
         if(question.getStatus() == Question.Status.PENDING) {
             question.setStatus(Question.Status.AVAILABLE);
             question.setJustification(justification);
             questionRepository.save(question);
+            return new QuestionDto(question);
         }
         else {
             throw new TutorException(QUESTION_NOT_PENDING);
@@ -226,7 +227,7 @@ public class QuestionService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public void rejectQuestion(int questionId, String justification) {
+    public QuestionDto rejectQuestion(int questionId, String justification) {
         if(justification == null || justification.trim().isEmpty()) {
             throw new TutorException(QUESTION_MISSING_JUSTIFICATION);
         }
@@ -235,6 +236,7 @@ public class QuestionService {
             question.setStatus(Question.Status.REJECTED);
             question.setJustification(justification);
             questionRepository.save(question);
+            return new QuestionDto(question);
         }
         else {
             throw new TutorException(QUESTION_NOT_PENDING);
