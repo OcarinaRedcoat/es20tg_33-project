@@ -5,7 +5,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
-import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
@@ -17,10 +16,9 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import spock.lang.Specification
 
 @DataJpaTest
-class GetOpenTourneysTest extends Specification {
+class UpdateTourneyPerformanceTest extends Specification {
 
     public static final Integer TOURNEY_ONE_NUMBER_QUESTIONS = 1
-    public static final Integer TOURNEY_TWO_NUMBER_QUESTIONS = 2
     public static final String TOURNEY_AVAILABLE_DATE = "2020-01-01 21:12"
     public static final String TOURNEY_CONCLUSION_DATE = "2020-01-06 21:12"
 
@@ -42,27 +40,12 @@ class GetOpenTourneysTest extends Specification {
     @Autowired
     CourseRepository courseRepository
 
-
-    def "no tourney open"(){
-        def user = new User(NAME, USERNAME, 1, User.Role.STUDENT)
-        userRepository.save(user)
-        def userId = userRepository.findAll().get(0).getId()
-        when:
-        def result = tourneyService.getOpenTourneys(userId)
-
-        then:
-        result.size() == 0
-    }
-
-    def "two tourneys - open one the user can access and other he cannot"(){
-        given: "two course executions"
-
+    def "performance testing to cancel 10000 tourneys"() {
+        given: "one course execution"
         def course = new Course()
         courseRepository.save(course)
         def courseExecution = new CourseExecution(course, "AC", "1", Course.Type.TECNICO)
         courseExecutionRepository.save(courseExecution)
-        def courseExecution2 = new CourseExecution(course, "AC", "2", Course.Type.TECNICO)
-        courseExecutionRepository.save(courseExecution2)
 
         and: "one user"
 
@@ -71,24 +54,22 @@ class GetOpenTourneysTest extends Specification {
         userRepository.save(user)
         def userId = userRepository.findAll().get(0).getId()
 
-        and: "two tourneys"
-
-        def tourney = new Tourney(TOURNEY_ONE_NUMBER_QUESTIONS, TOURNEY_AVAILABLE_DATE, TOURNEY_CONCLUSION_DATE, user)
-        tourney.setCourseExecution(courseExecution)
-        tourneyRepository.save(tourney)
-
-        tourney = new Tourney(TOURNEY_TWO_NUMBER_QUESTIONS, TOURNEY_AVAILABLE_DATE, TOURNEY_CONCLUSION_DATE, user)
-        tourney.setCourseExecution(courseExecution2)
-        tourneyRepository.save(tourney)
+        and: "a 10000 tourneys"
+        1.upto(1, {
+            def tourney = new Tourney(TOURNEY_ONE_NUMBER_QUESTIONS, TOURNEY_AVAILABLE_DATE, TOURNEY_CONCLUSION_DATE, user)
+            tourney.setCourseExecution(courseExecution)
+            tourneyRepository.save(tourney)
+        })
 
         when:
-        def result = tourneyService.getOpenTourneys(userId)
+        0.upto(0, {
+            tourneyService.cancelTournament(tourneyRepository.findAll().get(it).getId())
+        })
 
         then:
-        result.size() == 1
-        and:
-        result.get(0).getTourneyNumberOfQuestions() == 1
+        true
     }
+
 
     @TestConfiguration
     static class TourneyServiceImplTestContextConfiguration {
@@ -98,6 +79,4 @@ class GetOpenTourneysTest extends Specification {
             return new TourneyService()
         }
     }
-
 }
-

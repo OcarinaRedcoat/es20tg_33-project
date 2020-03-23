@@ -73,7 +73,6 @@ public class AnswerService {
     @PersistenceContext
     EntityManager entityManager;
 
-
     @Retryable(
       value = { SQLException.class },
       backoff = @Backoff(delay = 5000))
@@ -84,7 +83,7 @@ public class AnswerService {
         Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new TutorException(QUIZ_NOT_FOUND, quizId));
 
         QuizAnswer quizAnswer = new QuizAnswer(user, quiz);
-        entityManager.persist(quizAnswer);
+        quizAnswerRepository.save(quizAnswer);
 
         return new QuizAnswerDto(quizAnswer);
     }

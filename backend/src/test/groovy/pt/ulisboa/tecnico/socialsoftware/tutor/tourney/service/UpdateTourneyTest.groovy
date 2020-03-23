@@ -5,7 +5,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
-import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
@@ -17,15 +16,16 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import spock.lang.Specification
 
 @DataJpaTest
-class GetOpenTourneysTest extends Specification {
+class UpdateTourneyTest extends Specification {
 
     public static final Integer TOURNEY_ONE_NUMBER_QUESTIONS = 1
-    public static final Integer TOURNEY_TWO_NUMBER_QUESTIONS = 2
     public static final String TOURNEY_AVAILABLE_DATE = "2020-01-01 21:12"
     public static final String TOURNEY_CONCLUSION_DATE = "2020-01-06 21:12"
 
-    public static final String NAME = "name"
-    public static final String USERNAME = "username"
+    public static final String NAME1 = "name1"
+    public static final String USERNAME1 = "username1"
+    public static final String NAME2 = "name2"
+    public static final String USERNAME2 = "username2"
 
     @Autowired
     TourneyService tourneyService
@@ -42,62 +42,45 @@ class GetOpenTourneysTest extends Specification {
     @Autowired
     CourseRepository courseRepository
 
-
-    def "no tourney open"(){
-        def user = new User(NAME, USERNAME, 1, User.Role.STUDENT)
-        userRepository.save(user)
-        def userId = userRepository.findAll().get(0).getId()
-        when:
-        def result = tourneyService.getOpenTourneys(userId)
-
-        then:
-        result.size() == 0
-    }
-
-    def "two tourneys - open one the user can access and other he cannot"(){
-        given: "two course executions"
-
+    def  setup() {
         def course = new Course()
         courseRepository.save(course)
         def courseExecution = new CourseExecution(course, "AC", "1", Course.Type.TECNICO)
         courseExecutionRepository.save(courseExecution)
-        def courseExecution2 = new CourseExecution(course, "AC", "2", Course.Type.TECNICO)
-        courseExecutionRepository.save(courseExecution2)
 
-        and: "one user"
+        def user1 = new User(NAME1, USERNAME1, 1, User.Role.STUDENT)
+        user1.addCourse(courseExecution)
+        userRepository.save(user1)
 
-        def user = new User(NAME, USERNAME, 1, User.Role.STUDENT)
-        user.addCourse(courseExecution)
-        userRepository.save(user)
-        def userId = userRepository.findAll().get(0).getId()
+        def user2 = new User(NAME2, USERNAME2, 2, User.Role.STUDENT)
+        user2.addCourse(courseExecution)
+        userRepository.save(user2)
 
-        and: "two tourneys"
-
-        def tourney = new Tourney(TOURNEY_ONE_NUMBER_QUESTIONS, TOURNEY_AVAILABLE_DATE, TOURNEY_CONCLUSION_DATE, user)
+        def tourney = new Tourney(TOURNEY_ONE_NUMBER_QUESTIONS, TOURNEY_AVAILABLE_DATE, TOURNEY_CONCLUSION_DATE, user1)
         tourney.setCourseExecution(courseExecution)
         tourneyRepository.save(tourney)
-
-        tourney = new Tourney(TOURNEY_TWO_NUMBER_QUESTIONS, TOURNEY_AVAILABLE_DATE, TOURNEY_CONCLUSION_DATE, user)
-        tourney.setCourseExecution(courseExecution2)
-        tourneyRepository.save(tourney)
-
-        when:
-        def result = tourneyService.getOpenTourneys(userId)
-
-        then:
-        result.size() == 1
-        and:
-        result.get(0).getTourneyNumberOfQuestions() == 1
     }
 
+    def "creator cancels tourney"(){
+        given: "a tourney"
+        def tourneyId = tourneyRepository.findAll().get(0).getId()
+
+        when:
+        def result = tourneyService.cancelTournament(tourneyId)
+
+        then:
+        result.getTourneyStatus() == Tourney.Status.CANCELED
+    }
+
+
     @TestConfiguration
-    static class TourneyServiceImplTestContextConfiguration {
+    static class TourneyServiceImplTestContextConfiguration{
 
         @Bean
-        TourneyService tourneyService() {
+        TourneyService tourneyService(){
             return new TourneyService()
         }
+
     }
 
 }
-

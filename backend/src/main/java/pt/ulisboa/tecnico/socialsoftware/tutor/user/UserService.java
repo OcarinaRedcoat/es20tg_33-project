@@ -13,9 +13,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.UsersXmlExport;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.UsersXmlImport;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
+import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyDto;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,9 +28,6 @@ public class UserService {
 
     @Autowired
     private CourseExecutionRepository courseExecutionRepository;
-
-    @PersistenceContext
-    EntityManager entityManager;
 
     public User findByUsername(String username) {
         return this.userRepository.findByUsername(username);
@@ -53,7 +49,7 @@ public class UserService {
         }
 
         User user = new User(name, username, getMaxUserNumber() + 1, role);
-        entityManager.persist(user);
+        userRepository.save(user);
         return user;
     }
 
@@ -69,6 +65,13 @@ public class UserService {
         User user =  this.userRepository.findByUsername(username);
 
         return user.getCourseExecutions().stream().map(CourseDto::new).collect(Collectors.toList());
+    }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<TourneyDto> getCreatedTourneys(String username) {
+        User user =  this.userRepository.findByUsername(username);
+
+        return user.getCreatedTourneys().stream().map(TourneyDto::new).collect(Collectors.toList());
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
