@@ -135,33 +135,31 @@ public class QuestionController {
         return this.questionService.submitQuestion(courseId, question, user.getUsername());
     }
 
-    @PutMapping("/questions/{questionId}/approve")
-    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'QUESTION.ACCESS')")
-    public ResponseEntity approveQuestion(@PathVariable Integer questionId, @Valid @RequestBody String justification) {
-        questionService.approveQuestion(questionId, justification);
-
-        return ResponseEntity.ok().build();
-    }
-
-    @PutMapping("/questions/{questionId}/reject")
-    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'QUESTION.ACCESS')")
-    public ResponseEntity rejectQuestion(@PathVariable Integer questionId, @Valid @RequestBody String justification) {
-        questionService.rejectQuestion(questionId, justification);
-
-        return ResponseEntity.ok().build();
-    }
-
-    private Path getTargetLocation(String url) {
-        String fileLocation = figuresDir + url;
-        return Paths.get(fileLocation);
-    }
-
     private User getUser(Authentication principal) {
         User user = (User) principal.getPrincipal();
         if(user == null){
             throw new TutorException(AUTHENTICATION_ERROR);
         }
         return user;
+    }
+
+    @PutMapping("/questions/{questionId}/approve")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'QUESTION.ACCESS')")
+    public QuestionDto approveQuestion(@PathVariable Integer questionId, @RequestBody String justification) {
+
+        return this.questionService.approveQuestion(questionId, justification);
+    }
+
+    @PutMapping("/questions/{questionId}/reject")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'QUESTION.ACCESS')")
+    public QuestionDto rejectQuestion(@PathVariable Integer questionId, @RequestBody String justification) {
+
+        return this.questionService.rejectQuestion(questionId, justification);
+    }
+
+    private Path getTargetLocation(String url) {
+        String fileLocation = figuresDir + url;
+        return Paths.get(fileLocation);
     }
 
 }
