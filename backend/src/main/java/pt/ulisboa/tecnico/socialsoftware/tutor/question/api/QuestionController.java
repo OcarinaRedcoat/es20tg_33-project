@@ -135,14 +135,6 @@ public class QuestionController {
         return this.questionService.submitQuestion(courseId, question, user.getUsername());
     }
 
-    private User getUser(Authentication principal) {
-        User user = (User) principal.getPrincipal();
-        if(user == null){
-            throw new TutorException(AUTHENTICATION_ERROR);
-        }
-        return user;
-    }
-
     @PutMapping("/questions/{questionId}/approve")
     @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'QUESTION.ACCESS')")
     public ResponseEntity approveQuestion(@PathVariable Integer questionId, @Valid @RequestBody String justification) {
@@ -162,6 +154,14 @@ public class QuestionController {
     private Path getTargetLocation(String url) {
         String fileLocation = figuresDir + url;
         return Paths.get(fileLocation);
+    }
+
+    private User getUser(Authentication principal) {
+        User user = (User) principal.getPrincipal();
+        if(user == null){
+            throw new TutorException(AUTHENTICATION_ERROR);
+        }
+        return user;
     }
 
 }

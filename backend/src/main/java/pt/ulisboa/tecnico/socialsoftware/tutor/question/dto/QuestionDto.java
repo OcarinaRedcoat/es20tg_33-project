@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.question.dto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.StudentDto;
 
 import java.io.Serializable;
 import java.time.format.DateTimeFormatter;
@@ -25,7 +26,7 @@ public class QuestionDto implements Serializable {
     private ImageDto image;
     private List<TopicDto> topics = new ArrayList<>();
     private Integer sequence;
-    private User submittingUser = null;
+    private StudentDto submittingUser = null;
     private String justification = null;
 
     public QuestionDto() {
@@ -48,7 +49,7 @@ public class QuestionDto implements Serializable {
         if (question.getCreationDate() != null)
             this.creationDate = question.getCreationDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         if (question.getSubmittingUser() != null)
-            this.submittingUser = question.getSubmittingUser();
+            this.submittingUser = new StudentDto(question.getSubmittingUser());
     }
 
     public Integer getId() {
@@ -155,11 +156,11 @@ public class QuestionDto implements Serializable {
         this.creationDate = creationDate;
     }
 
-    public User getSubmittingUser() {
+    public StudentDto getSubmittingUser() {
         return submittingUser;
     }
 
-    public void setSubmittingUser(User submittingUser) {
+    public void setSubmittingUser(StudentDto submittingUser) {
         this.submittingUser = submittingUser;
     }
 
