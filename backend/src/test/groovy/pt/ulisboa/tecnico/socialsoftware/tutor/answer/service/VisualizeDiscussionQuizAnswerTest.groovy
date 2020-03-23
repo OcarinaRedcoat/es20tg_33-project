@@ -175,7 +175,7 @@ class VisualizeDiscussionQuizAnswerTest extends Specification {
         def exception = thrown(TutorException)
         exception.getErrorMessage() == ErrorMessage.TEACHER_DID_NOT_CLARIFIED
     }
-
+    /*
 
     def 'Student visualizes the message' () {
         given:
@@ -209,6 +209,8 @@ class VisualizeDiscussionQuizAnswerTest extends Specification {
         //def result = discussionRepository.findAll().get(0)
         result.size() == 1
     }
+
+     */
 
 
     @TestConfiguration

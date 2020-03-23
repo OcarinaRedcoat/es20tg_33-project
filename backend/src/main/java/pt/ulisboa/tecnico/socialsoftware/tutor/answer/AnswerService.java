@@ -214,7 +214,7 @@ public class AnswerService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public void submitMessage(Integer questionAnswerId, Integer UserId, DiscussionDto discussionDto, MessageDto messageDto) {
+    public DiscussionDto submitMessage(Integer questionAnswerId, Integer UserId, DiscussionDto discussionDto, MessageDto messageDto) {
         QuestionAnswer questionAnswer = questionAnswerRepository.findById(questionAnswerId).orElseThrow(() -> new TutorException(ErrorMessage.QUESTION_ANSWER_NOT_FOUND));
         User user = userRepository.findById(UserId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, UserId));
         Discussion discussion = new Discussion(questionAnswer, discussionDto);
@@ -228,6 +228,8 @@ public class AnswerService {
         saveMessage(messageDto, user, discussionDto, message);
 
         entityManager.persist(discussion);
+
+        return new DiscussionDto(discussion);
 
     }
 
