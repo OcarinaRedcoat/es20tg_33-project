@@ -33,19 +33,22 @@ public class Topic {
     @ManyToMany(cascade = CascadeType.ALL, fetch=FetchType.EAGER)
     private List<TopicConjunction> topicConjunctions = new ArrayList<>();
 
+    @ManyToMany(cascade = CascadeType.ALL, fetch=FetchType.EAGER)
+    private Set<Tourney> topicTourneys = new HashSet<>();
+
     @ManyToOne
     @JoinColumn(name = "course_id")
     private Course course;
 
-    @ManyToOne
-    @JoinColumn(name = "tourney_id")
-    private Tourney tourney;
-
     public Topic() {
     }
 
-    public Topic(Course course, TopicDto topicDto) {
+    public Topic(TopicDto topicDto) {
         this.name = topicDto.getName();
+    }
+
+    public Topic(Course course, TopicDto topicDto) {
+        this(topicDto);
         this.course = course;
         course.addTopic(this);
     }
@@ -102,6 +105,14 @@ public class Topic {
         this.questions.add(question);
     }
 
+    public Set<Tourney> getTourneys() {
+        return topicTourneys;
+    }
+
+    public void addTourney(Tourney tourney) {
+        this.topicTourneys.add(tourney);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -112,7 +123,6 @@ public class Topic {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(name);
     }
 

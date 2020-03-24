@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.course;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Assessment;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
+import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.Tourney;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.persistence.*;
@@ -14,7 +15,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 @Entity
 @Table(name = "course_executions")
 public class CourseExecution {
-    public enum Status {ACTIVE, INACTIVE, HISTORIC}
+     public enum Status {ACTIVE, INACTIVE, HISTORIC}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,6 +43,10 @@ public class CourseExecution {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "courseExecution", fetch=FetchType.LAZY, orphanRemoval=true)
     private Set<Assessment> assessments = new HashSet<>();
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "courseExecution", fetch=FetchType.LAZY, orphanRemoval=true)
+    private Set<Tourney> tourneys = new HashSet<>();
+
+
     public CourseExecution() {
     }
 
@@ -62,6 +67,15 @@ public class CourseExecution {
         this.academicTerm = academicTerm;
         this.status = Status.ACTIVE;
         course.addCourseExecution(this);
+    }
+
+    public void delete() {
+        if (!getQuizzes().isEmpty() || !getAssessments().isEmpty()) {
+            throw new TutorException(CANNOT_DELETE_COURSE_EXECUTION, acronym + academicTerm);
+        }
+
+        course.getCourseExecutions().remove(this);
+        users.forEach(user -> user.getCourseExecutions().remove(this));
     }
 
     public Integer getId() {
@@ -116,12 +130,20 @@ public class CourseExecution {
         return assessments;
     }
 
+    public Set<Tourney> getTourneys() {
+        return tourneys;
+    }
+
     public void addQuiz(Quiz quiz) {
         quizzes.add(quiz);
     }
 
     public void addAssessment(Assessment assessment) {
         assessments.add(assessment);
+    }
+
+    public void addTourney(Tourney tourney) {
+        tourneys.add(tourney);
     }
 
     public void addUser(User user) {

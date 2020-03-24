@@ -4,9 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.TopicService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.Tourney
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyRepository
@@ -26,9 +34,13 @@ class CreateTourneyTest extends Specification{
     def availableDate
     def conclusionDate
     def topicDto
+    def course
 
     @Autowired
     TourneyService tourneyService
+
+    @Autowired
+    TopicService topicService
 
     @Autowired
     TourneyRepository tourneyRepository
@@ -36,8 +48,19 @@ class CreateTourneyTest extends Specification{
     @Autowired
     UserRepository userRepository
 
+    @Autowired
+    CourseExecutionRepository courseExecutionRepository
+
+    @Autowired
+    CourseRepository courseRepository
 
     def setup(){
+        course = new Course()
+        courseRepository.save(course)
+        def courseId = courseRepository.findAll().get(0).getId()
+        def courseExecution = new CourseExecution(course, "AC", "1", Course.Type.TECNICO)
+        courseExecutionRepository.save(courseExecution)
+
         tourney = new TourneyDto()
         formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
         availableDate = LocalDateTime.now()
@@ -46,12 +69,19 @@ class CreateTourneyTest extends Specification{
         tourney.setTourneyStatus(Tourney.Status.CLOSED)
         tourney.setTourneyAvailableDate(availableDate.format(formatter))
         tourney.setTourneyConclusionDate(conclusionDate.format(formatter))
+        tourney.setTourneyCourseExecution(new CourseDto(courseExecution))
+
+        topicDto = new TopicDto()
+        topicDto.setName("topic")
+        course.addTopic(new Topic(topicDto))
+        topicService.createTopic(courseId, topicDto)
 
         def topics = new ArrayList()
         topics.add(topicDto)
         tourney.setTourneyTopics(topics)
 
         def user = new User("name", "username",1, User.Role.STUDENT)
+        user.addCourse(courseExecution)
         userRepository.save(user)
     }
 
@@ -105,6 +135,67 @@ class CreateTourneyTest extends Specification{
         tourneyRepository.count() == 0L
     }
 
+    def "student not enrolled at course execution"(){
+        given: "a tourney with no end date"
+        def userId = userRepository.findAll().get(0).getId()
+        def courseExecution = new CourseExecution(course, "AC", "2", Course.Type.TECNICO)
+        courseExecutionRepository.save(courseExecution)
+        def courseExecutionDto = new CourseDto(courseExecution)
+        courseExecutionDto.setCourseExecutionId(courseExecutionRepository.findAll().get(1).getId())
+        tourney.setTourneyCourseExecution(courseExecutionDto)
+        tourney.setTourneyNumberOfQuestions(QUESTION_NUMBER)
+
+        when:
+        tourneyService.createTourney(tourney, userId)
+
+        then:
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.STUDENT_CANT_ACCESS_COURSE_EXECUTION
+        tourneyRepository.count() == 0L
+    }
+
+    def "course execution doestn't exist"(){
+        given: "a tourney with no end date"
+        def userId = userRepository.findAll().get(0).getId()
+        def courseExecutionDto = new CourseDto()
+        courseExecutionDto.setCourseExecutionId(1)
+        tourney.setTourneyCourseExecution(courseExecutionDto)
+        tourney.setTourneyNumberOfQuestions(QUESTION_NUMBER)
+
+        when:
+        tourneyService.createTourney(tourney, userId)
+
+        then:
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.COURSE_EXECUTION_NOT_FOUND
+        tourneyRepository.count() == 0L
+    }
+
+    def "topics are not from the same course"(){
+        given: "a tourney with no end date"
+        def userId = userRepository.findAll().get(0).getId()
+        def newCourse = new Course()
+        courseRepository.save(newCourse)
+        def courseId = courseRepository.findAll().get(1).getId()
+        topicDto = new TopicDto()
+        topicDto.setName("topic2")
+        course.addTopic(new Topic(topicDto))
+        topicService.createTopic(courseId, topicDto)
+
+        def topics = new ArrayList(tourney.getTourneyTopics())
+        topics.add(topicDto)
+        tourney.setTourneyTopics(topics)
+        tourney.setTourneyNumberOfQuestions(QUESTION_NUMBER)
+
+        when:
+        tourneyService.createTourney(tourney, userId)
+
+        then:
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.TOPICS_NOT_FROM_SAME_COURSE
+        tourneyRepository.count() == 0L
+    }
+
     def "tourney with start date bigger than end date"(){
         given: "a tourney with start date bigger than the end date"
         def userId = userRepository.findAll().get(0).getId()
@@ -138,6 +229,20 @@ class CreateTourneyTest extends Specification{
     def "number of questions is empty"(){
         given: "a tourney without a given number of questions"
         def userId = userRepository.findAll().get(0).getId()
+        tourney.setTourneyNumberOfQuestions(0)
+
+        when:
+        tourneyService.createTourney(tourney, userId)
+
+        then:
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.TOURNEY_NOT_CONSISTENT
+        tourneyRepository.count() == 0L
+    }
+
+    def "number of questions is null"(){
+        given: "a tourney without a given number of questions"
+        def userId = userRepository.findAll().get(0).getId()
 
         when:
         tourneyService.createTourney(tourney, userId)
@@ -154,6 +259,16 @@ class CreateTourneyTest extends Specification{
         @Bean
         TourneyService tourneyService(){
             return new TourneyService()
+        }
+
+        @Bean
+        QuestionService questionService() {
+            return new QuestionService()
+        }
+
+        @Bean
+        TopicService topicService() {
+            return new TopicService()
         }
     }
 

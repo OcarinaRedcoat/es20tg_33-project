@@ -1,17 +1,20 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.tourney;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.*;
 
 @Entity
 @Table(name = "tourneys")
 public class Tourney {
 
-    public enum Status {CLOSED, OPEN}
+    public enum Status {CLOSED, OPEN, CANCELED}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,10 +27,18 @@ public class Tourney {
 
     private String availableDate, conclusionDate;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tourney", fetch=FetchType.LAZY, orphanRemoval=true)
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "topicTourneys", fetch=FetchType.LAZY)
     private List<Topic> topics = new ArrayList<>();
 
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "tourney")
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "enrolledTourneys", fetch=FetchType.LAZY)
+    private List<User> enrolledStudents = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "course_execution_id")
+    private CourseExecution courseExecution;
+
+    @ManyToOne
+    @JoinColumn(name="user_id")
     private User creator;
 
     public Tourney(){}
@@ -38,6 +49,8 @@ public class Tourney {
         this.conclusionDate = conclusionDate;
         this.status = Tourney.Status.OPEN;
         this.creator = creator;
+
+        this.creator.addCreatedTourneys(this);
     }
 
     public Tourney(TourneyDto tourneyDto, User user){
@@ -46,7 +59,6 @@ public class Tourney {
         this.availableDate = tourneyDto.getTourneyAvailableDate();
         this.conclusionDate = tourneyDto.getTourneyConclusionDate();
         this.status = tourneyDto.getTourneyStatus();
-        this.topics = tourneyDto.getTourneyTopics();
         this.creator = user;
     }
 
@@ -88,7 +100,9 @@ public class Tourney {
         this.status = status;
     }
 
-    public void closeTourney() {}
+    public void closeTourney() {
+        this.status = Status.CLOSED;
+    }
 
     public List<Topic> getTopics() {
         return topics;
@@ -102,8 +116,16 @@ public class Tourney {
         return creator;
     }
 
-    public void setCreator(User creator) {
-        this.creator = creator;
+    public List<User> getEnrolledStudents() {return this.enrolledStudents;}
+    public void enrollStudent(User user) {
+        this.enrolledStudents.add(user);
     }
 
+    public CourseExecution getCourseExecution() {
+        return courseExecution;
+    }
+
+    public void setCourseExecution(CourseExecution courseExecution) {
+        this.courseExecution = courseExecution;
+    }
 }
