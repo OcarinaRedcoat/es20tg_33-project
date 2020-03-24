@@ -63,11 +63,30 @@
             <stringProp name="variableNames">id,title,content,status</stringProp>
           </CSVDataSet>
           <hashTree/>
+          <JDBCDataSource guiclass="TestBeanGUI" testclass="JDBCDataSource" testname="JDBC Connection Configuration" enabled="true">
+            <boolProp name="autocommit">true</boolProp>
+            <stringProp name="checkQuery"></stringProp>
+            <stringProp name="connectionAge">5000</stringProp>
+            <stringProp name="connectionProperties"></stringProp>
+            <stringProp name="dataSource">sampleReq</stringProp>
+            <stringProp name="dbUrl">jdbc:postgresql://localhost:5432/tutordb?autoReconnect=true</stringProp>
+            <stringProp name="driver">org.postgresql.Driver</stringProp>
+            <stringProp name="initQuery"></stringProp>
+            <boolProp name="keepAlive">true</boolProp>
+            <stringProp name="password">xavier</stringProp>
+            <stringProp name="poolMax">0</stringProp>
+            <boolProp name="preinit">false</boolProp>
+            <stringProp name="timeout">10000</stringProp>
+            <stringProp name="transactionIsolation">DEFAULT</stringProp>
+            <stringProp name="trimInterval">60000</stringProp>
+            <stringProp name="username">xavier</stringProp>
+          </JDBCDataSource>
+          <hashTree/>
           <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
             <stringProp name="dataSource">sampleReq</stringProp>
             <stringProp name="queryType">Callable Statement</stringProp>
-            <stringProp name="query">INSERT INTO questions (id, content, number_of_answers, number_of_correct, title, status, creation_date, course_id, key, justification, submitting_user, user_id)
-VALUES (${id}, &apos;Question content&apos;,0,0,&apos;Test Question title&apos;,&apos;PENDING&apos;, null, 2, ${id}, null, null, null);
+            <stringProp name="query">INSERT INTO questions (id, content, number_of_answers, number_of_correct, title, status, creation_date, course_id, key, justification, user_id)
+VALUES (${id}, &apos;Question content&apos;,0,0,&apos;Test Question title&apos;,&apos;PENDING&apos;, null, 2, ${id}, null, null);
 
 
 </stringProp>
