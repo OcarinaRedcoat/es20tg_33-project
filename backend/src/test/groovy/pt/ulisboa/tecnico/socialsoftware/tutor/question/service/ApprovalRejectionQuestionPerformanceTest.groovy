@@ -22,6 +22,7 @@ class ApprovalRejectionQuestionPerformanceTest extends Specification {
     @Autowired
     QuestionRepository questionRepository
 
+//TODO refactor
     def "performance test to approve 5000 questions"() {
         when:
         1.upto(5000, {
@@ -39,10 +40,10 @@ class ApprovalRejectionQuestionPerformanceTest extends Specification {
         then:
         true
     }
-
+//TODO refactor
     def "performance test to reject 5000 questions"() {
         when:
-        1.upto(5000, {
+        5001.upto(10000, {
             def question
             question = new Question()
             question.setId(it)
@@ -53,6 +54,8 @@ class ApprovalRejectionQuestionPerformanceTest extends Specification {
             questionRepository.save(question)
 
             questionService.rejectQuestion(it, JUSTIFICATION_CONTENT)})
+
+
 
         then:
         true
