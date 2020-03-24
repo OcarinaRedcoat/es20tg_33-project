@@ -66,8 +66,8 @@
           <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
             <stringProp name="dataSource">sampleReq</stringProp>
             <stringProp name="queryType">Callable Statement</stringProp>
-            <stringProp name="query">INSERT INTO questions (id, content, number_of_answers, number_of_correct, title, status, creation_date, course_id, key, justification, user_id)
-VALUES (${id}, &apos;Question content&apos;,0,0,&apos;Test Question title&apos;,&apos;PENDING&apos;, null, 2, ${id}, null, null);
+            <stringProp name="query">INSERT INTO questions (id, content, number_of_answers, number_of_correct, title, status, creation_date, course_id, key, justification, submitting_user, user_id)
+VALUES (${id}, &apos;Question content&apos;,0,0,&apos;Test Question title&apos;,&apos;PENDING&apos;, null, 2, ${id}, null, null, null);
 
 
 </stringProp>
