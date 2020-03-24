@@ -1,6 +1,16 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.exceptions;
 
 public enum ErrorMessage {
+    MESSAGE_NULL("Cannot send a null message"),
+    MESSAGE_EMPTY("Cannot send a empty message"),
+    MESSAGE_DATE_NULL("Cannot send a message with a null date"),
+    STUDENT_DID_NOT_ANSWER_QUESTION("Student did not answered this question"),
+    STUDENT_DOESNT_HAVE_PERMISSION("Student does not have permission to see a discussion clarification without " +
+            "answering the corresponding question"),
+    STUDENT_IS_NOT_TOURNEY_CREATOR("Only the Tourney %d creator can perform this action"),
+    TEACHER_CANNOT_SEE_TEACHER_CLARIFICATION("Permission only for student, only user can see teacher clarification"),
+    TEACHER_DID_NOT_CLARIFIED("Theacher did not clarified the discussion yet"),
+
     QUIZ_NOT_FOUND("Quiz not found with id %d"),
     QUIZ_QUESTION_NOT_FOUND("Quiz question not found with id %d"),
     QUIZ_ANSWER_NOT_FOUND("Quiz answer not found with id %d"),
@@ -11,13 +21,15 @@ public enum ErrorMessage {
     TOPIC_NOT_FOUND("Topic not found with id %d"),
     ASSESSMENT_NOT_FOUND("Assessment not found with id %d"),
     TOPIC_CONJUNCTION_NOT_FOUND("Topic Conjunction not found with id %d"),
-    COURSE_EXECUTION_NOT_FOUND("Course execution not found with name %d"),
+    TOPICS_NOT_FROM_SAME_COURSE("Topics are not from the same course"),
+    COURSE_EXECUTION_NOT_FOUND("Course execution not found with id %d"),
 
     COURSE_NOT_FOUND("Course not found with name %s"),
     COURSE_NAME_IS_EMPTY("The course name is empty"),
     COURSE_TYPE_NOT_DEFINED("The course type is not defined"),
     COURSE_EXECUTION_ACRONYM_IS_EMPTY("The course execution acronym is empty"),
     COURSE_EXECUTION_ACADEMIC_TERM_IS_EMPTY("The course execution academic term is empty"),
+    CANNOT_DELETE_COURSE_EXECUTION("The course execution cannot be deleted %s"),
     USERNAME_NOT_FOUND("Username %s not found"),
 
     QUIZ_USER_MISMATCH("Quiz %s is not assigned to student %s"),
@@ -64,6 +76,11 @@ public enum ErrorMessage {
     TOURNEY_NOT_CONSISTENT("Field %s of tourney is not consistent."),
     TOURNEY_AVAILABLEDATE_BIGGER_THAN_CONCLUSIONDATE("Available date is bigger than Conclusion date."),
     TOURNEY_DATE_WRONG_FORMAT("Date format not according to the expected."),
+    TOURNEY_NOT_FOUND("Tourney not found"),
+    TOURNEY_CLOSED("Tourney closed"),
+
+    USER_NOT_STUDENT("The user is not a student"),
+    STUDENT_CANT_ACCESS_COURSE_EXECUTION("Student is not enrolled in the course execution: %s"),
 
     CANNOT_OPEN_FILE("Cannot open file");
 

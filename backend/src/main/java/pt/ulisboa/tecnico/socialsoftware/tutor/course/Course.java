@@ -14,13 +14,15 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.CO
 @Entity
 @Table(name = "courses")
 public class Course {
+    public static String DEMO_COURSE = "Demo Course";
+
     public enum Type {TECNICO, EXTERNAL}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-        @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING)
     private Type type;
 
     private String name;
