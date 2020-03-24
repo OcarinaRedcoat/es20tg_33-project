@@ -3,10 +3,7 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.answer.api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.DiscussionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.MessageDto;
@@ -14,6 +11,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import java.security.Principal;
+import java.util.List;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
@@ -41,7 +39,16 @@ public class DiscussionController {
 
     }
 
+    @GetMapping("/discussion/{questionAnswer}/visualize") //FIXME see if it is really necessary questionAnswer
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public List<MessageDto> visualizeDiscussion(@RequestBody DiscussionDto discussionDto, @PathVariable Integer questionAnswer, Principal principal){
+        User user = (User) ((Authentication) principal).getPrincipal();
+        if (user == null){
+            throw new TutorException(AUTHENTICATION_ERROR);
+        }
 
+        return answerService.displayDiscussion(user.getId(), discussionDto);
+    }
 
 }
 
