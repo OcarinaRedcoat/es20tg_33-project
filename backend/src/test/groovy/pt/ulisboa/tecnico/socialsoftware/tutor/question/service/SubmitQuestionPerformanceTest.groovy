@@ -46,7 +46,7 @@ class SubmitQuestionPerformanceTest extends Specification {
         userRepository.save(user)
 
         when:
-        1.upto(5000, {
+        1.upto(1, {
             def questionDto = new QuestionDto()
             questionDto.setTitle(QUESTION_TITLE)
             questionDto.setContent(QUESTION_CONTENT)
