@@ -202,7 +202,7 @@ public class QuestionService {
         checkIfPending(question);
         question.setSubmittingUser(user);
         user.addSubmittedQuestion(question);
-        questionRepository.save(question);
+        entityManager.persist(question);
         return new QuestionDto(question);
     }
 
@@ -215,7 +215,7 @@ public class QuestionService {
         if(question.getStatus() == Question.Status.PENDING) {
             question.setStatus(Question.Status.AVAILABLE);
             question.setJustification(justification);
-            questionRepository.save(question);
+            entityManager.persist(question);
             return new QuestionDto(question);
         }
         else {
@@ -235,7 +235,7 @@ public class QuestionService {
         if(question.getStatus() == Question.Status.PENDING) {
             question.setStatus(Question.Status.REJECTED);
             question.setJustification(justification);
-            questionRepository.save(question);
+            entityManager.persist(question);
             return new QuestionDto(question);
         }
         else {
