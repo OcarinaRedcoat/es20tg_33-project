@@ -76,6 +76,7 @@ public class Question {
     private Discussion discussion;
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User submittingUser;
 
     @Column
