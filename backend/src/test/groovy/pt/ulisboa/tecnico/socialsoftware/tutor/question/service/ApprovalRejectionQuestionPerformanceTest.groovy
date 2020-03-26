@@ -25,7 +25,7 @@ class ApprovalRejectionQuestionPerformanceTest extends Specification {
 //TODO refactor
     def "performance test to approve 5000 questions"() {
         when:
-        1.upto(1, {
+        1.upto(2500, {
             def question
             question = new Question()
             question.setId(it)
@@ -43,7 +43,7 @@ class ApprovalRejectionQuestionPerformanceTest extends Specification {
 //TODO refactor
     def "performance test to reject 5000 questions"() {
         when:
-        2.upto(2, {
+        2501.upto(5000, {
             def question
             question = new Question()
             question.setId(it)

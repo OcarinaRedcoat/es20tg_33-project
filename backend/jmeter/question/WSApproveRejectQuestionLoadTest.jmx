@@ -406,11 +406,7 @@ VALUES (${id}, &apos;Question content&apos;,0,0,&apos;Test Question title&apos;,
         <hashTree/>
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
           <stringProp name="dataSource">sampleReq</stringProp>
-          <stringProp name="query">SELECT id FROM questions where status = &apos;AVAILABLE&apos; ORDER BY id ASC;
-select * from questions where false;
-SELECT id FROM questions where status = &apos;REJECTED&apos; ORDER BY id ASC;
-
-DELETE FROM options WHERE content=&apos;TestOptCont&apos;;
+          <stringProp name="query">DELETE FROM options WHERE content=&apos;TestOptCont&apos;;
 DELETE FROM questions WHERE title=&apos;Test Question title&apos;;</stringProp>
           <stringProp name="queryArguments"></stringProp>
           <stringProp name="queryArgumentsTypes"></stringProp>
