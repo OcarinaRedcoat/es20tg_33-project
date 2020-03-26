@@ -92,7 +92,7 @@ class VisualizeDiscussionQuizAnswerTest extends Specification {
         user_student = new User("Rodrigo","rcosta1944",1,User.Role.STUDENT)
         user_teacher = new User('Rito Silva','Ocarina',2,User.Role.TEACHER)
         user_student.setId(1)
-        user_teacher.setId(1)
+        user_teacher.setId(2)
         quizAnswer = new QuizAnswer(user_student, quiz)
 
         user_student.addQuizAnswer(quizAnswer)
@@ -149,7 +149,7 @@ class VisualizeDiscussionQuizAnswerTest extends Specification {
     }
 
 
-
+/*
 
     def 'The teacher didnt reply yet' () {
         given:
@@ -175,7 +175,7 @@ class VisualizeDiscussionQuizAnswerTest extends Specification {
         def exception = thrown(TutorException)
         exception.getErrorMessage() == ErrorMessage.TEACHER_DID_NOT_CLARIFIED
     }
-    /*
+    */
 
     def 'Student visualizes the message' () {
         given:
@@ -203,14 +203,14 @@ class VisualizeDiscussionQuizAnswerTest extends Specification {
         when:
         answerService.submitMessage(qAId1, user_student.getId(), discussionDto, messageDto6)
         answerService.submitMessage(qAId1, user_teacher.getId(), discussionDto, messageDto5)
-        def result = answerService.displayDiscussion(user_student.getId(),discussionDto)
+        def result = answerService.displayDiscussion(user_student.getId(),discussionDto.getId())
 
         then:
         //def result = discussionRepository.findAll().get(0)
         result.size() == 1
     }
 
-     */
+
 
 
     @TestConfiguration

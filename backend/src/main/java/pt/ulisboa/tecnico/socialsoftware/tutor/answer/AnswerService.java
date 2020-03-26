@@ -205,8 +205,8 @@ public class AnswerService {
         QuestionAnswer questionAnswer= questionAnswerRepository.findById(questionAnswerId).orElseThrow(() -> new TutorException(ErrorMessage.QUESTION_ANSWER_NOT_FOUND));
         Discussion discussion= new Discussion(questionAnswer,discussionDto);
 
-        entityManager.persist(discussion);
         discussionRepository.save(discussion);
+//        entityManager.persist(discussion);
         return new DiscussionDto(discussion);
     }
 
@@ -217,7 +217,9 @@ public class AnswerService {
     public DiscussionDto submitMessage(Integer questionAnswerId, Integer UserId, DiscussionDto discussionDto, MessageDto messageDto) {
         QuestionAnswer questionAnswer = questionAnswerRepository.findById(questionAnswerId).orElseThrow(() -> new TutorException(ErrorMessage.QUESTION_ANSWER_NOT_FOUND));
         User user = userRepository.findById(UserId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, UserId));
-        Discussion discussion = new Discussion(questionAnswer, discussionDto);
+        Discussion discussion = discussionRepository.findById(discussionDto.getId()).orElseThrow(() -> new TutorException(STUDENT_DID_NOT_ANSWER_QUESTION));
+
+        //Discussion discussion = new Discussion(questionAnswer, discussionDto);
 
         Message message = new Message(messageDto, user);
 
@@ -225,7 +227,7 @@ public class AnswerService {
 
         message.checkConsistentMessage(messageDto);
 
-        saveMessage(messageDto, user, discussionDto);
+        saveMessage(message, user, discussion);
 
         entityManager.persist(discussion);
 
@@ -233,30 +235,24 @@ public class AnswerService {
 
     }
 
-    private void saveMessage(MessageDto messageDto, User user, DiscussionDto discussionDto) {
+    private void saveMessage(Message message, User user, Discussion discussion) {
         if (user.getRole().equals(User.Role.STUDENT)) {
-            discussionDto.setStudentMessage(messageDto);
-            discussionDto.addDiscussionMessage(messageDto);
+            discussion.setStudentMessage(message);
+            discussion.addDiscussionMessage(message);
 
         } else {
-            discussionDto.setTeacherMessage(messageDto);
-            discussionDto.addDiscussionMessage(messageDto);
+            discussion.setTeacherMessage(message);
+            discussion.addDiscussionMessage(message);
         }
     }
 
-    //FIXME
-    public List<MessageDto> displayDiscussionDto(Integer UserId, Integer discussionDtoId) {
-        DiscussionDto discussionDto = new DiscussionDto();
-        discussionDto.setId(discussionDtoId);
-        return displayDiscussion(UserId, discussionDto);
-    }
 
     @Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
-    public List<MessageDto> displayDiscussion(Integer UserId, DiscussionDto discussionDto){
+    public List<MessageDto> displayDiscussion(Integer UserId, Integer discussionDtoId){
         User user = userRepository.findById(UserId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, UserId));
-        Discussion discussion = discussionRepository.findById(discussionDto.getId()).orElseThrow(() -> new TutorException(STUDENT_DOESNT_HAVE_PERMISSION));
+        Discussion discussion = discussionRepository.findById(discussionDtoId).orElseThrow(() -> new TutorException(STUDENT_DOESNT_HAVE_PERMISSION));
         //discussion.setDiscussionListMessages(discussionDto.getDiscussionListMessages());
         List<MessageDto> messagesList = getTeacherClarification(discussion);
 

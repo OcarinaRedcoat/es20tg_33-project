@@ -25,9 +25,13 @@ public class DiscussionDto implements Serializable {
     }
 
     public DiscussionDto(Discussion discussion){
-        this.id=discussion.getId();
-        this.studentMessage= new MessageDto(discussion.getStudentMessage());
-        this.teacherMessage= new MessageDto(discussion.getTeacherMessage());
+        this.id= discussion.getId();
+        if (discussion.getStudentMessage() != null) {
+            this.studentMessage = new MessageDto(discussion.getStudentMessage());
+        }
+        if (discussion.getTeacherMessage() != null) {
+            this.teacherMessage = new MessageDto(discussion.getTeacherMessage());
+        }
     }
 
     public Integer getId() {

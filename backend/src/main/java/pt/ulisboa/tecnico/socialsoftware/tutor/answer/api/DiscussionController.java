@@ -51,7 +51,7 @@ public class DiscussionController {
     public List<MessageDto> visualizeDiscussion(@PathVariable Integer discussionDtoId, Principal principal){
         User user = (User) ((Authentication) principal).getPrincipal();
         if (user == null){ throw new TutorException(AUTHENTICATION_ERROR); }
-        return answerService.displayDiscussionDto(user.getId(), discussionDtoId);
+        return answerService.displayDiscussion(user.getId(), discussionDtoId);
     }
 
 }

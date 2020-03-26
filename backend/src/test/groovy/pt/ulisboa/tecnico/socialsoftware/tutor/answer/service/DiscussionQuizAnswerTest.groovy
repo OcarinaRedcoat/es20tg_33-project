@@ -86,7 +86,7 @@ class DiscussionQuizAnswerTest extends Specification {
 
 
         quiz = new Quiz()
-        quiz.setKey(3)
+        quiz.setKey(1)
         quiz.setType(Quiz.QuizType.GENERATED)
 
         user_student = new User("Rodrigo","rcosta1944",1,User.Role.STUDENT)
@@ -134,10 +134,10 @@ class DiscussionQuizAnswerTest extends Specification {
         discussion.setId(1)
 
         discussionDto = new DiscussionDto()
-
+        discussionDto.setId(1)
         discussionDto.setStudent(user_student)
         discussionDto.setTeacher(user_teacher)
-
+        answerService.createDiscussion(questionAnswer.getId(), discussionDto)
 
         formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
         availableDate = LocalDateTime.now()
@@ -148,11 +148,13 @@ class DiscussionQuizAnswerTest extends Specification {
         def qAId = questionAnswer.getId()
         def discussionDto1 = new DiscussionDto()
         def user_student1 = new User("Rodrigo","st",1,User.Role.STUDENT)
+        user_student1.setId(1)
 
         user_student1.addQuizAnswer(quizAnswer)
 
         discussionDto1.setStudent(user_student1)
         discussionDto1.setId(1)
+
         when:
         def result = answerService.createDiscussion(qAId, discussionDto1)
 
