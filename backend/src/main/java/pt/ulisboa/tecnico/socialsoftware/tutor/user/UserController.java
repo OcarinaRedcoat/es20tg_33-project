@@ -60,13 +60,13 @@ public class UserController {
                 }).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
     }
 
-    @PostMapping("/courses/{courseId}/questions/status")
+    @GetMapping("/courses/{courseId}/questions/status")
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#courseId, 'COURSE.ACCESS')")
     public List<QuestionDto> getSubmittedQuestionsStats(Principal principal, @PathVariable int courseId) {
         User user = (User) ((Authentication) principal).getPrincipal();
         if(user == null){
             throw new TutorException(AUTHENTICATION_ERROR);
-        }   
+        }
         return this.userService.getSubmittedQuestionsStats(user.getUsername());
     }
 }
