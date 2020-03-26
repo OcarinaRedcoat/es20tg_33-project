@@ -127,7 +127,7 @@
             <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Data to create questions to submit" enabled="true">
               <stringProp name="delimiter">,</stringProp>
               <stringProp name="fileEncoding"></stringProp>
-              <stringProp name="filename">/home/nodo/Desktop/ESof/es20tg_33-project/backend/jmeter/question/QuestionsData.csv</stringProp>
+              <stringProp name="filename">QuestionsData.csv</stringProp>
               <boolProp name="ignoreFirstLine">false</boolProp>
               <boolProp name="quotedData">false</boolProp>
               <boolProp name="recycle">true</boolProp>
@@ -389,13 +389,13 @@
           <stringProp name="driver">org.postgresql.Driver</stringProp>
           <stringProp name="initQuery"></stringProp>
           <boolProp name="keepAlive">true</boolProp>
-          <stringProp name="password">nodo</stringProp>
+          <stringProp name="password"></stringProp>
           <stringProp name="poolMax">0</stringProp>
           <boolProp name="preinit">false</boolProp>
           <stringProp name="timeout">10000</stringProp>
           <stringProp name="transactionIsolation">DEFAULT</stringProp>
           <stringProp name="trimInterval">60000</stringProp>
-          <stringProp name="username">nodo</stringProp>
+          <stringProp name="username">ars</stringProp>
         </JDBCDataSource>
         <hashTree/>
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">

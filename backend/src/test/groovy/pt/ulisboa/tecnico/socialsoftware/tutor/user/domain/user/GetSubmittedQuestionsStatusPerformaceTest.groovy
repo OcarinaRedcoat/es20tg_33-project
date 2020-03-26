@@ -47,8 +47,8 @@ class GetSubmittedQuestionsStatusPerformaceTest extends Specification {
         and: "one student"
         def user = new User(PERSON_NAME, USERNAME, 1, User.Role.STUDENT)
         userRepository.save(user)
-        and: "a question dto"
-        1.upto(10, {
+        and: "a 100 question dto"
+        1.upto(1, {
         def questionDto = new QuestionDto()
         questionDto.setKey(it)
         questionDto.setTitle(QUESTION_TITLE)
@@ -75,8 +75,8 @@ class GetSubmittedQuestionsStatusPerformaceTest extends Specification {
         questionService.submitQuestion(course.getId(), questionDto, user.getUsername())})
 
 
-        when:
-        1.upto(10, {
+        when: "get 5000"
+        1.upto(1, {
             userService.getSubmittedQuestionsStats(USERNAME)})
         then:
         true
