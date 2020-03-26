@@ -43,9 +43,9 @@ public class Discussion {
     }
 
     public Discussion(QuestionAnswer questionAnswerId, DiscussionDto discussionDto){
+        checkConsistentDiscussion(discussionDto);
         this.questionAnswerId = questionAnswerId.getId();
         this.student =  discussionDto.getStudent();
-        checkConsistentDiscussion(discussionDto);
     }
 
     public Integer getId() {

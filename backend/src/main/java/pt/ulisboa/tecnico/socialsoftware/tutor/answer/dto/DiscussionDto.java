@@ -11,8 +11,8 @@ import java.util.List;
 public class DiscussionDto implements Serializable {
 
     private Integer id;
-    private Message  studentMessage;
-    private Message teacherMessage;
+    private MessageDto  studentMessage;
+    private MessageDto teacherMessage;
     private List<MessageDto> discussionListMessages= new ArrayList<>();
 
 
@@ -26,8 +26,8 @@ public class DiscussionDto implements Serializable {
 
     public DiscussionDto(Discussion discussion){
         this.id=discussion.getId();
-        this.studentMessage=discussion.getStudentMessage();
-        this.teacherMessage=discussion.getTeacherMessage();
+        this.studentMessage= new MessageDto(discussion.getStudentMessage());
+        this.teacherMessage= new MessageDto(discussion.getTeacherMessage());
     }
 
     public Integer getId() {
@@ -38,19 +38,19 @@ public class DiscussionDto implements Serializable {
         this.id = id;
     }
 
-    public Message getStudentMessage() {
+    public MessageDto getStudentMessage() {
         return studentMessage;
     }
 
-    public void setStudentMessage(Message studentMessage) {
+    public void setStudentMessage(MessageDto studentMessage) {
         this.studentMessage = studentMessage;
     }
 
-    public Message getTeacherMessage() {
+    public MessageDto getTeacherMessage() {
         return teacherMessage;
     }
 
-    public void setTeacherMessage(Message teacherMessage) {
+    public void setTeacherMessage(MessageDto teacherMessage) {
         this.teacherMessage = teacherMessage;
     }
 
