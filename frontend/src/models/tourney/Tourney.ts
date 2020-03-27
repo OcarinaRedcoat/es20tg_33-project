@@ -1,13 +1,15 @@
 import User from '../user/User';
 import Course from '../user/Course';
+import Topic from '../management/Topic';
 
 export default class Tourney {
   tourneyId: number | undefined;
   tourneyStatus: string = 'OPEN';
-  tourneyName: string | undefined;
+  tourneyTitle: string | undefined;
   tourneyNumberOfQuestions: number | undefined;
   tourneyAvailableDate: string = '';
   tourneyConclusionDate: string | undefined;
+  tourneyTopics: Topic[] | undefined;
   tourneyCreator: User | undefined;
   tourneyCourseExecution: Course | undefined;
 
@@ -15,10 +17,11 @@ export default class Tourney {
     if (jsonObj) {
       this.tourneyId = jsonObj.tourneyId;
       this.tourneyStatus = jsonObj.tourneyStatus;
-      this.tourneyName = jsonObj.tourneyName;
+      this.tourneyTitle = jsonObj.tourneyTitle;
       this.tourneyNumberOfQuestions = jsonObj.tourneyNumberOfQuestions;
       this.tourneyAvailableDate = jsonObj.tourneyAvailableDate;
       this.tourneyConclusionDate = jsonObj.tourneyConclusionDate;
+      this.tourneyTopics = jsonObj.tourneyTopics;
       this.tourneyCreator = jsonObj.tourneyCreator;
       this.tourneyCourseExecution = jsonObj.tourneyCourseExecution;
     }

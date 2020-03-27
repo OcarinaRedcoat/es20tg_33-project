@@ -188,6 +188,21 @@ class CreateTourneyTest extends Specification{
         tourneyRepository.count() == 0L
     }
 
+    def "tourney doesn't have a course execution"(){
+        given: "a tourney with no end date"
+        def userId = userRepository.findAll().get(0).getId()
+        tourney.setTourneyCourseExecution(null)
+        tourney.setTourneyNumberOfQuestions(QUESTION_NUMBER)
+
+        when:
+        tourneyService.createTourney(tourney, userId)
+
+        then:
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.TOURNEY_NOT_CONSISTENT
+        tourneyRepository.count() == 0L
+    }
+
     def "course execution doestn't exist"(){
         given: "a tourney with no end date"
         def userId = userRepository.findAll().get(0).getId()

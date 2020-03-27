@@ -71,6 +71,8 @@ public class TourneyService {
         if(tourney.getNumberOfQuestions() == null || tourney.getNumberOfQuestions() <= 0) throw new TutorException(ErrorMessage.TOURNEY_NOT_CONSISTENT, "numberOfQuestions");
 
         CourseDto courseExecutionDto = tourneyDto.getTourneyCourseExecution();
+        if(courseExecutionDto == null) throw new TutorException(ErrorMessage.TOURNEY_NOT_CONSISTENT, "courseExecution");
+        
         tourney.setCourseExecution(courseExecutionRepository.findById(courseExecutionDto.getCourseExecutionId()).orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND, courseExecutionDto.getCourseExecutionId())));
         tourney.setTopics(tourneyDto.getTourneyTopics().stream().map(topicDto -> topicRepository.findTopicByName(tourney.getCourseExecution().getCourse().getId(), topicDto.getName())).collect(Collectors.toList()));
 

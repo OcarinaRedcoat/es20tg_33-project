@@ -5,9 +5,9 @@
         <v-row justify="space-between">
           <v-col cols="12" md="6">
             <v-text-field
-              v-model="editTourney.tourneyName"
-              :rules="[v => !!v || 'Must have a Name']"
-              label="Name"
+              v-model="editTourney.tourneyTitle"
+              :rules="[v => !!v || 'Must have a title']"
+              label="Title"
               required
             ></v-text-field>
 
@@ -25,42 +25,40 @@
             <v-datetime-picker
               label="Available Date"
               format="yyyy-MM-dd HH:mm"
-              v-model="editTourney.tourneyAvailableDate"
+              v-model="availableDate"
               date-format="yyyy-MM-dd"
               time-format="HH:mm"
-              :rule="[dateRule]"
             ></v-datetime-picker>
 
             <v-datetime-picker
               label="Conclusion Date"
-              v-model="editTourney.tourneyConclusionDate"
+              v-model="conclusionDate"
               date-format="yyyy-MM-dd"
               time-format="HH:mm"
-              :rule="[dateRule]"
             ></v-datetime-picker>
           </v-col>
         </v-row>
 
-        <v-list shaped>
-          <v-list-item-group v-model="selectedTopics" multiple>
-            <template v-for="(item, i) in topics">
-              <v-divider v-if="!item" :key="`divider-${i}`"></v-divider>
+        <v-list>
+          <v-list-item-group v-model="editTourney.tourneyTopics" multiple>
+            <template v-for="(topic, i) in topics">
+              <v-divider v-if="!topic" :key="`divider-${i}`"></v-divider>
 
               <v-list-item
                 v-else
                 :key="`topic-${i}`"
-                :value="item"
+                :value="topic"
                 active-class="deep-purple--text text--accent-4"
               >
                 <template v-slot:default="{ active, toggle }">
                   <v-list-item-content>
-                    <v-list-item-title v-text="item"></v-list-item-title>
+                    <v-list-item-title v-text="topic.name"></v-list-item-title>
                   </v-list-item-content>
 
                   <v-list-item-action>
                     <v-checkbox
                       :input-value="active"
-                      :true-value="item"
+                      :true-value="topic"
                       color="deep-purple accent-4"
                       @click="toggle"
                     ></v-checkbox>
@@ -80,7 +78,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Model, Prop, Vue } from 'vue-property-decorator';
+import { Component, Model, Prop, Vue, Watch } from 'vue-property-decorator';
+import { formatUTCDate } from '../../utils';
 import RemoteServices from '../../services/RemoteServices';
 import Tourney from '../../models/tourney/Tourney';
 import Course from '../../models/user/Course';
@@ -90,24 +89,42 @@ import Topic from '../../models/management/Topic';
 export default class EditTourneyForm extends Vue {
   editTourney!: Tourney;
   valid: boolean = false;
-  courseExecutionItems!: Course[];
-  currentCourse!: Course;
+  availableDate: string = '';
+  conclusionDate: string = '';
   topics: Topic[] = [];
-  selectedTopics: Topic[] = [];
-  courses!: Course[];
 
   async created() {
     this.editTourney = new Tourney();
     this.valid = false;
     this.topics = await this.getTopics();
+    this.editTourney.tourneyCourseExecution = await this.getCourse();
   }
 
-  dateRule(value: string) {
-    return !!value || 'Not a valid Date';
+  @Watch('availableDate', { deep: true })
+  formatAvailableDate() {
+    this.editTourney.tourneyAvailableDate = formatUTCDate(
+      this.availableDate
+    );
+  }
+
+  @Watch('conclusionDate', { deep: true })
+  formatConclusionDate() {
+    this.editTourney.tourneyConclusionDate = formatUTCDate(
+      this.conclusionDate
+    );
+    console.log(this.editTourney.tourneyConclusionDate);
   }
 
   hasAllValues() {
-    return this.editTourney.tourneyName;
+    return this.editTourney.tourneyTitle;
+  }
+
+  async getCourse() {
+    const course = this.$store.getters.getCurrentCourse;
+    if (course == null) {
+      await this.$store.dispatch('error', 'Can\'t find course');
+    }
+    return course;
   }
 
   async getTopics() {
@@ -119,25 +136,33 @@ export default class EditTourneyForm extends Vue {
     return [];
   }
 
-  async saveTourney() {
-    if (!this.editTourney) {
-      // await this.$store.dispatch(
-      //   'error',
-      //   'Tourney must have name'
-      // );
-      return;
-    }
+  toggle() {}
 
-    // if (this.editTourney) {
-    //   try {
-    //     const result = await RemoteServices.createCourse(this.editTourney);
-    //     this.$emit('new-tourney', result);
-    //   } catch (error) {
-    //     await this.$store.dispatch('error', error);
-    //   }
-    // }
+  async saveTourney() {
+    if (
+      !(
+        this.editTourney.tourneyTitle ||
+        this.editTourney.tourneyAvailableDate ||
+        this.editTourney.tourneyConclusionDate ||
+        this.editTourney.tourneyNumberOfQuestions ||
+        this.editTourney.tourneyTopics?.length == 0
+      )
+    ) {
+      await this.$store.dispatch('error', 'Please fill the form');
+      return;
+    } else {
+      try {
+        const result = await RemoteServices.createTourney(this.editTourney);
+        this.$emit('new-tourney', result);
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
   }
 
-  reset() {}
+  reset() {
+    this.$refs.form.reset();
+    this.editTourney = new Tourney();
+  }
 }
 </script>
