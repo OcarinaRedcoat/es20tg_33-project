@@ -47,6 +47,7 @@ class GetSubmittedQuestionsStatus extends Specification {
     def "a student tries to get the state of his submitted questions"() {
         given:
         def question = new StudentQuestion()
+        question.setKey(key)
         question.setTitle(title)
         question.setContent(content)
         question.setStatus(status)
@@ -63,15 +64,16 @@ class GetSubmittedQuestionsStatus extends Specification {
         def questions = result.getSubmittedQuestions()
         questions.size() == 1
         def resQuestion = questions.get(0)
+        resQuestion.getKey() == resKey
         resQuestion.getTitle() == resTitle
         resQuestion.getContent() == resContent
         resQuestion.getStatus() == resStatus
 
         where:
-        title           | content          | status                           | resTitle        | resContent       | resStatus                        | nrApprQ
-        QUESTION_TITLE1 | QUESTION_CONTENT | StudentQuestion.Status.PENDING   | QUESTION_TITLE1 | QUESTION_CONTENT | StudentQuestion.Status.PENDING   | 0
-        QUESTION_TITLE2 | QUESTION_CONTENT | StudentQuestion.Status.PENDING   | QUESTION_TITLE2 | QUESTION_CONTENT | StudentQuestion.Status.PENDING   | 0
-        QUESTION_TITLE3 | QUESTION_CONTENT | StudentQuestion.Status.APPROVED  | QUESTION_TITLE3 | QUESTION_CONTENT | StudentQuestion.Status.APPROVED  | 1
+        key     | title           | content          | status                           | resKey    | resTitle        | resContent       | resStatus                        | nrApprQ
+        1       | QUESTION_TITLE1 | QUESTION_CONTENT | StudentQuestion.Status.PENDING   | 1         | QUESTION_TITLE1 | QUESTION_CONTENT | StudentQuestion.Status.PENDING   | 0
+        2       | QUESTION_TITLE2 | QUESTION_CONTENT | StudentQuestion.Status.PENDING   | 2         | QUESTION_TITLE2 | QUESTION_CONTENT | StudentQuestion.Status.PENDING   | 0
+        3       | QUESTION_TITLE3 | QUESTION_CONTENT | StudentQuestion.Status.APPROVED  | 3         | QUESTION_TITLE3 | QUESTION_CONTENT | StudentQuestion.Status.APPROVED  | 1
     }
 
     def "the student doesn't have submitted questions"() {
