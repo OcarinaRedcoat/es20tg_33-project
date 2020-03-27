@@ -1,8 +1,5 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.answer.api;
 
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -27,24 +24,22 @@ public class DiscussionController {
     private AnswerService answerService;
 
 
-
-    @PostMapping("/discussion/{questionAnswer}")
+    @PostMapping("/question_answers/{questionAnswerId}/discussion")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
-    public DiscussionDto createDiscussion(@RequestBody DiscussionDto discussionDto,@PathVariable Integer questionAnswer) {
-        return answerService.createDiscussion(questionAnswer,discussionDto);
+    public DiscussionDto createDiscussion(@RequestBody DiscussionDto discussionDto,@PathVariable Integer questionAnswerId) {
+        return answerService.createDiscussion(questionAnswerId,discussionDto);
     }
 
-    @PostMapping("/discussion/{questionAnswer}/{messageDto}/submit")
+    @PostMapping("/discussion/submit")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
-    public DiscussionDto submitMessage(@RequestBody DiscussionDto discussionDto, @PathVariable Integer questionAnswer, @PathVariable MessageDto messageDto,Principal principal) {
+    public DiscussionDto submitMessage(@RequestBody DiscussionDto discussionDto,@RequestBody MessageDto messageDto,Principal principal) {
         User user = (User) ((Authentication) principal).getPrincipal();
         if(user==null){
             throw new TutorException(AUTHENTICATION_ERROR);
         }
-
-        return answerService.submitMessage(questionAnswer,user.getId(),discussionDto,messageDto);
-
+        return answerService.submitMessage(user.getId(),discussionDto,messageDto);
     }
+
 
     @GetMapping("/discussion/{discussionDto}/visualize")
     @PreAuthorize("hasRole('ROLE_STUDENT')")

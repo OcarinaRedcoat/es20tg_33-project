@@ -34,8 +34,9 @@ public class Discussion {
     @JoinColumn(name = "teacher_id")
     private User teacher;
 
-    @Column(nullable = false)
-    private Integer questionAnswerId;
+    @OneToOne
+    @JoinColumn(name = "questionAnswer_id")
+    private QuestionAnswer questionAnswerId;
 
     @OneToMany
     private List<Message> discussionListMessages = new ArrayList<>();
@@ -45,7 +46,7 @@ public class Discussion {
 
     public Discussion(QuestionAnswer questionAnswerId, DiscussionDto discussionDto){
         checkConsistentDiscussion(discussionDto, questionAnswerId.getId());
-        this.questionAnswerId = questionAnswerId.getId();
+        this.questionAnswerId = questionAnswerId;
         this.student =  discussionDto.getStudent();
         this.id = questionAnswerId.getId();
     }
