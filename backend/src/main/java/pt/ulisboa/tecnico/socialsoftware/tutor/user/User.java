@@ -63,7 +63,7 @@ public class User implements UserDetails, DomainEntity {
     @ManyToMany
     private Set<CourseExecution> courseExecutions = new HashSet<>();
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "submittingUser", fetch = FetchType.LAZY, orphanRemoval=true)
     private List<Question> submittedQuestions = new ArrayList<>();
 
     @ManyToMany

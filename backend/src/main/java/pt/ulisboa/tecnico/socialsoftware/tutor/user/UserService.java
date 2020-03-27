@@ -13,6 +13,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.UsersXmlExport;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.UsersXmlImport;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
+import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyDto;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -65,6 +66,13 @@ public class UserService {
         User user =  this.userRepository.findByUsername(username);
 
         return user.getCourseExecutions().stream().map(CourseDto::new).collect(Collectors.toList());
+    }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<TourneyDto> getCreatedTourneys(String username) {
+        User user =  this.userRepository.findByUsername(username);
+
+        return user.getCreatedTourneys().stream().map(TourneyDto::new).collect(Collectors.toList());
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)

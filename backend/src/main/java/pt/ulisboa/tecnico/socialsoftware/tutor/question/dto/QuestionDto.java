@@ -6,6 +6,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.StudentDto;
 
 import java.io.Serializable;
 import java.time.format.DateTimeFormatter;
@@ -30,8 +31,8 @@ public class QuestionDto implements Serializable {
     private ImageDto image;
     private List<TopicDto> topics = new ArrayList<>();
     private Integer sequence;
+    private StudentDto submittingUser = null;
     private Discussion thread;
-    private User submittingUser = null;
     private String justification = null;
 
     public QuestionDto() {
@@ -54,6 +55,7 @@ public class QuestionDto implements Serializable {
         this.status = question.getStatus().name();
         this.options = question.getOptions().stream().map(OptionDto::new).collect(Collectors.toList());
         this.topics = question.getTopics().stream().sorted(Comparator.comparing(Topic::getName)).map(TopicDto::new).collect(Collectors.toList());
+        this.justification = question.getJustification();
         this.thread = question.getDiscussion();
 
         if (question.getImage() != null)
@@ -61,7 +63,7 @@ public class QuestionDto implements Serializable {
         if (question.getCreationDate() != null)
             this.creationDate = question.getCreationDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         if (question.getSubmittingUser() != null)
-            this.submittingUser = question.getSubmittingUser();
+            this.submittingUser = new StudentDto(question.getSubmittingUser());
     }
 
     public Integer getId() {
@@ -192,11 +194,11 @@ public class QuestionDto implements Serializable {
         this.thread = thread;
     }
 
-    public User getSubmittingUser() {
+    public StudentDto getSubmittingUser() {
         return submittingUser;
     }
 
-    public void setSubmittingUser(User submittingUser) {
+    public void setSubmittingUser(StudentDto submittingUser) {
         this.submittingUser = submittingUser;
     }
 

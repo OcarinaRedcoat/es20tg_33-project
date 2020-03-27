@@ -210,6 +210,8 @@ public class QuestionService {
     public QuestionDto submitQuestion(int courseId, QuestionDto questionDto, String username) {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new TutorException(COURSE_NOT_FOUND, courseId));
         User user = userRepository.findByUsername(username);
+        if (user == null)
+            throw new TutorException(USERNAME_NOT_FOUND);
 
         checkQuestionKey(questionDto);
 
@@ -218,7 +220,7 @@ public class QuestionService {
         checkIfPending(question);
         question.setSubmittingUser(user);
         user.addSubmittedQuestion(question);
-        this.entityManager.persist(question);
+        entityManager.persist(question);
         return new QuestionDto(question);
     }
 
@@ -226,12 +228,13 @@ public class QuestionService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public void approveQuestion(int questionId, String justification) {
+    public QuestionDto approveQuestion(int questionId, String justification) {
         Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
         if(question.getStatus() == Question.Status.PENDING) {
             question.setStatus(Question.Status.AVAILABLE);
             question.setJustification(justification);
-            this.entityManager.persist(question);
+            entityManager.persist(question);
+            return new QuestionDto(question);
         }
         else {
             throw new TutorException(QUESTION_NOT_PENDING);
@@ -242,7 +245,7 @@ public class QuestionService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public void rejectQuestion(int questionId, String justification) {
+    public QuestionDto rejectQuestion(int questionId, String justification) {
         if(justification == null || justification.trim().isEmpty()) {
             throw new TutorException(QUESTION_MISSING_JUSTIFICATION);
         }
@@ -250,7 +253,8 @@ public class QuestionService {
         if(question.getStatus() == Question.Status.PENDING) {
             question.setStatus(Question.Status.REJECTED);
             question.setJustification(justification);
-            this.entityManager.persist(question);
+            entityManager.persist(question);
+            return new QuestionDto(question);
         }
         else {
             throw new TutorException(QUESTION_NOT_PENDING);
@@ -269,6 +273,7 @@ public class QuestionService {
             questionDto.setKey(maxQuestionNumber + 1);
         }
     }
+    
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public String exportQuestionsToLatex() {
         LatexQuestionExportVisitor latexExporter = new LatexQuestionExportVisitor();

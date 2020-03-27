@@ -74,6 +74,7 @@ public class Question implements DomainEntity {
     private Discussion discussion;
 
     @ManyToOne
+    @JoinColumn(name = "user_id")
     private User submittingUser;
 
     @Column
@@ -88,7 +89,9 @@ public class Question implements DomainEntity {
         this.key = questionDto.getKey();
         this.content = questionDto.getContent();
         this.status = Status.valueOf(questionDto.getStatus());
-        this.creationDate = LocalDateTime.parse(questionDto.getCreationDate(), Course.formatter);
+
+        if(this.creationDate != null)
+            this.creationDate = LocalDateTime.parse(questionDto.getCreationDate(), Course.formatter);
 
         this.course = course;
         course.addQuestion(this);

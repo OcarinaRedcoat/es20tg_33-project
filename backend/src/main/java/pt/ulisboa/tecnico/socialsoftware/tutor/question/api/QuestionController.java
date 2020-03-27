@@ -5,12 +5,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -19,8 +22,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.security.Principal;
 import java.util.List;
 import java.util.Objects;
+
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.AUTHENTICATION_ERROR;
 
 @RestController
 public class QuestionController {
@@ -128,6 +134,40 @@ public class QuestionController {
         questionService.updateQuestionTopics(questionId, topics);
 
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/courses/{courseId}/questions/pending")
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#courseId, 'COURSE.ACCESS')")
+    public QuestionDto submitQuestion(Principal principal, @PathVariable int courseId, @Valid @RequestBody QuestionDto question) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+        if(user == null){
+            throw new TutorException(AUTHENTICATION_ERROR);
+        }
+
+        question.setStatus(Question.Status.PENDING.name());
+        return this.questionService.submitQuestion(courseId, question, user.getUsername());
+    }
+
+    private User getUser(Authentication principal) {
+        User user = (User) principal.getPrincipal();
+        if(user == null){
+            throw new TutorException(AUTHENTICATION_ERROR);
+        }
+        return user;
+    }
+
+    @PutMapping("/questions/{questionId}/approve")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'QUESTION.ACCESS')")
+    public QuestionDto approveQuestion(@PathVariable Integer questionId, @RequestBody String justification) {
+
+        return this.questionService.approveQuestion(questionId, justification);
+    }
+
+    @PutMapping("/questions/{questionId}/reject")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'QUESTION.ACCESS')")
+    public QuestionDto rejectQuestion(@PathVariable Integer questionId, @RequestBody String justification) {
+
+        return this.questionService.rejectQuestion(questionId, justification);
     }
 
     private Path getTargetLocation(String url) {
