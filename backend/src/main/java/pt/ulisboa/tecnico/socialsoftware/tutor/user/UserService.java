@@ -13,6 +13,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.UsersXmlExport;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.UsersXmlImport;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyDto;
 
 import java.sql.SQLException;
@@ -118,17 +119,15 @@ public class UserService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public void getSubmittedQuestionsStats(String username) {
+    public List<QuestionDto> getSubmittedQuestionsStats(String username) {
         User user = userRepository.findByUsername(username);
         checkUserFound(user);
-
         user.clearSubmittedQuestionsStatus();
-
         checkSubmittedQuestions(user);
-
         List<Question> questions = user.getSubmittedQuestions();
-
         countUserQuestions(user, questions);
+
+        return questions.stream().map(QuestionDto::new).collect(Collectors.toList());
     }
 
     private void countUserQuestions(User user, List<Question> questions) {

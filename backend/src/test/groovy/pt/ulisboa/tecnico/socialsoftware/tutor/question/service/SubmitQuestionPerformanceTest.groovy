@@ -35,7 +35,7 @@ class SubmitQuestionPerformanceTest extends Specification {
     @Autowired
     QuestionRepository questionRepository
 
-    def "performance test to submit 5000 questions"(){
+    def "performance test to submit 2000 questions"(){
         given: "a course"
         def course = new Course()
         courseRepository.save(course)
