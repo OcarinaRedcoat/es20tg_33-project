@@ -10,7 +10,7 @@ import java.util.List;
 
 public class DiscussionDto implements Serializable {
 
-    private Integer id;
+    private Integer discussionId;
     private MessageDto  studentMessage;
     private MessageDto teacherMessage;
     private List<MessageDto> discussionListMessages= new ArrayList<>();
@@ -25,7 +25,7 @@ public class DiscussionDto implements Serializable {
     }
 
     public DiscussionDto(Discussion discussion){
-        this.id= discussion.getId();
+        this.discussionId= discussion.getId();
         if (discussion.getStudentMessage() != null) {
             this.studentMessage = new MessageDto(discussion.getStudentMessage());
         }
@@ -35,11 +35,11 @@ public class DiscussionDto implements Serializable {
     }
 
     public Integer getId() {
-        return id;
+        return discussionId;
     }
 
     public void setId(Integer id) {
-        this.id = id;
+        this.discussionId = id;
     }
 
     public MessageDto getStudentMessage() {
@@ -81,8 +81,8 @@ public class DiscussionDto implements Serializable {
 
     @Override
     public String toString() {
-        return "ThreadDto{" +
-                "id=" + id +
+        return "DiscussionDto{" +
+                "discussionId=" + discussionId +
                 ", studentMessage=" + studentMessage +
                 ", teacherMessage=" + teacherMessage +
                 ", threadListMessages=" + discussionListMessages +

@@ -109,7 +109,22 @@
             <stringProp name="HTTPSampler.connect_timeout"></stringProp>
             <stringProp name="HTTPSampler.response_timeout"></stringProp>
           </HTTPSamplerProxy>
-          <hashTree/>
+          <hashTree>
+            <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor" enabled="true">
+              <stringProp name="JSONPostProcessor.referenceNames">discussionId</stringProp>
+              <stringProp name="JSONPostProcessor.jsonPathExprs">$.discussionId</stringProp>
+              <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+            </JSONPostProcessor>
+            <hashTree/>
+            <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor" enabled="true">
+              <stringProp name="TestPlan.comments">Set property discussionId so another thread group can access</stringProp>
+              <stringProp name="filename"></stringProp>
+              <stringProp name="parameters">discussionId</stringProp>
+              <boolProp name="resetInterpreter">false</boolProp>
+              <stringProp name="script">${__setProperty(discussionId,${discussionId})}</stringProp>
+            </BeanShellPostProcessor>
+            <hashTree/>
+          </hashTree>
         </hashTree>
         <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
@@ -221,7 +236,7 @@
             <stringProp name="HTTPSampler.port">${port}</stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/discussion/submit</stringProp>
+            <stringProp name="HTTPSampler.path">/discussion/${__property(discussionId)}/submit</stringProp>
             <stringProp name="HTTPSampler.method">POST</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -232,8 +247,8 @@
             <stringProp name="HTTPSampler.response_timeout"></stringProp>
           </HTTPSamplerProxy>
           <hashTree>
-            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Asserts Student Question" enabled="true">
-              <stringProp name="JSON_PATH">$.studentMessage</stringProp>
+            <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Asserts Teacher Answer" enabled="true">
+              <stringProp name="JSON_PATH">$.teacherMessage</stringProp>
               <stringProp name="EXPECTED_VALUE">Bom dia</stringProp>
               <boolProp name="JSONVALIDATION">false</boolProp>
               <boolProp name="EXPECT_NULL">false</boolProp>
