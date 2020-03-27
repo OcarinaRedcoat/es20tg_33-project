@@ -34,7 +34,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @DataJpaTest
-class DiscussionQuizAnswerTest extends Specification {
+class DiscussionQuizAnswerPerformanceTest extends Specification {
     public static final String COURSE_NAME = "Software Architecture"
     public static final String ACRONYM = "AS1"
     public static final String ACADEMIC_TERM = "1 SEM"
@@ -157,187 +157,46 @@ class DiscussionQuizAnswerTest extends Specification {
 
 
         when:
-        def result = answerService.createDiscussion(qAId, discussionDto1)
+        1.upto(1,{answerService.createDiscussion(qAId, discussionDto1)})
 
         then:
-        result.getId() == 1
-    }
-    /*
-
-    def 'Send a null student message' () {
-        given:
-        def messageDto = new MessageDto()
-        messageDto.setUser(user_student)
-        messageDto.setId(user_student.getId())
-        messageDto.setSentence(null)
-
-        def qAId = questionAnswer.getId()
-        def date = LocalDateTime.now()
-        messageDto.setMessageDate(date)
-
-
-        when:
-        answerService.submitMessage(user_student.getId(),discussionDto, messageDto)
-
-        then:
-        def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.MESSAGE_NULL
+        true
     }
 
-
-    def 'Send a empty student message' () {
-        given:
-        def messageDto2 = new MessageDto()
-
-        messageDto2.setUser(user_student)
-        messageDto2.setId(user_student.getId())
-        messageDto2.setSentence("    ")
-
-        def qAId = questionAnswer.getId()
-        def date = LocalDateTime.now()
-        messageDto2.setMessageDate(date)
-
-
-        when:
-        answerService.submitMessage(user_student.getId(),discussionDto, messageDto2)
-
-        then:
-        def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.MESSAGE_EMPTY
-    }
-
-
-    def 'Student did not answered the question'(){
-        given:
-        def messageDto3 = new MessageDto()
-        def user_student1 = new User("Rodrigo","gaylord",3,User.Role.STUDENT)
-        user_student1.setId(3)
-        messageDto3.setUser(user_student1)
-        messageDto3.setId(user_student1.getId())
-        messageDto3.setSentence(STUDENTANSWER)
-        def qAId = questionAnswer.getId()
-        def date = LocalDateTime.now()
-        messageDto3.setMessageDate(date)
-
-        when:
-        answerService.submitMessage(user_student1.getId(),discussionDto, messageDto3)
-
-        then:
-        def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.USER_NOT_FOUND
-    }
-
-
-    def 'Student answered with null date'(){
-        given:
-        def messageDto4 = new MessageDto()
-
-        messageDto4.setUser(user_student)
-        messageDto4.setId(user_student.getId())
-        messageDto4.setSentence(STUDENTANSWER)
-
-        def qAId = questionAnswer.getId()
-        def date = null
-        messageDto4.setMessageDate(date)
-
-
-        when:
-        answerService.submitMessage(user_student.getId(),discussionDto, messageDto4)
-
-        then:
-        def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.MESSAGE_DATE_NULL
-    }
-
-    def 'Professor sends a null message'(){
-        given:
-        def messageDto2 = new MessageDto()
-        def messageDto3 = new MessageDto()
-
-        messageDto3.setUser(user_student)
-        messageDto3.setId(user_student.getId())
-        messageDto3.setSentence(STUDENTANSWER)
-
-        messageDto2.setUser(user_teacher)
-        messageDto2.setId(user_teacher.getId())
-        messageDto2.setSentence("  ")
-
-        def qAId = questionAnswer.getId()
-        def date = LocalDateTime.now()
-        def date1 = LocalDateTime.now().plusHours(2)
-        messageDto3.setMessageDate(date)
-        messageDto2.setMessageDate(date1)
-
-        when:
-        answerService.submitMessage(user_student.getId(),discussionDto, messageDto3)
-        answerService.submitMessage(user_teacher.getId(),discussionDto,messageDto2)
-
-        then:
-        def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.MESSAGE_EMPTY
-    }
-
-    def 'Professor message with null date'(){
-        given:
-        def messageDto4 = new MessageDto()
+    def 'Submit messages and visualizes 1 messages'(){
+        given: "new discussion"
+        def messageDto6 = new MessageDto()
         def messageDto5 = new MessageDto()
 
-        messageDto4.setUser(user_student)
+        discussionDto.setStudent(user_student)
+        discussionDto.setTeacher(user_teacher)
+
+        messageDto6.setUser(user_student)
         messageDto5.setUser(user_teacher)
-        messageDto4.setId(user_student.getId())
+        messageDto6.setId(user_student.getId())
         messageDto5.setId(user_teacher.getId())
-        messageDto4.setSentence(STUDENTANSWER)
+        messageDto6.setSentence(STUDENTANSWER)
         messageDto5.setSentence(TEACHERANSWER)
 
 
-        def qAId = questionAnswer.getId()
+        def qAId1 = questionAnswer.getId()
         def date1 = LocalDateTime.now()
-        def date2 = null
-        messageDto4.setMessageDate(date1)
-        messageDto5.setMessageDate(date2)
+        def data2 = LocalDateTime.now().plusHours(1)
+        messageDto6.setMessageDate(date1)
+        messageDto5.setMessageDate(data2)
 
 
         when:
-        answerService.submitMessage(user_student.getId(),discussionDto, messageDto4)
-        answerService.submitMessage(user_teacher.getId(),discussionDto,messageDto5)
+        1.upto(1,{
+            answerService.submitMessage(user_student.getId(), discussionDto.getId(), messageDto6)
+            answerService.submitMessage(user_teacher.getId(), discussionDto.getId(), messageDto5)
+        })
 
         then:
-        def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.MESSAGE_DATE_NULL
+        //def result = answerService.displayDiscussion(user_student.getId(),discussionDto.getId())
+        //result.size() == 1
+        true
     }
-
-
-    def 'Send a null professor message'(){
-        given:
-        def messageDto2 = new MessageDto()
-        def messageDto3 = new MessageDto()
-
-        messageDto3.setUser(user_student)
-        messageDto3.setId(user_student.getId())
-        messageDto3.setSentence(STUDENTANSWER)
-
-        messageDto2.setUser(user_teacher)
-        messageDto2.setId(user_teacher.getId())
-        messageDto2.setSentence(null)
-
-        def qAId = questionAnswer.getId()
-        def date = LocalDateTime.now()
-        def date1 = LocalDateTime.now().plusHours(2)
-        messageDto3.setMessageDate(date)
-        messageDto2.setMessageDate(date1)
-
-        when:
-        answerService.submitMessage(user_student.getId(),discussionDto, messageDto3)
-        answerService.submitMessage(user_teacher.getId(),discussionDto,messageDto2)
-
-        then:
-        def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.MESSAGE_NULL
-    }
-
-     */
-
-    
 
     @TestConfiguration
     static class AnswerServiceImplTestContextConfiguration{
@@ -354,4 +213,3 @@ class DiscussionQuizAnswerTest extends Specification {
 
     }
 }
-

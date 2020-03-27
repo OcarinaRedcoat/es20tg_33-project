@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.MessageDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.DiscussionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
@@ -33,8 +34,9 @@ public class Discussion {
     @JoinColumn(name = "teacher_id")
     private User teacher;
 
-    @Column(nullable = false)
-    private Integer questionAnswerId;
+    @OneToOne
+    @JoinColumn(name = "questionAnswer_id")
+    private QuestionAnswer questionAnswerId;
 
     @OneToMany
     private List<Message> discussionListMessages = new ArrayList<>();
@@ -43,9 +45,10 @@ public class Discussion {
     }
 
     public Discussion(QuestionAnswer questionAnswerId, DiscussionDto discussionDto){
-        this.questionAnswerId = questionAnswerId.getId();
+        checkConsistentDiscussion(discussionDto, questionAnswerId.getId());
+        this.questionAnswerId = questionAnswerId;
         this.student =  discussionDto.getStudent();
-        checkConsistentDiscussion(discussionDto);
+        this.id = questionAnswerId.getId();
     }
 
     public Integer getId() {
@@ -88,6 +91,7 @@ public class Discussion {
         this.discussionListMessages = threadListMessages;
     }
 
+    public void addDiscussionMessage(Message message) {this.discussionListMessages.add(message);}
     public void saveStudentMessage(){
         this.discussionListMessages.add(this.studentMessage);
     }
@@ -101,10 +105,10 @@ public class Discussion {
                 discussionListMessages.get(1).displayMessage();
     }
 
-    public void checkConsistentDiscussion(DiscussionDto discussionDto){
-        for (QuizAnswer qzA : student.getQuizAnswers()) {
+    public void checkConsistentDiscussion(DiscussionDto discussionDto, int id){
+        for (QuizAnswer qzA : discussionDto.getStudent().getQuizAnswers()) {
             for (QuestionAnswer qA : qzA.getQuestionAnswers()) {
-                if (qA.getId().equals(questionAnswerId)) {
+                if (qA.getId().equals(id)) {
                     return;
                 }
             }

@@ -34,6 +34,8 @@ public class Message {
 
     public Message(MessageDto messageDto,User user){
         checkConsistentMessage(messageDto);
+        this.messageDate = messageDto.getMessageDate();
+        this.sentence = messageDto.getSentence();
         this.user = user;
 
     }
@@ -76,6 +78,7 @@ public class Message {
         if (messageDto.getSentence().trim().length() == 0){
             throw new TutorException(MESSAGE_EMPTY);
         }
+
 
     }
 
