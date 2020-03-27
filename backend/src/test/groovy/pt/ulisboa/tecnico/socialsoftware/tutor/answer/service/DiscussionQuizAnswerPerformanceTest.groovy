@@ -163,6 +163,41 @@ class DiscussionQuizAnswerPerformanceTest extends Specification {
         true
     }
 
+    def 'Submit messages and visualizes 1 messages'(){
+        given: "new discussion"
+        def messageDto6 = new MessageDto()
+        def messageDto5 = new MessageDto()
+
+        discussionDto.setStudent(user_student)
+        discussionDto.setTeacher(user_teacher)
+
+        messageDto6.setUser(user_student)
+        messageDto5.setUser(user_teacher)
+        messageDto6.setId(user_student.getId())
+        messageDto5.setId(user_teacher.getId())
+        messageDto6.setSentence(STUDENTANSWER)
+        messageDto5.setSentence(TEACHERANSWER)
+
+
+        def qAId1 = questionAnswer.getId()
+        def date1 = LocalDateTime.now()
+        def data2 = LocalDateTime.now().plusHours(1)
+        messageDto6.setMessageDate(date1)
+        messageDto5.setMessageDate(data2)
+
+
+        when:
+        1.upto(1,{
+            answerService.submitMessage(user_student.getId(), discussionDto.getId(), messageDto6)
+            answerService.submitMessage(user_teacher.getId(), discussionDto.getId(), messageDto5)
+        })
+
+        then:
+        //def result = answerService.displayDiscussion(user_student.getId(),discussionDto.getId())
+        //result.size() == 1
+        true
+    }
+
     @TestConfiguration
     static class AnswerServiceImplTestContextConfiguration{
 

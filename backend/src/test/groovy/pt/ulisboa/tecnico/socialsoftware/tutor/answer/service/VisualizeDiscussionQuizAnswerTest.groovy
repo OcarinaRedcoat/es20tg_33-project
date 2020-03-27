@@ -201,8 +201,8 @@ class VisualizeDiscussionQuizAnswerTest extends Specification {
 
 
         when:
-        answerService.submitMessage(user_student.getId(), discussionDto, messageDto6)
-        answerService.submitMessage(user_teacher.getId(), discussionDto, messageDto5)
+        answerService.submitMessage(user_student.getId(), discussionDto.getId(), messageDto6)
+        answerService.submitMessage(user_teacher.getId(), discussionDto.getId(), messageDto5)
         def result = answerService.displayDiscussion(user_student.getId(),discussionDto.getId())
 
         then:

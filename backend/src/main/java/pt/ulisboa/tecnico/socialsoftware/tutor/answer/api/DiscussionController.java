@@ -26,27 +26,24 @@ public class DiscussionController {
 
     @PostMapping("/question_answers/{questionAnswerId}/discussion")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
-    public DiscussionDto createDiscussion(@RequestBody DiscussionDto discussionDto,@PathVariable Integer questionAnswerId) {
+    public DiscussionDto createDiscussion(@PathVariable Integer questionAnswerId, @RequestBody DiscussionDto discussionDto) {
         return answerService.createDiscussion(questionAnswerId,discussionDto);
     }
 
-    @PostMapping("/discussion/submit")
+    @PostMapping("/discussion/{discussionId}/submit")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
-    public DiscussionDto submitMessage(@RequestBody DiscussionDto discussionDto,@RequestBody MessageDto messageDto,Principal principal) {
+    public DiscussionDto submitMessage(@PathVariable Integer discussionId, @RequestBody MessageDto messageDto, Principal principal) {
         User user = (User) ((Authentication) principal).getPrincipal();
-        if(user==null){
-            throw new TutorException(AUTHENTICATION_ERROR);
-        }
-        return answerService.submitMessage(user.getId(),discussionDto,messageDto);
+        if(user==null){ throw new TutorException(AUTHENTICATION_ERROR); }
+        return answerService.submitMessage(user.getId(),discussionId,messageDto);
     }
 
-
-    @GetMapping("/discussion/{discussionDto}/visualize")
+    @GetMapping("/visualize/{discussionId}")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
-    public List<MessageDto> visualizeDiscussion(@PathVariable Integer discussionDtoId, Principal principal){
+    public List<MessageDto> visualizeDiscussion(@PathVariable Integer discussionId, Principal principal){
         User user = (User) ((Authentication) principal).getPrincipal();
         if (user == null){ throw new TutorException(AUTHENTICATION_ERROR); }
-        return answerService.displayDiscussion(user.getId(), discussionDtoId);
+        return answerService.displayDiscussion(user.getId(), discussionId);
     }
 
 }

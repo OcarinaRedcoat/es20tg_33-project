@@ -214,9 +214,9 @@ public class AnswerService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public DiscussionDto submitMessage(Integer UserId, DiscussionDto discussionDto, MessageDto messageDto) {
+    public DiscussionDto submitMessage(Integer UserId, Integer discussionId, MessageDto messageDto) {
         User user = userRepository.findById(UserId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, UserId));
-        Discussion discussion = discussionRepository.findById(discussionDto.getId()).orElseThrow(() -> new TutorException(STUDENT_DID_NOT_ANSWER_QUESTION));
+        Discussion discussion = discussionRepository.findById(discussionId).orElseThrow(() -> new TutorException(STUDENT_DID_NOT_ANSWER_QUESTION));
 
         //Discussion discussion = new Discussion(questionAnswer, discussionDto);
 
@@ -252,7 +252,7 @@ public class AnswerService {
     public List<MessageDto> displayDiscussion(Integer UserId, Integer discussionDtoId){
         User user = userRepository.findById(UserId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, UserId));
         Discussion discussion = discussionRepository.findById(discussionDtoId).orElseThrow(() -> new TutorException(STUDENT_DOESNT_HAVE_PERMISSION));
-        //discussion.setDiscussionListMessages(discussionDto.getDiscussionListMessages());
+
         List<MessageDto> messagesList = getTeacherClarification(discussion);
 
         if (messagesList.isEmpty()){
