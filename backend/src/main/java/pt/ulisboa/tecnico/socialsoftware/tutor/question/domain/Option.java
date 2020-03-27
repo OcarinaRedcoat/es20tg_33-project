@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.question.domain;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestion;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -26,6 +27,10 @@ public class Option {
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name = "question_id")
     private Question question;
+
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "student_question_id")
+    private StudentQuestion studentQuestion;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "quizAnswer", orphanRemoval=true)
     private Set<QuestionAnswer> questionAnswers = new HashSet<>();
@@ -80,6 +85,10 @@ public class Option {
     public void setQuestion(Question question) {
         this.question = question;
     }
+
+    public StudentQuestion getStudentQuestion() { return studentQuestion; }
+
+    public void setStudentQuestion(StudentQuestion studentQuestion) { this.studentQuestion = studentQuestion; }
 
     public Set<QuestionAnswer> getQuestionAnswers() {
         return questionAnswers;

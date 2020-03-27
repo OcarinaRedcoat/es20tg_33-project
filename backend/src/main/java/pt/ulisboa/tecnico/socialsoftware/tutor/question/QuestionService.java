@@ -50,9 +50,6 @@ public class QuestionService {
     @Autowired
     private ImageRepository imageRepository;
 
-    @PersistenceContext
-    EntityManager entityManager;
-
     @Retryable(
       value = { SQLException.class },
       backoff = @Backoff(delay = 5000))
@@ -102,7 +99,11 @@ public class QuestionService {
     public QuestionDto createQuestion(int courseId, QuestionDto questionDto) {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new TutorException(COURSE_NOT_FOUND, courseId));
 
-        checkQuestionKey(questionDto);
+        if (questionDto.getKey() == null) {
+            int maxQuestionNumber = questionRepository.getMaxQuestionNumber() != null ?
+                    questionRepository.getMaxQuestionNumber() : 0;
+            questionDto.setKey(maxQuestionNumber + 1);
+        }
 
         Question question = new Question(course, questionDto);
         question.setCreationDate(LocalDateTime.now());
@@ -187,77 +188,6 @@ public class QuestionService {
         QuestionsXmlImport xmlImporter = new QuestionsXmlImport();
 
         xmlImporter.importQuestions(questionsXML, this, courseRepository);
-    }
-
-    @Retryable(
-            value = { SQLException.class },
-            backoff = @Backoff(delay = 5000))
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public QuestionDto submitQuestion(int courseId, QuestionDto questionDto, String username) {
-        Course course = courseRepository.findById(courseId).orElseThrow(() -> new TutorException(COURSE_NOT_FOUND, courseId));
-        User user = userRepository.findByUsername(username);
-        if (user == null)
-            throw new TutorException(USERNAME_NOT_FOUND);
-
-        checkQuestionKey(questionDto);
-
-        Question question = new Question(course, questionDto);
-        question.setCreationDate(LocalDateTime.now());
-        checkIfPending(question);
-        question.setSubmittingUser(user);
-        user.addSubmittedQuestion(question);
-        entityManager.persist(question);
-        return new QuestionDto(question);
-    }
-
-    @Retryable(
-            value = { SQLException.class },
-            backoff = @Backoff(delay = 5000))
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public QuestionDto approveQuestion(int questionId, String justification) {
-        Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
-        if(question.getStatus() == Question.Status.PENDING) {
-            question.setStatus(Question.Status.AVAILABLE);
-            question.setJustification(justification);
-            entityManager.persist(question);
-            return new QuestionDto(question);
-        }
-        else {
-            throw new TutorException(QUESTION_NOT_PENDING);
-        }
-    }
-
-    @Retryable(
-            value = { SQLException.class },
-            backoff = @Backoff(delay = 5000))
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public QuestionDto rejectQuestion(int questionId, String justification) {
-        if(justification == null || justification.trim().isEmpty()) {
-            throw new TutorException(QUESTION_MISSING_JUSTIFICATION);
-        }
-        Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
-        if(question.getStatus() == Question.Status.PENDING) {
-            question.setStatus(Question.Status.REJECTED);
-            question.setJustification(justification);
-            entityManager.persist(question);
-            return new QuestionDto(question);
-        }
-        else {
-            throw new TutorException(QUESTION_NOT_PENDING);
-        }
-    }
-
-    private void checkIfPending(Question question) {
-        if (question.getStatus() != Question.Status.PENDING)
-            question.setStatus(Question.Status.PENDING);
-    }
-
-    private void checkQuestionKey(QuestionDto questionDto) {
-        if (questionDto.getKey() == null) {
-            int maxQuestionNumber = questionRepository.getMaxQuestionNumber() != null ?
-                    questionRepository.getMaxQuestionNumber() : 0;
-            questionDto.setKey(maxQuestionNumber + 1);
-        }
     }
 
 }

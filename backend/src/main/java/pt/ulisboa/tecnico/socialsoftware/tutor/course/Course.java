@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.course;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
+import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestion;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -32,6 +33,9 @@ public class Course {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "course", fetch=FetchType.LAZY, orphanRemoval=true)
     private Set<Question> questions = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "course", fetch=FetchType.LAZY, orphanRemoval=true)
+    private Set<StudentQuestion> submittedQuestions = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "course", fetch=FetchType.LAZY, orphanRemoval=true)
     private Set<Topic> topics = new HashSet<>();
@@ -83,6 +87,8 @@ public class Course {
         return questions;
     }
 
+    public Set<StudentQuestion> getSubmittedQuestions() { return submittedQuestions; }
+
     public Set<Topic> getTopics() {
         return topics;
     }
@@ -93,6 +99,10 @@ public class Course {
 
     public void addQuestion(Question question) {
         questions.add(question);
+    }
+
+    public void addStudentQuestion(StudentQuestion question) {
+        submittedQuestions.add(question);
     }
 
     public void addTopic(Topic topic) {

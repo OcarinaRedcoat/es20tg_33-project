@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.socialsoftware.tutor.question.service
+package pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.service
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
@@ -6,11 +6,11 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestion
+import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestionService
 import spock.lang.Specification
 
 @DataJpaTest
@@ -24,13 +24,13 @@ class ApprovalRejectionQuestionTest extends Specification {
     public static final String JUSTIFICATION_CONTENT = "justification content"
 
     @Autowired
-    QuestionService questionService
+    StudentQuestionService studentQuestionService
 
     @Autowired
     OptionRepository optionRepository
 
     @Autowired
-    QuestionRepository questionRepository
+    StudentQuestionRepository studentQuestionRepository
 
     def question
     def option
@@ -38,13 +38,12 @@ class ApprovalRejectionQuestionTest extends Specification {
 
     def setup() {
         given: "create a question"
-        question = new Question()
-        question.setKey(1)
+        question = new StudentQuestion()
         question.setTitle(QUESTION_TITLE)
         question.setContent(QUESTION_CONTENT)
-        question.setStatus(Question.Status.PENDING)
-        and: 'two options'
+        question.setStatus(StudentQuestion.Status.PENDING)
 
+        and: 'two options'
         option = new Option()
         option.setContent(OPTION_CONTENT)
         option.setCorrect(true)
@@ -58,19 +57,19 @@ class ApprovalRejectionQuestionTest extends Specification {
         question.addOption(option)
         question.addOption(optionF)
         optionRepository.save(optionF)
-        questionRepository.save(question)
+        studentQuestionRepository.save(question)
     }
 
     def "approve a valid question"() {
         when:
-        questionService.approveQuestion(question.getId(), null)
+        studentQuestionService.approveQuestion(question.getId(), null)
+
         // verify if person approving is teacher
         then: "the question is approved successfully"
-        questionRepository.count() == 1L
-        def result = questionRepository.findAll().get(0)
+        studentQuestionRepository.count() == 1L
+        def result = studentQuestionRepository.findAll().get(0)
         result.getId() != null
-        result.getKey() == 1
-        result.getStatus() == Question.Status.AVAILABLE
+        result.getStatus() == StudentQuestion.Status.APPROVED
         result.getTitle() == QUESTION_TITLE
         result.getContent() == QUESTION_CONTENT
         result.getOptions().size() == 2
@@ -78,14 +77,14 @@ class ApprovalRejectionQuestionTest extends Specification {
 
     def "approve a valid question with justification"() {
         when:
-        questionService.approveQuestion(question.getId(), JUSTIFICATION_CONTENT)
+        studentQuestionService.approveQuestion(question.getId(), JUSTIFICATION_CONTENT)
+
         // verify if person approving is teacher
         then: "the question is approved successfully"
-        questionRepository.count() == 1L
-        def result = questionRepository.findAll().get(0)
+        studentQuestionRepository.count() == 1L
+        def result = studentQuestionRepository.findAll().get(0)
         result.getId() != null
-        result.getKey() == 1
-        result.getStatus() == Question.Status.AVAILABLE
+        result.getStatus() == StudentQuestion.Status.APPROVED
         result.getTitle() == QUESTION_TITLE
         result.getContent() == QUESTION_CONTENT
         result.getOptions().size() == 2
@@ -93,14 +92,13 @@ class ApprovalRejectionQuestionTest extends Specification {
 
     def "reject a question with justification"() {
         when:
-        questionService.rejectQuestion(question.getId(), JUSTIFICATION_CONTENT)
+        studentQuestionService.rejectQuestion(question.getId(), JUSTIFICATION_CONTENT)
 
         then: "the question is rejected successfully"
-        questionRepository.count() == 1L
-        def result = questionRepository.findAll().get(0)
+        studentQuestionRepository.count() == 1L
+        def result = studentQuestionRepository.findAll().get(0)
         result.getId() != null
-        result.getKey() == 1
-        result.getStatus() == Question.Status.REJECTED
+        result.getStatus() == StudentQuestion.Status.REJECTED
         result.getTitle() == QUESTION_TITLE
         result.getContent() == QUESTION_CONTENT
         result.getJustification() == JUSTIFICATION_CONTENT
@@ -109,36 +107,34 @@ class ApprovalRejectionQuestionTest extends Specification {
 
     def "reject a question without justification"() {
         when:
-        questionService.rejectQuestion(question.getId(), null)
+        studentQuestionService.rejectQuestion(question.getId(), null)
 
         then: "an exception is thrown"
         def exception = thrown(TutorException)
         exception.getErrorMessage() == ErrorMessage.QUESTION_MISSING_JUSTIFICATION
-        def result = questionRepository.findAll().get(0)
+        def result = studentQuestionRepository.findAll().get(0)
         result.getId() != null
-        result.getKey() == 1
-        result.getStatus() == Question.Status.PENDING
+        result.getStatus() == StudentQuestion.Status.PENDING
         result.getTitle() == QUESTION_TITLE
         result.getContent() == QUESTION_CONTENT
         result.getJustification() == null
-        questionRepository.count() == 1L
+        studentQuestionRepository.count() == 1L
     }
 
     def "reject a question with blank justification"() {
         when:
-        questionService.rejectQuestion(question.getId(), '         ')
+        studentQuestionService.rejectQuestion(question.getId(), '         ')
 
         then: "an exception is thrown"
         def exception = thrown(TutorException)
         exception.getErrorMessage() == ErrorMessage.QUESTION_MISSING_JUSTIFICATION
-        def result = questionRepository.findAll().get(0)
+        def result = studentQuestionRepository.findAll().get(0)
         result.getId() != null
-        result.getKey() == 1
-        result.getStatus() == Question.Status.PENDING
+        result.getStatus() == StudentQuestion.Status.PENDING
         result.getTitle() == QUESTION_TITLE
         result.getContent() == QUESTION_CONTENT
         result.getJustification() == null
-        questionRepository.count() == 1L
+        studentQuestionRepository.count() == 1L
     }
 
     def "approve a question not in pending status"() {
@@ -146,27 +142,26 @@ class ApprovalRejectionQuestionTest extends Specification {
         question.setStatus(Question.Status.REJECTED)
 
         when:
-        questionService.approveQuestion(question.getId(), null)
+        studentQuestionService.approveQuestion(question.getId(), null)
 
         then: "an exception is thrown"
         def exception = thrown(TutorException)
         exception.getErrorMessage() == ErrorMessage.QUESTION_NOT_PENDING
-        def result = questionRepository.findAll().get(0)
+        def result = studentQuestionRepository.findAll().get(0)
         result.getId() != null
-        result.getKey() == 1
-        result.getStatus() == Question.Status.REJECTED
+        result.getStatus() == StudentQuestion.Status.REJECTED
         result.getTitle() == QUESTION_TITLE
         result.getContent() == QUESTION_CONTENT
         result.getJustification() == null
-        questionRepository.count() == 1L
+        studentQuestionRepository.count() == 1L
     }
 
     @TestConfiguration
-    static class QuestionServiceImplTestContextConfiguration {
+    static class StudentQuestionServiceImplTestContextConfiguration {
 
         @Bean
-        QuestionService questionService() {
-            return new QuestionService()
+        StudentQuestionService studentQuestionService() {
+            return new StudentQuestionService()
         }
     }
 }

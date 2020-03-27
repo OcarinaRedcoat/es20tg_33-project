@@ -8,6 +8,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
+import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.Tourney;
 
 import javax.persistence.*;
@@ -62,7 +63,7 @@ public class User implements UserDetails {
     private Set<CourseExecution> courseExecutions = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "submittingUser", fetch = FetchType.LAZY, orphanRemoval=true)
-    private List<Question> submittedQuestions = new ArrayList<>();
+    private List<StudentQuestion> submittedQuestions = new ArrayList<>();
 
     @ManyToMany
     private Set<Tourney> enrolledTourneys = new HashSet<>();
@@ -170,9 +171,9 @@ public class User implements UserDetails {
         this.courseExecutions = courseExecutions;
     }
 
-    public List<Question> getSubmittedQuestions() { return submittedQuestions; }
+    public List<StudentQuestion> getSubmittedQuestions() { return submittedQuestions; }
 
-    public void setSubmittedQuestions(List<Question> submittedQuestions) { this.submittedQuestions = submittedQuestions; }
+    public void setSubmittedQuestions(List<StudentQuestion> submittedQuestions) { this.submittedQuestions = submittedQuestions; }
 
     public Set<Tourney> getEnrolledTourneys() {
         return enrolledTourneys;
@@ -400,23 +401,11 @@ public class User implements UserDetails {
         }
     }
 
-    public void increaseNumberOfSubmittedQuestions() {
-        this.numberOfSubmittedQuestions ++;
-    }
+    public void increaseNumberOfSubmittedQuestions() { this.numberOfSubmittedQuestions ++; } //TODO fix later
 
-    public void increaseNumberOfApprovedQuestions() {
-        this.numberOfApprovedQuestions ++;
-    }
+    public void increaseNumberOfApprovedQuestions() { this.numberOfApprovedQuestions ++; } //TODO fix later
 
-    public void increaseNumberOfRejectedQuestions() {
-        this.numberOfRejectedQuestions ++;
-    }
-
-    public void clearSubmittedQuestionsStatus() {
-        this.numberOfSubmittedQuestions = 0;
-        this.numberOfApprovedQuestions = 0;
-        this.numberOfRejectedQuestions = 0;
-    }
+    public void increaseNumberOfRejectedQuestions() { this.numberOfRejectedQuestions ++; } //TODO fix later
 
     public void addQuizAnswer(QuizAnswer quizAnswer) {
         this.quizAnswers.add(quizAnswer);
@@ -426,7 +415,7 @@ public class User implements UserDetails {
         this.courseExecutions.add(course);
     }
 
-    public void addSubmittedQuestion(Question question) { this.submittedQuestions.add(question); }
+    public void addSubmittedQuestion(StudentQuestion question) { this.submittedQuestions.add(question); }
 
     @Override
     public String toString() {

@@ -28,7 +28,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 public class Question {
     @SuppressWarnings("unused")
     public enum Status {
-        DISABLED, REMOVED, AVAILABLE, REJECTED, PENDING
+        DISABLED, REMOVED, AVAILABLE
     }
 
     @Id
@@ -74,13 +74,6 @@ public class Question {
     @ManyToOne
     @JoinColumn(name = "discussion_id")
     private Discussion discussion;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User submittingUser;
-
-    @Column
-    private String justification;
 
     public Question() {
     }
@@ -223,14 +216,6 @@ public class Question {
         topics.add(topic);
     }
 
-    public User getSubmittingUser() { return submittingUser; }
-
-    public void setSubmittingUser(User submittingUser) { this.submittingUser = submittingUser; }
-
-    public String getJustification() { return justification; }
-
-    public void setJustification(String justification) { this.justification = justification; }
-
     public void remove() {
         canRemove();
         getCourse().getQuestions().remove(this);
@@ -256,8 +241,6 @@ public class Question {
                 ", topics=" + topics +
                 ", course=" + course +
                 ", discussion=" + discussion +
-                ", submittingUser=" + submittingUser +
-                ", justification='" + justification + '\'' +
                 '}';
     }
 
@@ -317,7 +300,7 @@ public class Question {
         }
 
         if (questionDto.getOptions().stream().filter(OptionDto::getCorrect).count() < 1) {
-            throw new TutorException(QUESTION_MISSING_CORRECT_OPTION);
+            throw new TutorException(NO_CORRECT_OPTION);
         }
 
         if (!questionDto.getOptions().stream().filter(OptionDto::getCorrect).findAny()

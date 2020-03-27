@@ -114,44 +114,4 @@ public class UserService {
         return this.userRepository.findByUsername("Demo-Admin");
     }
 
-    @Retryable(
-            value = { SQLException.class },
-            backoff = @Backoff(delay = 5000))
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public void getSubmittedQuestionsStats(String username) {
-        User user = userRepository.findByUsername(username);
-        checkUserFound(user);
-
-        user.clearSubmittedQuestionsStatus();
-
-        checkSubmittedQuestions(user);
-
-        List<Question> questions = user.getSubmittedQuestions();
-
-        countUserQuestions(user, questions);
-    }
-
-    private void countUserQuestions(User user, List<Question> questions) {
-        for (Question question : questions) {
-            if (question.getStatus() == Question.Status.PENDING)
-                user.increaseNumberOfSubmittedQuestions();
-            else if (question.getStatus() == Question.Status.REJECTED) {
-                user.increaseNumberOfSubmittedQuestions();
-                user.increaseNumberOfRejectedQuestions();
-            } else {
-                user.increaseNumberOfSubmittedQuestions();
-                user.increaseNumberOfApprovedQuestions();
-            }
-        }
-    }
-
-    private void checkSubmittedQuestions(User user) {
-        if (user.getSubmittedQuestions().isEmpty())
-            throw new TutorException(USER_WITHOUT_SUBMITTED_QUESTIONS);
-    }
-
-    private void checkUserFound(User user) {
-        if (user == null)
-            throw new TutorException(USERNAME_NOT_FOUND);
-    }
 }
