@@ -52,7 +52,6 @@ class UpdateTourneyPerformanceTest extends Specification {
         def user = new User(NAME, USERNAME, 1, User.Role.STUDENT)
         user.addCourse(courseExecution)
         userRepository.save(user)
-        def userId = userRepository.findAll().get(0).getId()
 
         and: "a 10000 tourneys"
         1.upto(1, {
