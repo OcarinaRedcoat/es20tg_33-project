@@ -4,29 +4,26 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
-
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Discussion
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.DiscussionDto
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.MessageDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.DiscussionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Discussion
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
-import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.MessageDto
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -34,7 +31,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @DataJpaTest
-class DiscussionQuizAnswerPerformanceTest extends Specification {
+class GetDiscussionQuizAnswerPerformanceTest extends Specification {
     public static final String COURSE_NAME = "Software Architecture"
     public static final String ACRONYM = "AS1"
     public static final String ACADEMIC_TERM = "1 SEM"
@@ -144,23 +141,38 @@ class DiscussionQuizAnswerPerformanceTest extends Specification {
         availableDate = LocalDateTime.now()
     }
 
-    def 'Create a new discussion' () {
+    def 'Submit messages and visualizes 1 messages'(){
         given: "new discussion"
-        def qAId = questionAnswer.getId()
-        def discussionDto1 = new DiscussionDto()
-        def user_student1 = new User("Rodrigo","st",1,User.Role.STUDENT)
-        user_student1.setId(1)
+        def messageDto6 = new MessageDto()
+        def messageDto5 = new MessageDto()
 
-        user_student1.addQuizAnswer(quizAnswer)
+        discussionDto.setStudent(user_student)
+        discussionDto.setTeacher(user_teacher)
 
-        discussionDto1.setStudent(user_student1)
-        discussionDto1.setId(1)
+        messageDto6.setUser(user_student)
+        messageDto5.setUser(user_teacher)
+        messageDto6.setId(user_student.getId())
+        messageDto5.setId(user_teacher.getId())
+        messageDto6.setSentence(STUDENTANSWER)
+        messageDto5.setSentence(TEACHERANSWER)
+
+
+        def qAId1 = questionAnswer.getId()
+        def date1 = LocalDateTime.now()
+        def data2 = LocalDateTime.now().plusHours(1)
+        messageDto6.setMessageDate(date1)
+        messageDto5.setMessageDate(data2)
 
 
         when:
-        1.upto(1,{answerService.createDiscussion(qAId, discussionDto1)})
+        1.upto(1,{
+            answerService.submitMessage(user_student.getId(), discussionDto.getId(), messageDto6)
+            answerService.submitMessage(user_teacher.getId(), discussionDto.getId(), messageDto5)
+        })
 
         then:
+        def result = answerService.displayDiscussion(user_student.getId(),discussionDto.getId())
+        result.size() == 1
         true
     }
 
