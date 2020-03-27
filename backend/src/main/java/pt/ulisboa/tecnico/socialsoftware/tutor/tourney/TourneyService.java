@@ -62,6 +62,7 @@ public class TourneyService {
         User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, userId));
         Tourney tourney = new Tourney(tourneyDto, user);
 
+        if(tourney.getTitle() == null || tourney.getTitle().trim().isEmpty()) throw new TutorException(ErrorMessage.TOURNEY_NOT_CONSISTENT, "title");
         if(tourney.getAvailableDate() == null)  throw new TutorException(ErrorMessage.TOURNEY_NOT_CONSISTENT,"availableDate");
         if(tourney.getConclusionDate() == null)  throw new TutorException(ErrorMessage.TOURNEY_NOT_CONSISTENT, "conclusionDate");
         try{

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class TourneyDto implements Serializable {
+    private String tourneyTitle;
     private Integer tourneyNumberOfQuestions;
     private Integer tourneyId;
     private String tourneyAvailableDate, tourneyConclusionDate;
@@ -24,6 +25,7 @@ public class TourneyDto implements Serializable {
     public TourneyDto(){}
 
     public TourneyDto(Tourney tourney){
+        this.tourneyTitle = tourney.getTitle();
         this.tourneyNumberOfQuestions = tourney.getNumberOfQuestions();
         this.tourneyId = tourney.getId();
         this.tourneyAvailableDate = tourney.getAvailableDate();
@@ -105,4 +107,13 @@ public class TourneyDto implements Serializable {
     public void setTourneyCourseExecution(CourseDto tourneyCourseExecution) {
         this.tourneyCourseExecution = tourneyCourseExecution;
     }
+
+    public String getTourneyTitle() {
+        return tourneyTitle;
+    }
+
+    public void setTourneyTitle(String tourneyTitle) {
+        this.tourneyTitle = tourneyTitle;
+    }
+    
 }
