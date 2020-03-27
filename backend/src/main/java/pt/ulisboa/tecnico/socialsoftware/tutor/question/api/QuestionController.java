@@ -15,6 +15,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -44,6 +45,16 @@ public class QuestionController {
     @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#courseId, 'COURSE.ACCESS')")
     public List<QuestionDto> getCourseQuestions(@PathVariable int courseId){
         return this.questionService.findQuestions(courseId);
+    }
+
+    @GetMapping(value = "/courses/{courseId}/questions/export")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#courseId, 'COURSE.ACCESS')")
+    public void exportQuestions(HttpServletResponse response,@PathVariable int courseId) throws IOException {
+        response.setHeader("Content-Disposition", "attachment; filename=file.zip");
+        response.setContentType("application/zip");
+        response.getOutputStream().write(this.questionService.exportCourseQuestions(courseId).toByteArray());
+
+        response.flushBuffer();
     }
 
     @GetMapping("/courses/{courseId}/questions/available")
