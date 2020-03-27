@@ -47,16 +47,17 @@ class ApprovalRejectionQuestionTest extends Specification {
         option = new Option()
         option.setContent(OPTION_CONTENT)
         option.setCorrect(true)
-        option.setQuestion(question)
+        option.setStudentQuestion(question)
         optionRepository.save(option)
 
         optionF = new Option()
         optionF.setContent(OPTION_CONTENT)
         optionF.setCorrect(false)
-        optionF.setQuestion(question)
+        optionF.setStudentQuestion(question)
+        optionRepository.save(optionF)
+
         question.addOption(option)
         question.addOption(optionF)
-        optionRepository.save(optionF)
         studentQuestionRepository.save(question)
     }
 

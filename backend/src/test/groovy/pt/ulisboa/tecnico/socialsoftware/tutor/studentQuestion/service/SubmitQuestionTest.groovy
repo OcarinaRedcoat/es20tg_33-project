@@ -108,7 +108,7 @@ class SubmitQuestionTest extends Specification {
         questionDto.setTitle(QUESTION_TITLE)
         questionDto.setContent(QUESTION_CONTENT)
         questionDto.setStatus(StudentQuestion.Status.PENDING.name())
-        and: "four options"
+        and: "two options"
         def options = new ArrayList<String>()
         options.add(OPTION_CONTENT)
         options.add(OPTION_CONTENT)
@@ -118,18 +118,10 @@ class SubmitQuestionTest extends Specification {
         when:
         studentQuestionService.submitQuestion(course.getId(), questionDto, USERNAME)
 
-        then: "the question is submitted successfully"
-        studentQuestionRepository.count() == 1L
-        def result = studentQuestionRepository.findAll().get(0)
-        result.getId() != null
-        result.getStatus() == StudentQuestion.Status.PENDING
-        result.getTitle() == QUESTION_TITLE
-        result.getContent() == QUESTION_CONTENT
-        result.getOptions().size() == 2
-        result.getCourse().getName() == TEST_COURSE
-        result.getSubmittingUser().getUsername() == USERNAME
-        course.getSubmitttedQuestions().contains(result)
-        user.getSubmittedQuestions().get(0).getSubmittingUser().getUsername() == USERNAME
+        then: "an exception is thrown"
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.INVALID_NUMBER_OF_OPTIONS
+        studentQuestionRepository.count() == 0L
     }
 
     def "question with an invalid correct answer index"() {

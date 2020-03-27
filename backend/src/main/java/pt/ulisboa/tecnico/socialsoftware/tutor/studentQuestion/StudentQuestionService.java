@@ -17,6 +17,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
@@ -64,6 +65,7 @@ public class StudentQuestionService {
         if(question.getStatus() == StudentQuestion.Status.PENDING) {
             question.setStatus(StudentQuestion.Status.APPROVED);
             question.setJustification(justification);
+            question.getSubmittingUser().increaseNumberOfApprovedQuestions();
             entityManager.persist(question);
             return new StudentQuestionDto(question);
         }
@@ -84,6 +86,7 @@ public class StudentQuestionService {
         if(question.getStatus() == StudentQuestion.Status.PENDING) {
             question.setStatus(StudentQuestion.Status.REJECTED);
             question.setJustification(justification);
+            question.getSubmittingUser().increaseNumberOfRejectedQuestions();
             entityManager.persist(question);
             return new StudentQuestionDto(question);
         }
@@ -92,44 +95,23 @@ public class StudentQuestionService {
         }
     }
 
-    /*@Retryable(
+    @Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public List<QuestionDto> getSubmittedQuestionsStats(String username) { //TODO fix
+    public List<StudentQuestionDto> getSubmittedQuestionsStats(String username) {
         User user = userRepository.findByUsername(username);
         checkUserFound(user);
-        user.clearSubmittedQuestionsStatus();
         checkSubmittedQuestions(user);
-        List<Question> questions = user.getSubmittedQuestions();
-        countUserQuestions(user, questions);
+        List<StudentQuestion> questions = user.getSubmittedQuestions();
 
-        return questions.stream().map(QuestionDto::new).collect(Collectors.toList());
-    }
-
-    private void countUserQuestions(User user, List<Question> questions) {
-        for (Question question : questions) {
-            if (question.getStatus() == Question.Status.PENDING)
-                user.increaseNumberOfSubmittedQuestions();
-            else if (question.getStatus() == Question.Status.REJECTED) {
-                user.increaseNumberOfSubmittedQuestions();
-                user.increaseNumberOfRejectedQuestions();
-            } else {
-                user.increaseNumberOfSubmittedQuestions();
-                user.increaseNumberOfApprovedQuestions();
-            }
-        }
+        return questions.stream().map(StudentQuestionDto::new).collect(Collectors.toList());
     }
 
     private void checkSubmittedQuestions(User user) {
         if (user.getSubmittedQuestions().isEmpty())
             throw new TutorException(USER_WITHOUT_SUBMITTED_QUESTIONS);
     }
-
-    private void checkUserFound(User user) {
-        if (user == null)
-            throw new TutorException(USERNAME_NOT_FOUND);
-    }*/
 
     private void checkUserFound(User user) {
         if (user == null)

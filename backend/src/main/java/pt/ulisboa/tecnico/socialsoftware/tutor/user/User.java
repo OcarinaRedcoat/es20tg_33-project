@@ -175,6 +175,8 @@ public class User implements UserDetails {
 
     public void setSubmittedQuestions(List<StudentQuestion> submittedQuestions) { this.submittedQuestions = submittedQuestions; }
 
+    public void addSubmittedQuestion(StudentQuestion question) { this.submittedQuestions.add(question); }
+
     public Set<Tourney> getEnrolledTourneys() {
         return enrolledTourneys;
     }
@@ -195,25 +197,19 @@ public class User implements UserDetails {
         return numberOfSubmittedQuestions;
     }
 
-    public void setNumberOfSubmittedQuestions(Integer numberOfSubmittedQuestions) {
-        this.numberOfSubmittedQuestions = numberOfSubmittedQuestions;
-    }
+    public void setNumberOfSubmittedQuestions(Integer numberOfSubmittedQuestions) { this.numberOfSubmittedQuestions = numberOfSubmittedQuestions; }
 
     public Integer getNumberOfApprovedQuestions() {
         return numberOfApprovedQuestions;
     }
 
-    public void setNumberOfApprovedQuestions(Integer numberOfApprovedQuestions) {
-        this.numberOfApprovedQuestions = numberOfApprovedQuestions;
-    }
+    public void setNumberOfApprovedQuestions(Integer numberOfApprovedQuestions) { this.numberOfApprovedQuestions = numberOfApprovedQuestions; }
 
     public Integer getNumberOfRejectedQuestions() {
         return numberOfRejectedQuestions;
     }
 
-    public void setNumberOfRejectedQuestions(Integer numberOfRejectedQuestions) {
-        this.numberOfRejectedQuestions = numberOfRejectedQuestions;
-    }
+    public void setNumberOfRejectedQuestions(Integer numberOfRejectedQuestions) { this.numberOfRejectedQuestions = numberOfRejectedQuestions; }
 
     public Integer getNumberOfTeacherQuizzes() {
         if (this.numberOfTeacherQuizzes == null)
@@ -401,12 +397,6 @@ public class User implements UserDetails {
         }
     }
 
-    public void increaseNumberOfSubmittedQuestions() { this.numberOfSubmittedQuestions ++; } //TODO fix later
-
-    public void increaseNumberOfApprovedQuestions() { this.numberOfApprovedQuestions ++; } //TODO fix later
-
-    public void increaseNumberOfRejectedQuestions() { this.numberOfRejectedQuestions ++; } //TODO fix later
-
     public void addQuizAnswer(QuizAnswer quizAnswer) {
         this.quizAnswers.add(quizAnswer);
     }
@@ -415,7 +405,11 @@ public class User implements UserDetails {
         this.courseExecutions.add(course);
     }
 
-    public void addSubmittedQuestion(StudentQuestion question) { this.submittedQuestions.add(question); }
+    public void increaseNumberOfApprovedQuestions() { this.numberOfApprovedQuestions ++; }
+
+    public void increaseNumberOfRejectedQuestions() { this.numberOfRejectedQuestions ++; }
+
+    public void increaseNumberOfSubmittedQuestions() { this.numberOfSubmittedQuestions ++; }
 
     @Override
     public String toString() {

@@ -68,11 +68,11 @@
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
           <stringProp name="dataSource">sampleReq</stringProp>
           <stringProp name="queryType">Callable Statement</stringProp>
-          <stringProp name="query">INSERT INTO questions (id, content, number_of_answers, number_of_correct, title, status, creation_date, course_id, key, justification, user_id)
-VALUES (3000, &apos;Question content&apos;,0,0,&apos;Test Question title&apos;,&apos;PENDING&apos;, null, 2, 2020, null, null);
+          <stringProp name="query">INSERT INTO student_questions (id, content, title, status, course_id, key, justification, user_id)
+VALUES (3000, &apos;Question content&apos;,&apos;Test Question title&apos;,&apos;PENDING&apos;, 2, 2020, null, null);
 
-INSERT INTO questions (id, content, number_of_answers, number_of_correct, title, status, creation_date, course_id, key, justification, user_id)
-VALUES (3001, &apos;Question content&apos;,0,0,&apos;Test Question title&apos;,&apos;PENDING&apos;, null, 2, 2021, null, null);
+INSERT INTO student_questions (id, content, title, status, course_id, key, justification, user_id)
+VALUES (3001, &apos;Question content&apos;,&apos;Test Question title&apos;,&apos;PENDING&apos;, 2, 2021, null, null);
 
 
 </stringProp>
@@ -193,7 +193,7 @@ VALUES (3001, &apos;Question content&apos;,0,0,&apos;Test Question title&apos;,&
             <stringProp name="HTTPSampler.port">${port}</stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/questions/3000/approve</stringProp>
+            <stringProp name="HTTPSampler.path">/studentQuestions/3000/approve</stringProp>
             <stringProp name="HTTPSampler.method">PUT</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -265,7 +265,7 @@ VALUES (3001, &apos;Question content&apos;,0,0,&apos;Test Question title&apos;,&
             <stringProp name="HTTPSampler.port">${port}</stringProp>
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-            <stringProp name="HTTPSampler.path">/questions/3001/reject</stringProp>
+            <stringProp name="HTTPSampler.path">/studentQuestions/3001/reject</stringProp>
             <stringProp name="HTTPSampler.method">PUT</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -433,8 +433,8 @@ VALUES (3001, &apos;Question content&apos;,0,0,&apos;Test Question title&apos;,&
         <hashTree/>
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
           <stringProp name="dataSource">sampleReq</stringProp>
-          <stringProp name="query">DELETE FROM questions WHERE id=3000;
-DELETE FROM questions WHERE id=3001;</stringProp>
+          <stringProp name="query">DELETE FROM student_questions WHERE id=3000;
+DELETE FROM student_questions WHERE id=3001;</stringProp>
           <stringProp name="queryArguments"></stringProp>
           <stringProp name="queryArgumentsTypes"></stringProp>
           <stringProp name="queryTimeout"></stringProp>

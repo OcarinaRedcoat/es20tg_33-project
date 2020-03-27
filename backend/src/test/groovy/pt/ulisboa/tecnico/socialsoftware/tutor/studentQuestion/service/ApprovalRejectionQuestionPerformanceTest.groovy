@@ -13,7 +13,6 @@ import spock.lang.Specification
 class ApprovalRejectionQuestionPerformanceTest extends Specification {
     public static final String QUESTION_TITLE = "qTitle"
     public static final String QUESTION_CONTENT = "qContent"
-    public static final String OPTION_CONTENT = "optContent"
     public static final String JUSTIFICATION_CONTENT = "justification content"
 
     @Autowired

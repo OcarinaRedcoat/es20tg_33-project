@@ -17,11 +17,9 @@ public class StudentQuestionController {
 
     private StudentQuestionService studentQuestionService;
 
-    StudentQuestionController(StudentQuestionService studentQuestionService) {
-        this.studentQuestionService = studentQuestionService;
-    }
+    StudentQuestionController(StudentQuestionService studentQuestionService) { this.studentQuestionService = studentQuestionService; }
 
-    @PostMapping("/courses/{courseId}/submissions")
+    @PostMapping("/courses/{courseId}/studentQuestions")
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#courseId, 'COURSE.ACCESS')")
     public StudentQuestionDto submitQuestion(Principal principal, @PathVariable int courseId, @Valid @RequestBody StudentQuestionDto question) {
         User user = (User) ((Authentication) principal).getPrincipal();
@@ -47,7 +45,7 @@ public class StudentQuestionController {
         return this.studentQuestionService.rejectQuestion(questionId, justification);
     }
 
-    /*@GetMapping("/courses/{courseId}/studentQuestions/status")
+    @GetMapping("/courses/{courseId}/studentQuestions/status")
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#courseId, 'COURSE.ACCESS')")
     public List<StudentQuestionDto> getSubmittedQuestionsStats(Principal principal, @PathVariable int courseId) {
         User user = (User) ((Authentication) principal).getPrincipal();
@@ -55,5 +53,5 @@ public class StudentQuestionController {
             throw new TutorException(AUTHENTICATION_ERROR);
         }
         return this.studentQuestionService.getSubmittedQuestionsStats(user.getUsername());
-    }*/
+    }
 }

@@ -44,8 +44,8 @@ public class StudentQuestion {
     @Column
     private String justification;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "student_question", fetch = FetchType.EAGER, orphanRemoval=true)
-    private List<Option> options = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "studentQuestion", fetch = FetchType.EAGER, orphanRemoval=true)
+    private List<Option> studentQuestionOptions = new ArrayList<>();
 
     public StudentQuestion() {
     }
@@ -92,9 +92,9 @@ public class StudentQuestion {
 
     public void setStatus(Status status) { this.status = status; }
 
-    public List<Option> getOptions() { return options; }
+    public List<Option> getOptions() { return studentQuestionOptions; }
 
-    public void setOptions(List<Option> options) { this.options = options; }
+    public void setOptions(List<Option> options) { this.studentQuestionOptions = options; }
 
     public Course getCourse() { return course; }
 
@@ -109,7 +109,7 @@ public class StudentQuestion {
     public void setJustification(String justification) { this.justification = justification; }
 
     public void addOption(Option option) {
-        this.options.add(option);
+        this.studentQuestionOptions.add(option);
     }
 
     @Override
@@ -120,7 +120,7 @@ public class StudentQuestion {
                 ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
                 ", status=" + status +
-                ", options=" + options +
+                ", options=" + studentQuestionOptions +
                 ", course=" + course +
                 ", submittingUser=" + submittingUser +
                 ", justification='" + justification + '\'' +
@@ -128,6 +128,12 @@ public class StudentQuestion {
     }
 
     private void checkConsistentQuestion(StudentQuestionDto questionDto) {
+        if (questionDto.getTitle() == null || questionDto.getTitle().trim().length() == 0 ||
+                questionDto.getContent().trim().length() == 0 ||
+                questionDto.getContent() == null) {
+            throw new TutorException(QUESTION_MISSING_TITLE_OR_CONTENT);
+        }
+
         if (questionDto.getOptions().stream().anyMatch(option -> option.trim().length() == 0)) {
             throw new TutorException(QUESTION_MISSING_DATA);
         }
@@ -136,17 +142,7 @@ public class StudentQuestion {
             throw new TutorException(INVALID_NUMBER_OF_OPTIONS);
         }
 
-        if (questionDto.getTitle() == null || questionDto.getTitle().trim().length() == 0 ||
-                questionDto.getContent().trim().length() == 0 ||
-                questionDto.getContent() == null) {
-            throw new TutorException(QUESTION_MISSING_TITLE_OR_CONTENT);
-        }
-
-        if (questionDto.getCorrectOptionIndex() == 0) {
-            throw new TutorException(NO_CORRECT_OPTION);
-        }
-
-        if (questionDto.getCorrectOptionIndex() < 1 || questionDto.getCorrectOptionIndex() > 4){
+        if (questionDto.getCorrectOptionIndex() < 1 || questionDto.getCorrectOptionIndex() > 4 || questionDto.getCorrectOptionIndex() == 0){
             throw new TutorException(INVALID_CORRECT_OPTION_INDEX);
         }
     }
