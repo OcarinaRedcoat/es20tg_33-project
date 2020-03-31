@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
@@ -35,6 +36,14 @@ public class StudentQuestionService {
 
     @PersistenceContext
     EntityManager entityManager;
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public CourseDto findQuestionCourse(Integer questionId) {
+        return studentQuestionRepository.findById(questionId)
+                .map(StudentQuestion::getCourse)
+                .map(CourseDto::new)
+                .orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
+    }
 
     @Retryable(
             value = { SQLException.class },
@@ -65,7 +74,6 @@ public class StudentQuestionService {
         if(question.getStatus() == StudentQuestion.Status.PENDING) {
             question.setStatus(StudentQuestion.Status.APPROVED);
             question.setJustification(justification);
-            question.getSubmittingUser().increaseNumberOfApprovedQuestions();
             entityManager.persist(question);
             return new StudentQuestionDto(question);
         }
@@ -86,7 +94,6 @@ public class StudentQuestionService {
         if(question.getStatus() == StudentQuestion.Status.PENDING) {
             question.setStatus(StudentQuestion.Status.REJECTED);
             question.setJustification(justification);
-            question.getSubmittingUser().increaseNumberOfRejectedQuestions();
             entityManager.persist(question);
             return new StudentQuestionDto(question);
         }

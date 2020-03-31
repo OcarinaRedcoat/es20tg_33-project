@@ -405,12 +405,6 @@ public class User implements UserDetails {
         this.courseExecutions.add(course);
     }
 
-    public void increaseNumberOfApprovedQuestions() { this.numberOfApprovedQuestions ++; }
-
-    public void increaseNumberOfRejectedQuestions() { this.numberOfRejectedQuestions ++; }
-
-    public void increaseNumberOfSubmittedQuestions() { this.numberOfSubmittedQuestions ++; }
-
     @Override
     public String toString() {
         return "User{" +

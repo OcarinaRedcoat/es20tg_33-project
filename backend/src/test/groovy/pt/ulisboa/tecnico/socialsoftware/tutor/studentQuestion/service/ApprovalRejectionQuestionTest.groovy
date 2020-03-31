@@ -11,10 +11,14 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionReposit
 import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestion
 import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestionService
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import spock.lang.Specification
 
 @DataJpaTest
 class ApprovalRejectionQuestionTest extends Specification {
+    public static final String USERNAME = "user"
+    public static final String PERSON_NAME = "Name"
     public static final String COURSE_NAME = "Software Architecture"
     public static final String ACRONYM = "AS1"
     public static final String ACADEMIC_TERM = "1 SEM"
@@ -30,15 +34,23 @@ class ApprovalRejectionQuestionTest extends Specification {
     OptionRepository optionRepository
 
     @Autowired
+    UserRepository userRepository
+
+    @Autowired
     StudentQuestionRepository studentQuestionRepository
 
     def question
     def option
     def optionF
+    def user
 
     def setup() {
+        user = new User(PERSON_NAME, USERNAME, 1, User.Role.STUDENT)
+        userRepository.save(user)
+
         given: "create a question"
         question = new StudentQuestion()
+        question.setKey(1)
         question.setTitle(QUESTION_TITLE)
         question.setContent(QUESTION_CONTENT)
         question.setStatus(StudentQuestion.Status.PENDING)
@@ -48,16 +60,19 @@ class ApprovalRejectionQuestionTest extends Specification {
         option.setContent(OPTION_CONTENT)
         option.setCorrect(true)
         option.setStudentQuestion(question)
+        option.setSequence(1)
         optionRepository.save(option)
 
         optionF = new Option()
         optionF.setContent(OPTION_CONTENT)
         optionF.setCorrect(false)
         optionF.setStudentQuestion(question)
+        optionF.setSequence(2)
         optionRepository.save(optionF)
 
         question.addOption(option)
         question.addOption(optionF)
+        question.setSubmittingUser(user)
         studentQuestionRepository.save(question)
     }
 
@@ -74,6 +89,7 @@ class ApprovalRejectionQuestionTest extends Specification {
         result.getTitle() == QUESTION_TITLE
         result.getContent() == QUESTION_CONTENT
         result.getOptions().size() == 2
+        result.getSubmittingUser().getUsername() == USERNAME
     }
 
     def "approve a valid question with justification"() {
@@ -89,6 +105,7 @@ class ApprovalRejectionQuestionTest extends Specification {
         result.getTitle() == QUESTION_TITLE
         result.getContent() == QUESTION_CONTENT
         result.getOptions().size() == 2
+        result.getSubmittingUser().getUsername() == USERNAME
     }
 
     def "reject a question with justification"() {
@@ -104,6 +121,7 @@ class ApprovalRejectionQuestionTest extends Specification {
         result.getContent() == QUESTION_CONTENT
         result.getJustification() == JUSTIFICATION_CONTENT
         result.getOptions().size() == 2
+        result.getSubmittingUser().getUsername() == USERNAME
     }
 
     def "reject a question without justification"() {
@@ -140,7 +158,7 @@ class ApprovalRejectionQuestionTest extends Specification {
 
     def "approve a question not in pending status"() {
         given: "a question in rejected status"
-        question.setStatus(Question.Status.REJECTED)
+        question.setStatus(StudentQuestion.Status.REJECTED)
 
         when:
         studentQuestionService.approveQuestion(question.getId(), null)

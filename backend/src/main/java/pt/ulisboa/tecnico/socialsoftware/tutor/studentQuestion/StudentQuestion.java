@@ -62,8 +62,10 @@ public class StudentQuestion {
 
         int correctOptionIndex = questionDto.getCorrectOptionIndex();
         int i = 0;
-        for (String optionContent : questionDto.getOptions()) {
+        List<String> options = questionDto.getOptions();
+        for (String optionContent : options) {
             Option option = new Option();
+            option.setStudentQuestion(this);
             option.setContent(optionContent);
             option.setSequence(i++);
             if (i == correctOptionIndex)

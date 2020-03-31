@@ -31,7 +31,7 @@ public class StudentQuestionDto implements Serializable {
         this.justification = question.getJustification();
         this.options = question.getOptions().stream().map(Option::getContent).collect(Collectors.toList());
         this.correctOptionIndex = (question.getOptions().stream()
-                .filter(option -> option.getCorrect() == true)
+                .filter(Option::getCorrect)
                 .mapToInt(Option::getSequence)
                 .findAny()
                 .getAsInt()) + 1;

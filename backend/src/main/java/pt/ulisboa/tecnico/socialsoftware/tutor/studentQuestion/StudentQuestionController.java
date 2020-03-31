@@ -32,14 +32,14 @@ public class StudentQuestionController {
     }
 
     @PutMapping("/studentQuestions/{questionId}/approve")
-    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'QUESTION.ACCESS')")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'STUDENT_QUESTION.ACCESS')")
     public StudentQuestionDto approveQuestion(@PathVariable Integer questionId, @RequestBody String justification) {
 
         return this.studentQuestionService.approveQuestion(questionId, justification);
     }
 
     @PutMapping("/studentQuestions/{questionId}/reject")
-    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'QUESTION.ACCESS')")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'STUDENT_QUESTION.ACCESS')")
     public StudentQuestionDto rejectQuestion(@PathVariable Integer questionId, @RequestBody String justification) {
 
         return this.studentQuestionService.rejectQuestion(questionId, justification);

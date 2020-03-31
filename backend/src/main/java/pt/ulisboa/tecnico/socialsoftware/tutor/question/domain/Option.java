@@ -70,9 +70,7 @@ public class Option {
         this.correct = correct;
     }
 
-    public String getContent() {
-        return content;
-    }
+    public String getContent() { return content; }
 
     public void setContent(String content) {
         this.content = content;
