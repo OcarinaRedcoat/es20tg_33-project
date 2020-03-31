@@ -10,10 +10,10 @@ import java.util.List;
 
 public class DiscussionDto implements Serializable {
 
-    private Integer id;
-    private Message  studentMessage;
-    private Message teacherMessage;
-    private List<Message> threadListMessages= new ArrayList<>();
+    private Integer discussionId;
+    private MessageDto  studentMessage;
+    private MessageDto teacherMessage;
+    private List<MessageDto> discussionListMessages= new ArrayList<>();
 
 
     private User student;
@@ -25,41 +25,49 @@ public class DiscussionDto implements Serializable {
     }
 
     public DiscussionDto(Discussion discussion){
-        this.id=discussion.getId();
-        this.studentMessage=discussion.getStudentMessage();
-        this.teacherMessage=discussion.getTeacherMessage();
+        this.discussionId= discussion.getId();
+        if (discussion.getStudentMessage() != null) {
+            this.studentMessage = new MessageDto(discussion.getStudentMessage());
+        }
+        if (discussion.getTeacherMessage() != null) {
+            this.teacherMessage = new MessageDto(discussion.getTeacherMessage());
+        }
     }
 
     public Integer getId() {
-        return id;
+        return discussionId;
     }
 
     public void setId(Integer id) {
-        this.id = id;
+        this.discussionId = id;
     }
 
-    public Message getStudentMessage() {
+    public MessageDto getStudentMessage() {
         return studentMessage;
     }
 
-    public void setStudentMessage(Message studentMessage) {
+    public void setStudentMessage(MessageDto studentMessage) {
         this.studentMessage = studentMessage;
     }
 
-    public Message getTeacherMessage() {
+    public MessageDto getTeacherMessage() {
         return teacherMessage;
     }
 
-    public void setTeacherMessage(Message teacherMessage) {
+    public void setTeacherMessage(MessageDto teacherMessage) {
         this.teacherMessage = teacherMessage;
     }
 
-    public List<Message> getDiscussionListMessages() {
-        return threadListMessages;
+    public List<MessageDto> getDiscussionListMessages() {
+        return discussionListMessages;
     }
 
-    public void setDiscussionListMessages(List<Message> threadListMessages) {
-        this.threadListMessages = threadListMessages;
+    public void setDiscussionListMessages(List<MessageDto> threadListMessages) {
+        this.discussionListMessages = threadListMessages;
+    }
+
+    public void addDiscussionMessage(MessageDto messageDto){
+        this.discussionListMessages.add(messageDto);
     }
 
     public User getStudent() { return student; }
@@ -73,11 +81,11 @@ public class DiscussionDto implements Serializable {
 
     @Override
     public String toString() {
-        return "ThreadDto{" +
-                "id=" + id +
+        return "DiscussionDto{" +
+                "discussionId=" + discussionId +
                 ", studentMessage=" + studentMessage +
                 ", teacherMessage=" + teacherMessage +
-                ", threadListMessages=" + threadListMessages +
+                ", threadListMessages=" + discussionListMessages +
                 '}';
     }
 }

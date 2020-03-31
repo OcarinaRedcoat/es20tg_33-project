@@ -105,7 +105,7 @@ public class AnswerService {
             quizAnswer.setCompleted(true);
         }
 
-        // When student submits before conclusionDate
+        // In class quiz When student submits before conclusionDate
         if (quizAnswer.getQuiz().getConclusionDate() != null &&
             quizAnswer.getQuiz().getType().equals(Quiz.QuizType.IN_CLASS) &&
             LocalDateTime.now().isBefore(quizAnswer.getQuiz().getConclusionDate())) {
@@ -205,8 +205,8 @@ public class AnswerService {
         QuestionAnswer questionAnswer= questionAnswerRepository.findById(questionAnswerId).orElseThrow(() -> new TutorException(ErrorMessage.QUESTION_ANSWER_NOT_FOUND));
         Discussion discussion= new Discussion(questionAnswer,discussionDto);
 
-        entityManager.persist(discussion);
         discussionRepository.save(discussion);
+//        entityManager.persist(discussion);
         return new DiscussionDto(discussion);
     }
 
@@ -214,32 +214,34 @@ public class AnswerService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public DiscussionDto submitMessage(Integer questionAnswerId, Integer UserId, DiscussionDto discussionDto, MessageDto messageDto) {
-        QuestionAnswer questionAnswer = questionAnswerRepository.findById(questionAnswerId).orElseThrow(() -> new TutorException(ErrorMessage.QUESTION_ANSWER_NOT_FOUND));
+    public DiscussionDto submitMessage(Integer UserId, Integer discussionId, MessageDto messageDto) {
         User user = userRepository.findById(UserId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, UserId));
-        Discussion discussion = new Discussion(questionAnswer, discussionDto);
+        Discussion discussion = discussionRepository.findById(discussionId).orElseThrow(() -> new TutorException(STUDENT_DID_NOT_ANSWER_QUESTION));
+
+        //Discussion discussion = new Discussion(questionAnswer, discussionDto);
 
         Message message = new Message(messageDto, user);
 
+        message.setSentence(messageDto.getSentence());
+
         message.checkConsistentMessage(messageDto);
 
-        saveMessage(messageDto, user, discussion, message);
+        saveMessage(message, user, discussion);
 
         entityManager.persist(discussion);
 
         return new DiscussionDto(discussion);
+
     }
 
-    private void saveMessage(MessageDto messageDto, User user, Discussion discussion, Message message) {
+    private void saveMessage(Message message, User user, Discussion discussion) {
         if (user.getRole().equals(User.Role.STUDENT)) {
             discussion.setStudentMessage(message);
-            discussion.getStudentMessage().checkConsistentMessage(messageDto);
-            discussion.saveStudentMessage();
+            discussion.addDiscussionMessage(message);
+
         } else {
             discussion.setTeacherMessage(message);
-            discussion.getTeacherMessage().checkConsistentMessage(messageDto);
-            discussion.saveTeacherMessage();
-
+            discussion.addDiscussionMessage(message);
         }
     }
 
@@ -247,11 +249,11 @@ public class AnswerService {
     @Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
-    public List<Message> displayDiscussion(Integer UserId, DiscussionDto discussionDto){
+    public List<MessageDto> displayDiscussion(Integer UserId, Integer discussionDtoId){
         User user = userRepository.findById(UserId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, UserId));
-        Discussion discussion = discussionRepository.findById(discussionDto.getId()).orElseThrow(() -> new TutorException(STUDENT_DOESNT_HAVE_PERMISSION));
+        Discussion discussion = discussionRepository.findById(discussionDtoId).orElseThrow(() -> new TutorException(STUDENT_DOESNT_HAVE_PERMISSION));
 
-        List<Message> messagesList = getTeacherClarification(discussion);
+        List<MessageDto> messagesList = getTeacherClarification(discussion);
 
         if (messagesList.isEmpty()){
             throw new TutorException(TEACHER_DID_NOT_CLARIFIED);
@@ -260,11 +262,13 @@ public class AnswerService {
          return messagesList;
     }
 
-    private List<Message> getTeacherClarification(Discussion discussion) {
-        List<Message> messagesList = new ArrayList<>();
+    private List<MessageDto> getTeacherClarification(Discussion discussion) {
+        List<MessageDto> messagesList = new ArrayList<>();
         for (Message message: discussion.getDiscussionListMessages()){
            if (message.getUser().getRole().equals(User.Role.TEACHER)){
-               messagesList.add(message);
+               MessageDto messageDto = new MessageDto(message);
+               messageDto.setUser(message.getUser());
+               messagesList.add(messageDto);
            }
         }
         return messagesList;
