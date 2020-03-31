@@ -57,7 +57,8 @@ public enum ErrorMessage {
     NOT_ENOUGH_QUESTIONS("Not enough questions to create a quiz"),
     QUESTION_MISSING_DATA("Missing information for quiz"),
     QUESTION_MULTIPLE_CORRECT_OPTIONS("Questions can only have 1 correct option"),
-    QUESTION_MISSING_CORRECT_OPTION("Questions must have one correct option"),
+    INVALID_NUMBER_OF_OPTIONS("Questions must have 4 options"),
+    INVALID_CORRECT_OPTION_INDEX("That's not a valid option index"),
     QUESTION_MISSING_TITLE_OR_CONTENT("Questions need a title and content"),
     QUESTION_CHANGE_CORRECT_OPTION_HAS_ANSWERS("Can not change correct option of answered question"),
     QUIZ_HAS_ANSWERS("Quiz already has answers"),
@@ -68,6 +69,7 @@ public enum ErrorMessage {
     AUTHENTICATION_ERROR("Authentication Error"),
     FENIX_CONFIGURATION_ERROR("Incorrect server configuration files for fenix"),
 
+    STUDENT_QUESTION_NOT_FOUND("Student Question not found with id %d"),
     QUESTION_MISSING_JUSTIFICATION("Missing a justification in order to reject question"),
     QUESTION_NOT_PENDING("Question status not pending"),
     USER_WITHOUT_SUBMITTED_QUESTIONS("This user doesn't have any submitted questions"),
