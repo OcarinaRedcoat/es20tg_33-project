@@ -187,11 +187,11 @@ let router = new Router({
           }
         },
         {
-          path: 'tourneys',
+          path: 'tourneys/create',
           name: 'create-tourney',
           component: CreateTourney,
           meta: {
-            title: process.env.VUE_APP_NAME + ' - Open Tourneys',
+            title: process.env.VUE_APP_NAME + ' - Create Tourney',
             requiredAuth: 'Student'
           }
         },

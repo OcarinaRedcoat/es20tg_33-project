@@ -112,7 +112,7 @@
             </v-btn>
           </template>
           <v-list dense>
-            <v-list-item to="/student/tourneys">
+            <v-list-item to="/student/tourneys/create">
               <v-list-item-action>
                 <v-icon>assignment</v-icon>
               </v-list-item-action>
