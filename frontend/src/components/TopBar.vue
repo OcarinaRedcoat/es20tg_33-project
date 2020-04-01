@@ -122,7 +122,7 @@
             </v-list-item>
             <v-list-item to="/student/tourneys">
               <v-list-item-action>
-                <v-icon>assignment</v-icon>
+                <v-icon>list</v-icon>
               </v-list-item-action>
               <v-list-item-content>
                 <v-list-item-title>Open Tourneys List</v-list-item-title>

@@ -566,6 +566,19 @@ export default class RemoteServices {
       });
   }
 
+  static async getTourneys() {
+    return httpClient
+      .get('/tourneys/open')
+      .then(response => {
+        return response.data.map((tourney: any) => {
+          return new Tourney(tourney);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async exportAll() {
     return httpClient
       .get('/admin/export', {
