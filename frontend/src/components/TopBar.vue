@@ -125,7 +125,7 @@
                 <v-icon>list</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title>Open Tourneys List</v-list-item-title>
+                <v-list-item-title data-cy="top-bar-open-tourneys">Open Tourneys List</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </v-list>

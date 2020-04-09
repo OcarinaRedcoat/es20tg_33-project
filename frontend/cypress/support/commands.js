@@ -102,9 +102,9 @@ function getMonthName(monthNumber) {
 Cypress.Commands.add('selectDate', (dialog, datePicker, dateTime) => {
   const dateTimeArr = dateTime.split(' ');
   const dateArr = dateTimeArr[0].split('-');
-  const year = dateArr[0];
+  const year = dateArr[2];
   const month = dateArr[1];
-  const day = dateArr[2];
+  const day = dateArr[0];
   const timeArr = dateTimeArr[1].split(':');
   const hour = timeArr[0];
   const minute = timeArr[1];
@@ -114,23 +114,30 @@ Cypress.Commands.add('selectDate', (dialog, datePicker, dateTime) => {
     .parent()
     .children('input')
     .click();
-  cy.get('.v-picker__title__btn.v-date-picker-title__year').last().click();
+  cy.get('.v-picker__title__btn.v-date-picker-title__year')
+    .last()
+    .click();
   cy.get('.v-date-picker-years')
     .contains(year)
     .click();
-  cy.get('.v-date-picker-table').last()
+  cy.get('.v-date-picker-table')
+    .last()
     .contains(getMonthName(Number.parseInt(month)).slice(0, 3))
     .click();
-  cy.get('.v-date-picker-table--date').last()
+  cy.get('.v-date-picker-table--date')
+    .last()
     .contains(day)
     .click();
-  cy.get('.v-time-picker-clock__inner').last()
+  cy.get('.v-time-picker-clock__inner')
+    .last()
     .contains((Number.parseInt(hour) % 12) + 12)
     .click();
-  cy.get('.v-time-picker-clock__inner').last()
+  cy.get('.v-time-picker-clock__inner')
+    .last()
     .contains(minute)
     .click();
-  cy.get('.v-card__actions').last()
+  cy.get('.v-card__actions')
+    .last()
     .contains('OK')
     .click();
 });
@@ -142,6 +149,12 @@ Cypress.Commands.add('visitCreateTourneyPage', () => {
   cy.get('[data-cy="top-bar-create-tourney"]').click();
 });
 
+Cypress.Commands.add('visitOpenTourneysPage', () => {
+  cy.get('[data-cy="top-bar-tourneys"]').click();
+  cy.get('[data-cy="top-bar-open-tourneys"]').click();
+  cy.get('.scrollbar').click();
+});
+
 // Tourney commands
 
 Cypress.Commands.add(
@@ -150,12 +163,29 @@ Cypress.Commands.add(
     cy.get('[data-cy="title"]').type(name);
     cy.get('[data-cy="numberOfQuestions"]').type(numberOfQuestions);
     cy.selectDate('[data-cy="availableDate"]', 'Available Date', availableDate);
-    cy.selectDate('[data-cy="conclusionDate"]', 'Conclusion Date', conclusionDate);
+    cy.selectDate(
+      '[data-cy="conclusionDate"]',
+      'Conclusion Date',
+      conclusionDate
+    );
     for (let topic of topics) {
       cy.get('[data-cy="topics"]')
         .contains(topic)
         .click();
     }
     cy.get('[data-cy="saveTourney"]').click();
+  }
+);
+
+Cypress.Commands.add(
+  'getOpenTourney',
+  (name, numberOfQuestions, availableDate, conclusionDate, topics) => {
+    return cy
+      .get('[data-cy="tourneysList"] tbody tr')
+      .last()
+      .should('contain', name)
+      .and('contain', numberOfQuestions)
+      .and('contain', availableDate)
+      .and('contain', conclusionDate);
   }
 );
