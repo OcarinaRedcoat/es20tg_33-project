@@ -19,6 +19,7 @@ import spock.lang.Specification
 @DataJpaTest
 class GetOpenTourneysTest extends Specification {
 
+    public static final String TOURNEY_TITLE = "Tourney 1"
     public static final Integer TOURNEY_ONE_NUMBER_QUESTIONS = 1
     public static final Integer TOURNEY_TWO_NUMBER_QUESTIONS = 2
     public static final String TOURNEY_AVAILABLE_DATE = "2020-01-01 21:12"
@@ -73,11 +74,11 @@ class GetOpenTourneysTest extends Specification {
 
         and: "two tourneys"
 
-        def tourney = new Tourney(TOURNEY_ONE_NUMBER_QUESTIONS, TOURNEY_AVAILABLE_DATE, TOURNEY_CONCLUSION_DATE, user)
+        def tourney = new Tourney(TOURNEY_TITLE, TOURNEY_ONE_NUMBER_QUESTIONS, TOURNEY_AVAILABLE_DATE, TOURNEY_CONCLUSION_DATE, user)
         tourney.setCourseExecution(courseExecution)
         tourneyRepository.save(tourney)
 
-        tourney = new Tourney(TOURNEY_TWO_NUMBER_QUESTIONS, TOURNEY_AVAILABLE_DATE, TOURNEY_CONCLUSION_DATE, user)
+        tourney = new Tourney(TOURNEY_TITLE, TOURNEY_TWO_NUMBER_QUESTIONS, TOURNEY_AVAILABLE_DATE, TOURNEY_CONCLUSION_DATE, user)
         tourney.setCourseExecution(courseExecution2)
         tourneyRepository.save(tourney)
 

@@ -27,7 +27,9 @@ import java.time.format.DateTimeFormatter
 
 @DataJpaTest
 class CreateTourneyTest extends Specification{
-    static final int QUESTION_NUMBER = 5
+
+    public static final int QUESTION_NUMBER = 5
+    public static final String TOURNEY_TITLE = "Tourney 1"
 
     def tourney
     def formatter
@@ -66,6 +68,7 @@ class CreateTourneyTest extends Specification{
         availableDate = LocalDateTime.now()
         conclusionDate = LocalDateTime.now().plusDays(1)
 
+        tourney.setTourneyTitle(TOURNEY_TITLE)
         tourney.setTourneyStatus(Tourney.Status.CLOSED)
         tourney.setTourneyAvailableDate(availableDate.format(formatter))
         tourney.setTourneyConclusionDate(conclusionDate.format(formatter))
@@ -97,12 +100,43 @@ class CreateTourneyTest extends Specification{
         tourneyRepository.count() == 1L
         def result = tourneyRepository.findAll().get(0)
         result.getId() != null
+        result.getTitle().equals(TOURNEY_TITLE)
         result.getAvailableDate().equals(availableDate.format(formatter))
         result.getConclusionDate().equals(conclusionDate.format(formatter))
         result.getTopics().size() == 1
         result.getStatus() == Tourney.Status.CLOSED
         result.getNumberOfQuestions() == QUESTION_NUMBER
         result.getCreator().getKey() == userId
+    }
+
+    def "tourney title is null"(){
+        given: "a tourney with no title"
+        def userId = userRepository.findAll().get(0).getId()
+        tourney.setTourneyNumberOfQuestions(QUESTION_NUMBER)
+        tourney.setTourneyTitle(null)
+
+        when:
+        tourneyService.createTourney(tourney, userId)
+
+        then:
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.TOURNEY_NOT_CONSISTENT
+        tourneyRepository.count() == 0L
+    }
+
+    def "tourney title is empty"(){
+        given: "a tourney with an empty title"
+        def userId = userRepository.findAll().get(0).getId()
+        tourney.setTourneyNumberOfQuestions(QUESTION_NUMBER)
+        tourney.setTourneyTitle(" ")
+
+        when:
+        tourneyService.createTourney(tourney, userId)
+
+        then:
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.TOURNEY_NOT_CONSISTENT
+        tourneyRepository.count() == 0L
     }
 
     def "tourney with no start date"(){
@@ -151,6 +185,21 @@ class CreateTourneyTest extends Specification{
         then:
         def exception = thrown(TutorException)
         exception.getErrorMessage() == ErrorMessage.STUDENT_CANT_ACCESS_COURSE_EXECUTION
+        tourneyRepository.count() == 0L
+    }
+
+    def "tourney doesn't have a course execution"(){
+        given: "a tourney with no end date"
+        def userId = userRepository.findAll().get(0).getId()
+        tourney.setTourneyCourseExecution(null)
+        tourney.setTourneyNumberOfQuestions(QUESTION_NUMBER)
+
+        when:
+        tourneyService.createTourney(tourney, userId)
+
+        then:
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.TOURNEY_NOT_CONSISTENT
         tourneyRepository.count() == 0L
     }
 
