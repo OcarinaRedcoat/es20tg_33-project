@@ -1,13 +1,14 @@
 <template>
   <v-card>
     <v-container>
-      <v-form ref="form" v-model="valid" lazy-validation>
+      <v-form ref="form" v-model="valid" lazy-validation data-cy="form">
         <v-row justify="space-between">
           <v-col cols="12" md="6">
             <v-text-field
               v-model="editTourney.tourneyTitle"
               :rules="[v => !!v || 'Must have a title']"
               label="Title"
+              data-cy="title"
               required
             ></v-text-field>
 
@@ -17,6 +18,7 @@
               :rules="[v => v > 0 || 'Number must be positive']"
               label="Number of Questions"
               value="0"
+              data-cy="numberOfQuestions"
               required
             ></v-text-field>
           </v-col>
@@ -28,6 +30,7 @@
               v-model="availableDate"
               date-format="yyyy-MM-dd"
               time-format="HH:mm"
+              data-cy="availableDate"
             ></v-datetime-picker>
 
             <v-datetime-picker
@@ -35,12 +38,13 @@
               v-model="conclusionDate"
               date-format="yyyy-MM-dd"
               time-format="HH:mm"
+              data-cy="conclusionDate"
             ></v-datetime-picker>
           </v-col>
         </v-row>
 
         <v-list>
-          <v-list-item-group v-model="editTourney.tourneyTopics" multiple>
+          <v-list-item-group v-model="editTourney.tourneyTopics" multiple data-cy="topics">
             <template v-for="(topic, i) in topics">
               <v-divider v-if="!topic" :key="`divider-${i}`"></v-divider>
 
@@ -71,7 +75,7 @@
 
         <v-btn color="error" class="mr-4" @click="reset">Clear</v-btn>
 
-        <v-btn :disabled="!valid" color="success" class="mr-4" @click="saveTourney">Create</v-btn>
+        <v-btn :disabled="!valid" color="success" class="mr-4" data-cy="saveTourney" @click="saveTourney">Save</v-btn>
       </v-form>
     </v-container>
   </v-card>
@@ -112,7 +116,6 @@ export default class EditTourneyForm extends Vue {
     this.editTourney.tourneyConclusionDate = formatUTCDate(
       this.conclusionDate
     );
-    console.log(this.editTourney.tourneyConclusionDate);
   }
 
   hasAllValues() {

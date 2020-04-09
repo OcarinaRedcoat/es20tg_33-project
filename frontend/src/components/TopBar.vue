@@ -106,7 +106,7 @@
 
         <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
           <template v-slot:activator="{ on }">
-            <v-btn v-on="on" text dark>
+            <v-btn v-on="on" text dark data-cy="top-bar-tourneys">
               Tourneys
               <v-icon>mdi-license</v-icon>
             </v-btn>
@@ -117,7 +117,7 @@
                 <v-icon>assignment</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title>Create Tourney</v-list-item-title>
+                <v-list-item-title data-cy="top-bar-create-tourney">Create Tourney</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-list-item to="/student/tourneys">
