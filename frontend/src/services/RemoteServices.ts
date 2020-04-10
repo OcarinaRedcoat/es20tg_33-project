@@ -569,6 +569,34 @@ export default class RemoteServices {
       });
   }
 
+  static async approveQuestion(questionId: number, justification: String): Promise<StudentQuestion> {
+    return httpClient
+      .put(
+        `/studentQuestions/${questionId}/approve`,
+        justification
+      )
+      .then(response => {
+        return new StudentQuestion(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async rejectQuestion(questionId: number, justification: String): Promise<StudentQuestion> {
+    return httpClient
+      .put(
+        `/studentQuestions/${questionId}/approve`,
+        justification
+      )
+      .then(response => {
+        return new StudentQuestion(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async exportAll() {
     return httpClient
       .get('/admin/export', {
