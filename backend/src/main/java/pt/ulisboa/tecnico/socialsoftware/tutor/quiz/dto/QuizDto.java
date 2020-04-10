@@ -4,6 +4,7 @@ import org.springframework.data.annotation.Transient;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
+import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyDto;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -28,6 +29,7 @@ public class QuizDto implements Serializable {
     private String version;
     private int numberOfQuestions;
     private int numberOfAnswers;
+    private TourneyDto tourney;
     private List<QuestionDto> questions = new ArrayList<>();
 
     @Transient
@@ -49,6 +51,8 @@ public class QuizDto implements Serializable {
         this.numberOfQuestions = quiz.getQuizQuestions().size();
         this.numberOfAnswers = quiz.getQuizAnswers().size();
 
+        if(quiz.getTourney() != null)
+            this.tourney = new TourneyDto(quiz.getTourney());
         if (quiz.getCreationDate() != null)
             this.creationDate = quiz.getCreationDate().format(formatter);
         if (quiz.getAvailableDate() != null)
@@ -227,5 +231,13 @@ public class QuizDto implements Serializable {
                 ", questions=" + questions +
                 ", formatter=" + formatter +
                 '}';
+    }
+
+    public TourneyDto getTourney() {
+        return tourney;
+    }
+
+    public void setTourney(TourneyDto tourney) {
+        this.tourney = tourney;
     }
 }
