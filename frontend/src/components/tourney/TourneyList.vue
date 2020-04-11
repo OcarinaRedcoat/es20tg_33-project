@@ -9,6 +9,7 @@
         :mobile-breakpoint="0"
         :items-per-page="50"
         :footer-props="{ itemsPerPageOptions: [15, 30, 50, 100] }"
+        data-cy="tourneysList"
       >
         <template v-slot:top>
           <v-card-title>
@@ -83,6 +84,7 @@ export default class TourneyList extends Vue {
       sortable: false
     }
   ];
+  
   async created() {
     await this.$store.dispatch('loading');
     try {
@@ -103,7 +105,7 @@ export default class TourneyList extends Vue {
   }
 
 	isCreator(tourney: Tourney) {
-		return tourney.tourneyCreator.username === this.username;
+		return tourney?.tourneyCreator?.username === this.username;
 	}
 
   async enrollInTourney(tourney: Tourney) {

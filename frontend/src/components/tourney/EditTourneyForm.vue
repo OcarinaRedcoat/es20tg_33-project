@@ -164,7 +164,7 @@ export default class EditTourneyForm extends Vue {
   }
 
   reset() {
-    this.$refs.form.reset();
+    (this.$refs.form as Vue & { reset: () => boolean }).reset();
     this.editTourney = new Tourney();
   }
 }
