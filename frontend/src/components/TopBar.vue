@@ -122,10 +122,10 @@
           <v-list dense>
             <v-list-item to="/student/submit">
               <v-list-item-action>
-                <v-icon>create</v-icon>
+                <v-icon>fas fa-file-alt</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title>Submit Question</v-list-item-title>
+                <v-list-item-title>Submitted Questions</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </v-list>
