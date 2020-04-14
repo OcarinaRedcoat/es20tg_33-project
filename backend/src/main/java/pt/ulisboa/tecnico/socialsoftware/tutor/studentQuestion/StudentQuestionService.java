@@ -115,6 +115,16 @@ public class StudentQuestionService {
         return questions.stream().map(StudentQuestionDto::new).collect(Collectors.toList());
     }
 
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<StudentQuestionDto> getSubmittedQuestions(int CourseId) {
+        List<StudentQuestion> questions = studentQuestionRepository.findStudentSubmittedQuestionsByCourse(CourseId);
+
+        return questions.stream().map(StudentQuestionDto::new).collect(Collectors.toList());
+    }
+
     private void checkSubmittedQuestions(User user) {
         if (user.getSubmittedQuestions().isEmpty())
             throw new TutorException(USER_WITHOUT_SUBMITTED_QUESTIONS);

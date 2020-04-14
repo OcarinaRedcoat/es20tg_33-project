@@ -54,4 +54,15 @@ public class StudentQuestionController {
         }
         return this.studentQuestionService.getSubmittedQuestionsStats(user.getUsername());
     }
+
+    @GetMapping("/courses/{courseId}/studentQuestions")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#courseId, 'COURSE.ACCESS')")
+    public List<StudentQuestionDto> getPendingQuestions(Principal principal, @PathVariable int courseId) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+        if(user == null){
+            throw new TutorException(AUTHENTICATION_ERROR);
+        }
+
+        return this.studentQuestionService.getSubmittedQuestions(courseId);
+    }
 }
