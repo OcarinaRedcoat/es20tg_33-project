@@ -43,7 +43,6 @@
   })
   export default class StudentQuestionsView extends Vue {
     questions: StudentQuestion[] = [];
-    editQuestionDialog: boolean = false;
     search: string = '';
 
     headers: object = [
@@ -107,3 +106,4 @@
         }
     }
 </style>
+

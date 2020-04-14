@@ -555,7 +555,22 @@ export default class RemoteServices {
       });
   }
 
-  static async submitQuestion(studentQuestion: StudentQuestion): Promise<StudentQuestion> {
+  static async getStudentQuestions(): Promise<StudentQuestion[]> {
+    return httpClient
+      .get(`/courses/${Store.getters.getCurrentCourse.courseId}/studentQuestions/status`)
+      .then(response => {
+        return response.data.map((question: any) => {
+          return new StudentQuestion(question);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async submitQuestion(
+    studentQuestion: StudentQuestion
+  ): Promise<StudentQuestion> {
     return httpClient
       .post(
         `/courses/${Store.getters.getCurrentCourse.courseId}/studentQuestions`,
@@ -569,12 +584,12 @@ export default class RemoteServices {
       });
   }
 
-  static async approveQuestion(questionId: number, justification: String): Promise<StudentQuestion> {
+  static async approveQuestion(
+    questionId: number,
+    justification: String
+  ): Promise<StudentQuestion> {
     return httpClient
-      .put(
-        `/studentQuestions/${questionId}/approve`,
-        justification
-      )
+      .put(`/studentQuestions/${questionId}/approve`, justification)
       .then(response => {
         return new StudentQuestion(response.data);
       })
@@ -583,12 +598,12 @@ export default class RemoteServices {
       });
   }
 
-  static async rejectQuestion(questionId: number, justification: String): Promise<StudentQuestion> {
+  static async rejectQuestion(
+    questionId: number,
+    justification: String
+  ): Promise<StudentQuestion> {
     return httpClient
-      .put(
-        `/studentQuestions/${questionId}/approve`,
-        justification
-      )
+      .put(`/studentQuestions/${questionId}/approve`, justification)
       .then(response => {
         return new StudentQuestion(response.data);
       })
