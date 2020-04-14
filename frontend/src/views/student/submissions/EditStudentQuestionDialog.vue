@@ -3,7 +3,7 @@
     :value="dialog"
     @input="$emit('dialog', false)"
     @keydown.esc="$emit('dialog', false)"
-    max-width="76%"
+    max-width="75%"
     max-height="80%"
   >
     <v-card class="pt-9 mx-auto">
@@ -39,7 +39,6 @@
             :key="index"
           >
             <v-switch
-              clearable
               v-model="editStudentQuestion.options[index - 1].correct"
               class="ma-4"
               label="Correct"
@@ -78,7 +77,6 @@ export default class SubmitQuestionView extends Vue {
 
   async created() {
     this.editStudentQuestion = new StudentQuestion(this.question);
-    this.editStudentQuestion.course = await this.getCourse();
     this.editStudentQuestion.submittingUser = await this.getSubmittingUser();
   }
 
@@ -104,16 +102,8 @@ export default class SubmitQuestionView extends Vue {
     }
   }
 
-  async getCourse() {
-    const course = this.$store.getters.getCurrentCourse;
-    if (course == null) {
-      await this.$store.dispatch('error', 'Can\'t find course');
-    }
-    return course;
-  }
-
   async getSubmittingUser() {
-    const user = this.$store.getters.getUser;
+    const user = this.$store.getters.getUser.getUsername();
     if (user == null) {
       await this.$store.dispatch('error', 'Can\'t find user');
     }
