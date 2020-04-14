@@ -1,6 +1,4 @@
 import Option from '@/models/management/Option';
-import User from '@/models/user/User';
-import Course from '@/models/user/Course';
 
 export default class StudentQuestion {
   id: number | undefined;
@@ -8,8 +6,7 @@ export default class StudentQuestion {
   status: string = 'PENDING';
   content: string = '';
   justification: string = '';
-  submittingUser: User | undefined;
-  course: Course | undefined;
+  submittingUser: string = '';
 
   options: Option[] = [new Option(), new Option(), new Option(), new Option()];
 
@@ -21,7 +18,6 @@ export default class StudentQuestion {
       this.content = jsonObj.content;
       this.justification = jsonObj.justification;
       this.submittingUser = jsonObj.submittingUser;
-      this.course = jsonObj.course;
 
       this.options = jsonObj.options.map(
         (option: Option) => new Option(option)

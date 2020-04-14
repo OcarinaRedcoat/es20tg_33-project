@@ -20,22 +20,16 @@
           />
 
           <v-spacer />
-          <v-btn color="primary" dark @click="submitQuestion">Submit Question</v-btn>
+          <v-btn color="primary" dark @click="submitQuestion"
+            >Submit Question</v-btn
+          >
         </v-card-title>
       </template>
 
       <template v-slot:item.status="{ item }">
-        <v-text-field
-          v-model="item.status"
-          :items="statusList"
-          dense
-        >
-          <template v-slot:selection="{ item }">
-            <v-chip :color="getStatusColor(item)" small>
-              <span>{{ item }}</span>
-            </v-chip>
-          </template>
-        </v-text-field>
+        <v-chip :color="getStatusColor(item)" small>
+          <span>{{ item.status }}</span>
+        </v-chip>
       </template>
     </v-data-table>
     <edit-student-question-dialog
@@ -55,7 +49,7 @@ import EditStudentQuestionDialog from '@/views/student/submissions/EditStudentQu
 
 @Component({
   components: {
-    'edit-student-question-dialog': EditStudentQuestionDialog,
+    'edit-student-question-dialog': EditStudentQuestionDialog
   }
 })
 export default class SubmittedQuestionsView extends Vue {
@@ -63,12 +57,12 @@ export default class SubmittedQuestionsView extends Vue {
   currentQuestion: StudentQuestion | null = null;
   editStudentQuestionDialog: boolean = false;
   search: string = '';
-  statusList = ['DISABLED', 'AVAILABLE', 'REMOVED'];
+  statusList = ['PENDING', 'APPROVED', 'REJECTED'];
 
   headers: object = [
     { text: 'Title', value: 'title', align: 'center' },
     { text: 'Question', value: 'content', align: 'left' },
-    { text: 'Status', value: 'status', align: 'center' },
+    { text: 'Status', value: 'status', align: 'center', width: '10%' },
     {
       text: 'Actions',
       value: 'action',
@@ -123,12 +117,13 @@ export default class SubmittedQuestionsView extends Vue {
   }*/
 
   async onSubmitQuestion(question: StudentQuestion) {
-    this.student_questions = this.student_questions.filter(q => q.id !== question.id);
+    this.student_questions = this.student_questions.filter(
+      q => q.id !== question.id
+    );
     this.student_questions.unshift(question);
     this.editStudentQuestionDialog = false;
     this.currentQuestion = null;
   }
-
 }
 </script>
 
