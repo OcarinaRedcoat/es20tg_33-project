@@ -62,7 +62,6 @@ public class StudentQuestionController {
         if(user == null){
             throw new TutorException(AUTHENTICATION_ERROR);
         }
-
         return this.studentQuestionService.getSubmittedQuestions(courseId);
     }
 }

@@ -11,6 +11,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
@@ -19,6 +20,7 @@ import javax.persistence.PersistenceContext;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Set;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
@@ -119,10 +121,8 @@ public class StudentQuestionService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public List<StudentQuestionDto> getSubmittedQuestions(int CourseId) {
-        List<StudentQuestion> questions = studentQuestionRepository.findStudentSubmittedQuestionsByCourse(CourseId);
-
-        return questions.stream().map(StudentQuestionDto::new).collect(Collectors.toList());
+    public List<StudentQuestionDto> getSubmittedQuestions(int courseId) {
+        return studentQuestionRepository.findQuestions(courseId).stream().map(StudentQuestionDto::new).collect(Collectors.toList());
     }
 
     private void checkSubmittedQuestions(User user) {
