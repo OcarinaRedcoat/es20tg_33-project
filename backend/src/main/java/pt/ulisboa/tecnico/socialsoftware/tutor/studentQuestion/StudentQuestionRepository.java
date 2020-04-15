@@ -17,9 +17,6 @@ public interface StudentQuestionRepository extends JpaRepository<StudentQuestion
     @Query(value = "SELECT * FROM student_questions q WHERE q.course_id = :courseId AND q.user_id = :userId", nativeQuery = true)
     List<StudentQuestion> findStudentSubmittedQuestions(int courseId, int userId);
 
-    @Query(value = "SELECT * FROM student_questions q WHERE q.course_id = :courseId AND q.status = 'PENDING'", nativeQuery = true)
-    List<StudentQuestion> findStudentSubmittedQuestionsByCourse(int courseId);
-
     @Query(value = "SELECT * FROM student_questions q WHERE q.course_id = :courseId", nativeQuery = true)
     List<StudentQuestion> findQuestions(int courseId);
 

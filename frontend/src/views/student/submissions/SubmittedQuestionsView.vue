@@ -27,7 +27,7 @@
       </template>
 
       <template v-slot:item.status="{ item }">
-        <v-chip :color="getStatusColor(item)" small>
+        <v-chip v-if="item.status" :color="getStatusColor(item.status)" small>
           <span>{{ item.status }}</span>
         </v-chip>
       </template>
@@ -57,7 +57,6 @@ export default class SubmittedQuestionsView extends Vue {
   currentQuestion: StudentQuestion | null = null;
   editStudentQuestionDialog: boolean = false;
   search: string = '';
-  statusList = ['PENDING', 'APPROVED', 'REJECTED'];
 
   headers: object = [
     { text: 'Title', value: 'title', align: 'center' },
@@ -111,7 +110,7 @@ export default class SubmittedQuestionsView extends Vue {
     this.editStudentQuestionDialog = true;
   }
 
-  /*editQuestion(question: Question) {
+  /*editQuestion(question: StudentQuestion) {
     this.currentQuestion = question;
     this.editQuestionDialog = true;
   }*/

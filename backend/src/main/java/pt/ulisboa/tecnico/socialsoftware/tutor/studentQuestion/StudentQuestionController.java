@@ -57,11 +57,8 @@ public class StudentQuestionController {
 
     @GetMapping("/courses/{courseId}/studentQuestions")
     @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#courseId, 'COURSE.ACCESS')")
-    public List<StudentQuestionDto> getPendingQuestions(Principal principal, @PathVariable int courseId) {
-        User user = (User) ((Authentication) principal).getPrincipal();
-        if(user == null){
-            throw new TutorException(AUTHENTICATION_ERROR);
-        }
+    public List<StudentQuestionDto> getPendingQuestions(@PathVariable int courseId) {
+
         return this.studentQuestionService.getSubmittedQuestions(courseId);
     }
 }

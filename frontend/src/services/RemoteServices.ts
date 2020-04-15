@@ -557,7 +557,9 @@ export default class RemoteServices {
 
   static async getStudentQuestions(): Promise<StudentQuestion[]> {
     return httpClient
-      .get(`/courses/${Store.getters.getCurrentCourse.courseId}/studentQuestions/status`)
+      .get(
+        `/courses/${Store.getters.getCurrentCourse.courseId}/studentQuestions/status`
+      )
       .then(response => {
         return response.data.map((question: any) => {
           return new StudentQuestion(question);
@@ -614,7 +616,9 @@ export default class RemoteServices {
 
   static async getPendingQuestions(): Promise<StudentQuestion[]> {
     return httpClient
-        .get(`/courses/${Store.getters.getCurrentCourse.courseId}/studentQuestions`)
+      .get(
+        `/courses/${Store.getters.getCurrentCourse.courseId}/studentQuestions`
+      )
       .then(response => {
         return response.data.map((question: any) => {
           return new StudentQuestion(question);
