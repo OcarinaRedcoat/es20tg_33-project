@@ -14,7 +14,9 @@ import AuthDto from '@/models/user/AuthDto';
 import StatementAnswer from '@/models/statement/StatementAnswer';
 import { QuizAnswer } from '@/models/management/QuizAnswer';
 import { QuizAnswers } from '@/models/management/QuizAnswers';
+// @ts-ignore
 import Tourney from '@/models/tourney/Tourney';
+import Discussion from '@/models/statement/Discussion';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 10000;
@@ -560,6 +562,17 @@ export default class RemoteServices {
       .post('/tourneys', tourney)
       .then(response => {
         return new Tourney(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async submitQuestion(discussionId: number, discussion: Discussion) {
+    return httpClient
+      .post('/discussion/${discussionId}/submit', discussion)
+      .then(response => {
+        return new Discussion(response.data);
       })
       .catch(async error => {
         throw Error(await this.errorMessage(error));

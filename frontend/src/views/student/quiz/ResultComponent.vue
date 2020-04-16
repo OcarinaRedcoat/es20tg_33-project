@@ -60,6 +60,15 @@
         />
       </li>
     </ul>
+    <p></p>
+    <div class="discussion-buttons">
+      <v-btn depressed small color="primary" dark to="discussion">
+        <i class="fa fa-comment" />Create Discussion
+      </v-btn>
+      <v-btn depressed small color="primary" dark to="discussion">
+        <i class="fa fa-comment" />See Discussion
+      </v-btn>
+    </div>
   </div>
 </template>
 
@@ -113,6 +122,15 @@ export default class ResultComponent extends Vue {
       background-color: #333333 !important;
       color: rgb(255, 255, 255) !important;
     }
+  }
+}
+
+.discussion-buttons {
+  margin-top: 40px;
+  padding-bottom: 30px;
+
+  button {
+    margin: 10px;
   }
 }
 

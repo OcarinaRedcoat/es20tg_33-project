@@ -175,6 +175,51 @@ public class QuestionService {
         question.getImage().setUrl(question.getKey() + "." + type);
     }
 
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public ByteArrayOutputStream exportCourseQuestions(int courseId) {
+        Course course = courseRepository.findById(courseId).orElseThrow(() -> new TutorException(COURSE_NOT_FOUND, courseId));
+
+        course.getQuestions();
+
+        String name = course.getName();
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+             ZipOutputStream zos = new ZipOutputStream(baos)) {
+
+            List<Question> questions = new ArrayList<>(course.getQuestions());
+
+            XMLQuestionExportVisitor xmlExport = new XMLQuestionExportVisitor();
+            InputStream in = IOUtils.toInputStream(xmlExport.export(questions), StandardCharsets.UTF_8);
+            zos.putNextEntry(new ZipEntry(name + ".xml"));
+            copyToZipStream(zos, in);
+            zos.closeEntry();
+
+            LatexQuestionExportVisitor latexExport = new LatexQuestionExportVisitor();
+            zos.putNextEntry(new ZipEntry(name + ".tex"));
+            in = IOUtils.toInputStream(latexExport.export(questions), StandardCharsets.UTF_8);
+            copyToZipStream(zos, in);
+            zos.closeEntry();
+
+            zos.close();
+
+            baos.flush();
+
+            return baos;
+        } catch (IOException ex) {
+            throw new TutorException(ErrorMessage.CANNOT_OPEN_FILE);
+        }
+
+    }
+
+    private void copyToZipStream(ZipOutputStream zos, InputStream in) throws IOException {
+        byte[] buffer = new byte[1024];
+        int len;
+        while ((len = in.read(buffer)) > 0) {
+            zos.write(buffer, 0, len);
+        }
+        in.close();
+    }
+
+
     @Retryable(
       value = { SQLException.class },
       backoff = @Backoff(delay = 5000))
