@@ -71,7 +71,7 @@ class GetSubmittedQuestionsStatus extends Specification {
         studentQuestionRepository.save(question)
 
         when: "the student tries to see the stats about his submitted questions"
-        studentQuestionService.getSubmittedQuestionsStats(USERNAME_1)
+        studentQuestionService.getUserSubmittedQuestions(USERNAME_1)
 
         then: "the correct information is stored"
         def result = userRepository.findByUsername(USERNAME_1)
@@ -93,7 +93,7 @@ class GetSubmittedQuestionsStatus extends Specification {
 
     def "the student doesn't have submitted questions"() {
         when: "the student tries to see the stats about his submitted questions"
-        studentQuestionService.getSubmittedQuestionsStats(USERNAME_2)
+        studentQuestionService.getUserSubmittedQuestionsStats(USERNAME_2)
 
         then: "an exception is thrown"
         def exception = thrown(TutorException)
@@ -102,7 +102,7 @@ class GetSubmittedQuestionsStatus extends Specification {
 
     def "the student doesn't exist"() {
         when: "the student tries to see the stats about his submitted questions"
-        studentQuestionService.getSubmittedQuestionsStats(USERNAME_3)
+        studentQuestionService.getUserSubmittedQuestions(USERNAME_3)
 
         then: "an exception is thrown"
         def exception = thrown(TutorException)

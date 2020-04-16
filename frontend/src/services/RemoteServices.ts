@@ -586,6 +586,14 @@ export default class RemoteServices {
       });
   }
 
+  static deleteStudentQuestion(questionId: number) {
+    return httpClient
+      .delete(`/studentQuestions/${questionId}`)
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async approveQuestion(
     questionId: number,
     justification: String
