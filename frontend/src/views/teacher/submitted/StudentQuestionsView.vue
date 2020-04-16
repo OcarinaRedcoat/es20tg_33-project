@@ -34,6 +34,7 @@
                         class="mr-2"
                         v-on="on"
                         @click="showQuestionDialog(item)"
+                        data-cy="reviewQuestionButton"
                 >visibility</v-icon>
             </template>
             <span>Show and Review Question</span>

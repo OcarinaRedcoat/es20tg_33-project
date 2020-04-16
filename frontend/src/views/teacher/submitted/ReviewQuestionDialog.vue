@@ -15,6 +15,7 @@
                                 class="py-5"
                                 v-model="editQuestion.justification"
                                 label="Justification"
+                                data-cy="justification"
                                 clearable
                         />
                     </v-flex>
@@ -24,11 +25,11 @@
                 <v-spacer />
                 <v-spacer />
                 <v-spacer />
-                <v-btn dark color="green darken-1" @click="approveQuestion"
+                <v-btn dark color="green darken-1" @click="approveQuestion" data-cy="approveButton"
                 >approve</v-btn>
-                <v-btn dark color="red darken-1" @click="rejectQuestion"
+                <v-btn dark color="red darken-1" @click="rejectQuestion" data-cy="rejectButton"
                 >reject</v-btn>
-                <v-btn dark color="blue darken-1" @click="closeQuestionDialog"
+                <v-btn dark color="blue darken-1" @click="closeQuestionDialog" data-cy="closeQuestionButton"
                 >close</v-btn>
             </v-card-actions>
         </v-card>
