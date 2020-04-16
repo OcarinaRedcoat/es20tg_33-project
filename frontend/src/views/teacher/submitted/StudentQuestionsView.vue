@@ -26,7 +26,26 @@
           <span>{{ item.status }}</span>
         </v-chip>
       </template>
+        <template v-slot:item.action="{ item }">
+        <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+                <v-icon
+                        small
+                        class="mr-2"
+                        v-on="on"
+                        @click="showQuestionDialog(item)"
+                >visibility</v-icon>
+            </template>
+            <span>Show and Review Question</span>
+        </v-tooltip>
+        </template>
     </v-data-table>
+      <show-question-dialog
+              v-if="currentQuestion"
+              :dialog="questionDialog"
+              :question="currentQuestion"
+              v-on:close-show-question-dialog="onCloseShowQuestionDialog"
+      />
   </v-card>
 </template>
 
@@ -35,16 +54,20 @@ import { Component, Vue, Watch } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import StudentQuestion from '@/models/submissions/StudentQuestion';
 import EditStudentQuestionDialog from '@/views/student/submissions/EditStudentQuestionDialog.vue';
+import Question from '@/models/management/Question';
+import ShowQuestionDialog from '@/views/teacher/submitted/ReviewQuestionDialog.vue';
 
 @Component({
   components: {
-    'edit-student-question-dialog': EditStudentQuestionDialog
+    'edit-student-question-dialog': EditStudentQuestionDialog,
+    'show-question-dialog': ShowQuestionDialog
   }
 })
 export default class StudentQuestionsView extends Vue {
   questions: StudentQuestion[] = [];
   currentQuestion: StudentQuestion | null = null;
   editStudentQuestionDialog: boolean = false;
+  questionDialog: boolean = false;
   search: string = '';
 
   headers: object = [
@@ -93,6 +116,15 @@ export default class StudentQuestionsView extends Vue {
     if (status === 'REJECTED') return 'red';
     else if (status === 'PENDING') return 'yellow';
     else return 'green';
+  }
+
+  showQuestionDialog(question: StudentQuestion) {
+    this.currentQuestion = question;
+    this.questionDialog = true;
+  }
+
+  onCloseShowQuestionDialog() {
+    this.questionDialog = false;
   }
 }
 </script>

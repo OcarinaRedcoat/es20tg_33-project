@@ -595,7 +595,7 @@ export default class RemoteServices {
   }
 
   static async approveQuestion(
-    questionId: number,
+    questionId: number | undefined,
     justification: String
   ): Promise<StudentQuestion> {
     return httpClient
@@ -609,11 +609,11 @@ export default class RemoteServices {
   }
 
   static async rejectQuestion(
-    questionId: number,
+    questionId: number | undefined,
     justification: String
   ): Promise<StudentQuestion> {
     return httpClient
-      .put(`/studentQuestions/${questionId}/approve`, justification)
+      .put(`/studentQuestions/${questionId}/reject`, justification)
       .then(response => {
         return new StudentQuestion(response.data);
       })
