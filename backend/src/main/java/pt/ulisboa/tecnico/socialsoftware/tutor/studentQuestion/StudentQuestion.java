@@ -110,6 +110,13 @@ public class StudentQuestion {
         this.studentQuestionOptions.add(option);
     }
 
+    public void remove() {
+        canRemove();
+        getCourse().getSubmittedQuestions().remove(this);
+        getSubmittingUser().getSubmittedQuestions().remove(this);
+        course = null;
+    }
+
     @Override
     public String toString() {
         return "StudentQuestion{" +
@@ -137,11 +144,21 @@ public class StudentQuestion {
         }
 
         if (questionDto.getOptions().stream().anyMatch(optionDto -> optionDto.getContent().trim().length() == 0)) {
-            throw new TutorException(QUESTION_MISSING_DATA);
+            throw new TutorException(QUESTION_MISSING_OPTIONS);
         }
 
         if (questionDto.getOptions().stream().filter(OptionDto::getCorrect).count() < 1) {
             throw new TutorException(NO_CORRECT_OPTION);
+        }
+
+        if (questionDto.getOptions().stream().filter(OptionDto::getCorrect).count() > 1) {
+            throw new TutorException(QUESTION_MULTIPLE_CORRECT_OPTIONS);
+        }
+    }
+
+    private void canRemove() {
+        if (this.status == Status.APPROVED) {
+            throw new TutorException(QUESTION_ALREADY_APPROVED);
         }
     }
 

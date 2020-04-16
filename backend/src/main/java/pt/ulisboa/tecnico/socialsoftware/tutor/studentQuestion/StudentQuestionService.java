@@ -10,8 +10,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
@@ -20,7 +18,6 @@ import javax.persistence.PersistenceContext;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.Set;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
@@ -108,10 +105,22 @@ public class StudentQuestionService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public List<StudentQuestionDto> getSubmittedQuestionsStats(String username) {
+    public List<StudentQuestionDto> getUserSubmittedQuestions(String username) {
         User user = userRepository.findByUsername(username);
         checkUserFound(user);
+        List<StudentQuestion> questions = user.getSubmittedQuestions();
+
+        return questions.stream().map(StudentQuestionDto::new).collect(Collectors.toList());
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<StudentQuestionDto> getUserSubmittedQuestionsStats(String username) {
+        User user = userRepository.findByUsername(username);
         checkSubmittedQuestions(user);
+        checkUserFound(user);
         List<StudentQuestion> questions = user.getSubmittedQuestions();
 
         return questions.stream().map(StudentQuestionDto::new).collect(Collectors.toList());
@@ -123,6 +132,16 @@ public class StudentQuestionService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public List<StudentQuestionDto> getSubmittedQuestions(int courseId) {
         return studentQuestionRepository.findQuestions(courseId).stream().map(StudentQuestionDto::new).collect(Collectors.toList());
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void removeStudentQuestion(Integer questionId) {
+        StudentQuestion question = studentQuestionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
+        question.remove();
+        studentQuestionRepository.delete(question);
     }
 
     private void checkSubmittedQuestions(User user) {

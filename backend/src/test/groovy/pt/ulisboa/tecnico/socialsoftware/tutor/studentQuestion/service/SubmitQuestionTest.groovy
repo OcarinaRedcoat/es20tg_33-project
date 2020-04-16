@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestion
 import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestionDto
@@ -61,13 +62,24 @@ class SubmitQuestionTest extends Specification {
         questionDto.setContent(QUESTION_CONTENT)
         questionDto.setStatus(StudentQuestion.Status.PENDING.name())
         and: "four options"
-        def options = new ArrayList<String>()
-        options.add(OPTION_CONTENT)
-        options.add(OPTION_CONTENT)
-        options.add(OPTION_CONTENT)
-        options.add(OPTION_CONTENT)
+        def options = new ArrayList<OptionDto>()
+        def optionDto = new OptionDto()
+        optionDto.setContent(OPTION_CONTENT)
+        optionDto.setCorrect(true)
+        options.add(optionDto)
+        optionDto = new OptionDto()
+        optionDto.setContent(OPTION_CONTENT)
+        optionDto.setCorrect(false)
+        options.add(optionDto)
+        optionDto = new OptionDto()
+        optionDto.setContent(OPTION_CONTENT)
+        optionDto.setCorrect(false)
+        options.add(optionDto)
+        optionDto = new OptionDto()
+        optionDto.setContent(OPTION_CONTENT)
+        optionDto.setCorrect(false)
+        options.add(optionDto)
         questionDto.setOptions(options)
-        questionDto.setCorrectOptionIndex(1)
 
         when:
         studentQuestionService.submitQuestion(course.getId(), questionDto, USERNAME)
@@ -109,11 +121,16 @@ class SubmitQuestionTest extends Specification {
         questionDto.setContent(QUESTION_CONTENT)
         questionDto.setStatus(StudentQuestion.Status.PENDING.name())
         and: "two options"
-        def options = new ArrayList<String>()
-        options.add(OPTION_CONTENT)
-        options.add(OPTION_CONTENT)
+        def options = new ArrayList<OptionDto>()
+        def optionDto = new OptionDto()
+        optionDto.setContent(OPTION_CONTENT)
+        optionDto.setCorrect(true)
+        options.add(optionDto)
+        optionDto = new OptionDto()
+        optionDto.setContent(OPTION_CONTENT)
+        optionDto.setCorrect(false)
+        options.add(optionDto)
         questionDto.setOptions(options)
-        questionDto.setCorrectOptionIndex(1)
 
         when:
         studentQuestionService.submitQuestion(course.getId(), questionDto, USERNAME)
@@ -124,27 +141,38 @@ class SubmitQuestionTest extends Specification {
         studentQuestionRepository.count() == 0L
     }
 
-    def "question with an invalid correct answer index"() {
+    def "question with two correct options"() {
         given: "a question dto"
         def questionDto = new StudentQuestionDto()
         questionDto.setTitle(QUESTION_TITLE)
         questionDto.setContent(QUESTION_CONTENT)
         questionDto.setStatus(StudentQuestion.Status.PENDING.name())
         and: "four options"
-        def options = new ArrayList<String>()
-        options.add(OPTION_CONTENT)
-        options.add(OPTION_CONTENT)
-        options.add(OPTION_CONTENT)
-        options.add(OPTION_CONTENT)
+        def options = new ArrayList<OptionDto>()
+        def optionDto = new OptionDto()
+        optionDto.setContent(OPTION_CONTENT)
+        optionDto.setCorrect(true)
+        options.add(optionDto)
+        optionDto = new OptionDto()
+        optionDto.setContent(OPTION_CONTENT)
+        optionDto.setCorrect(true)
+        options.add(optionDto)
+        optionDto = new OptionDto()
+        optionDto.setContent(OPTION_CONTENT)
+        optionDto.setCorrect(false)
+        options.add(optionDto)
+        optionDto = new OptionDto()
+        optionDto.setContent(OPTION_CONTENT)
+        optionDto.setCorrect(false)
+        options.add(optionDto)
         questionDto.setOptions(options)
-        questionDto.setCorrectOptionIndex(5)
 
         when:
         studentQuestionService.submitQuestion(course.getId(), questionDto, USERNAME)
 
         then: "an exception is thrown"
         def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.INVALID_CORRECT_OPTION_INDEX
+        exception.getErrorMessage() == ErrorMessage.QUESTION_MULTIPLE_CORRECT_OPTIONS
         studentQuestionRepository.count() == 0L
     }
 
@@ -155,11 +183,23 @@ class SubmitQuestionTest extends Specification {
         questionDto.setContent(QUESTION_CONTENT)
         questionDto.setStatus(StudentQuestion.Status.PENDING.name())
         and: "four options"
-        def options = new ArrayList<String>()
-        options.add(OPTION_CONTENT)
-        options.add(OPTION_CONTENT)
-        options.add(OPTION_CONTENT)
-        options.add(OPTION_CONTENT)
+        def options = new ArrayList<OptionDto>()
+        def optionDto = new OptionDto()
+        optionDto.setContent(OPTION_CONTENT)
+        optionDto.setCorrect(false)
+        options.add(optionDto)
+        optionDto = new OptionDto()
+        optionDto.setContent(OPTION_CONTENT)
+        optionDto.setCorrect(false)
+        options.add(optionDto)
+        optionDto = new OptionDto()
+        optionDto.setContent(OPTION_CONTENT)
+        optionDto.setCorrect(false)
+        options.add(optionDto)
+        optionDto = new OptionDto()
+        optionDto.setContent(OPTION_CONTENT)
+        optionDto.setCorrect(false)
+        options.add(optionDto)
         questionDto.setOptions(options)
 
         when:
@@ -167,7 +207,7 @@ class SubmitQuestionTest extends Specification {
 
         then: "an exception is thrown"
         def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.INVALID_CORRECT_OPTION_INDEX
+        exception.getErrorMessage() == ErrorMessage.NO_CORRECT_OPTION
         studentQuestionRepository.count() == 0L
     }
 

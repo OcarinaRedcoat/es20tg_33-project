@@ -19,15 +19,15 @@
               class="py-5"
               v-model="editStudentQuestion.title"
               label="Title"
-              clearable
+              data-cy="Title"
             />
           </v-flex>
           <v-flex xs24 sm12 md12>
             <v-textarea
               class="py-5 mx-auto"
-              clearable
               v-model="editStudentQuestion.content"
               label="Question Content"
+              data-cy="QuestionContent"
             ></v-textarea>
           </v-flex>
           <v-flex
@@ -42,19 +42,29 @@
               v-model="editStudentQuestion.options[index - 1].correct"
               class="ma-4"
               label="Correct"
+              data-cy="OptionCorrect"
             />
             <v-textarea
               v-model="editStudentQuestion.options[index - 1].content"
               label="Option Content"
-              clearable
+              data-cy="OptionContent"
             ></v-textarea>
           </v-flex>
           <v-card-actions>
             <v-spacer />
-            <v-btn color="error" class="mr-4" @click="$emit('dialog', false)"
+            <v-btn
+              color="error"
+              class="mr-4"
+              @click="$emit('dialog', false)"
+              data-cy="cancelButton"
               >Cancel</v-btn
             >
-            <v-btn color="success" @click="submitQuestion">Submit</v-btn>
+            <v-btn
+              color="success"
+              @click="submitQuestion"
+              data-cy="submitButton"
+              >Submit</v-btn
+            >
           </v-card-actions>
         </v-form>
       </v-container>

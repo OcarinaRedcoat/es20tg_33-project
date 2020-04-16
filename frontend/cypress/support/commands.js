@@ -31,6 +31,13 @@ Cypress.Commands.add('demoAdminLogin', () => {
     cy.contains('Manage Courses').click()
 })
 
+Cypress.Commands.add('demoStudentLogin', () => {
+    cy.visit('/')
+    cy.get('[data-cy="studentButton"]').click()
+    cy.contains('Submissions').click()
+    cy.contains('Submitted Questions').click()
+})
+
 Cypress.Commands.add('createCourseExecution', (name, acronym, academicTerm) => {
     cy.get('[data-cy="createButton"]').click()
     cy.get('[data-cy="Name"]').type(name)
@@ -67,5 +74,27 @@ Cypress.Commands.add('createFromCourseExecution', (name, acronym, academicTerm) 
     cy.get('[data-cy="Acronym"]').type(acronym)
     cy.get('[data-cy="AcademicTerm"]').type(academicTerm)
     cy.get('[data-cy="saveButton"]').click()
+})
+
+Cypress.Commands.add('submitQuestion', (title, content, optionContent) => {
+    cy.get('[data-cy="createSubmissionButton"]').click()
+    cy.get('[data-cy="Title"]').type(title,{force: true})
+    cy.get('[data-cy="QuestionContent"]').type(content)
+    cy.get('[data-cy="OptionContent"]').eq(0).type(optionContent)
+    cy.get('[data-cy="OptionContent"]').eq(1).type(optionContent)
+    cy.get('[data-cy="OptionContent"]').eq(2).type(optionContent)
+    cy.get('[data-cy="OptionContent"]').eq(3).type(optionContent)
+    cy.get('[data-cy="OptionCorrect"]:first').click({force: true})
+    cy.get('[data-cy="submitButton"]').click()
+})
+
+Cypress.Commands.add('deleteSubmittedQuestion', (title) => {
+    cy.contains(title)
+        .parent()
+        .should('have.length', 1)
+        .children()
+        .should('have.length', 4)
+        .find('[data-cy="deleteSubmittedQuestion"]')
+        .click()
 })
 

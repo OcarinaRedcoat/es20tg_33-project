@@ -20,7 +20,11 @@
           />
 
           <v-spacer />
-          <v-btn color="primary" dark @click="submitQuestion"
+          <v-btn
+            color="primary"
+            dark
+            @click="submitQuestion"
+            data-cy="createSubmissionButton"
             >Submit Question</v-btn
           >
         </v-card-title>
@@ -30,6 +34,23 @@
         <v-chip v-if="item.status" :color="getStatusColor(item.status)" small>
           <span>{{ item.status }}</span>
         </v-chip>
+      </template>
+
+      <template v-slot:item.action="{ item }">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-icon
+              small
+              class="mr-2"
+              v-on="on"
+              @click="deleteSubmittedQuestion(item)"
+              color="red"
+              data-cy="deleteSubmittedQuestion"
+              >delete</v-icon
+            >
+          </template>
+          <span>Delete Question</span>
+        </v-tooltip>
       </template>
     </v-data-table>
     <edit-student-question-dialog
@@ -46,6 +67,7 @@ import { Component, Vue, Watch } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import StudentQuestion from '@/models/submissions/StudentQuestion';
 import EditStudentQuestionDialog from '@/views/student/submissions/EditStudentQuestionDialog.vue';
+import Question from '@/models/management/Question';
 
 @Component({
   components: {
@@ -122,6 +144,22 @@ export default class SubmittedQuestionsView extends Vue {
     this.student_questions.unshift(question);
     this.editStudentQuestionDialog = false;
     this.currentQuestion = null;
+  }
+
+  async deleteSubmittedQuestion(toDeleteStudentQuestion: StudentQuestion) {
+    if (
+      toDeleteStudentQuestion.id &&
+      confirm('Are you sure you want cancel this question submission?')
+    ) {
+      try {
+        await RemoteServices.deleteStudentQuestion(toDeleteStudentQuestion.id);
+        this.student_questions = this.student_questions.filter(
+          question => question.id != toDeleteStudentQuestion.id
+        );
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
   }
 }
 </script>
