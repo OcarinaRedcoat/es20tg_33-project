@@ -40,11 +40,11 @@
         </v-tooltip>
         </template>
     </v-data-table>
-      <show-question-dialog
+      <review-question-dialog
               v-if="currentQuestion"
               :dialog="questionDialog"
               :question="currentQuestion"
-              v-on:close-show-question-dialog="onCloseShowQuestionDialog"
+              v-on:review-question="onReviewQuestion"
       />
   </v-card>
 </template>
@@ -53,14 +53,12 @@
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import StudentQuestion from '@/models/submissions/StudentQuestion';
-import EditStudentQuestionDialog from '@/views/student/submissions/EditStudentQuestionDialog.vue';
 import Question from '@/models/management/Question';
-import ShowQuestionDialog from '@/views/teacher/submitted/ReviewQuestionDialog.vue';
+import ReviewQuestionDialog from '@/views/teacher/submitted/ReviewQuestionDialog.vue';
 
 @Component({
   components: {
-    'edit-student-question-dialog': EditStudentQuestionDialog,
-    'show-question-dialog': ShowQuestionDialog
+    'review-question-dialog': ReviewQuestionDialog
   }
 })
 export default class StudentQuestionsView extends Vue {
@@ -123,8 +121,13 @@ export default class StudentQuestionsView extends Vue {
     this.questionDialog = true;
   }
 
-  onCloseShowQuestionDialog() {
+  async onReviewQuestion(question: StudentQuestion) {
+    this.questions = this.questions.filter(
+            q => q.id !== question.id
+    );
+    this.questions.unshift(question);
     this.questionDialog = false;
+    this.currentQuestion = null;
   }
 }
 </script>
