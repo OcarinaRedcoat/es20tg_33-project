@@ -27,6 +27,8 @@ public class Tourney {
 
     private String availableDate, conclusionDate;
 
+    private String title;
+
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "topicTourneys", fetch=FetchType.LAZY)
     private List<Topic> topics = new ArrayList<>();
 
@@ -43,7 +45,8 @@ public class Tourney {
 
     public Tourney(){}
 
-    public Tourney(Integer numberOfQuestions, String availableDate, String conclusionDate, User creator){
+    public Tourney(String title, Integer numberOfQuestions, String availableDate, String conclusionDate, User creator){
+        this.title = title;
         this.numberOfQuestions = numberOfQuestions;
         this.availableDate = availableDate;
         this.conclusionDate = conclusionDate;
@@ -54,6 +57,7 @@ public class Tourney {
     }
 
     public Tourney(TourneyDto tourneyDto, User user){
+        this.title = tourneyDto.getTourneyTitle();
         this.numberOfQuestions = tourneyDto.getTourneyNumberOfQuestions();
         this.id = tourneyDto.getTourneyId();
         this.availableDate = tourneyDto.getTourneyAvailableDate();
@@ -127,5 +131,13 @@ public class Tourney {
 
     public void setCourseExecution(CourseExecution courseExecution) {
         this.courseExecution = courseExecution;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

@@ -1,6 +1,7 @@
 describe('Question Submission walkthrough', () => {
     beforeEach(() => {
         cy.demoStudentLogin()
+        cy.visitSubmittedQuestionsPage()
     })
 
     afterEach(() => {

@@ -19,6 +19,8 @@ import ResultsView from './views/student/quiz/ResultsView.vue';
 import StatsView from './views/student/StatsView.vue';
 import ScanView from './views/student/ScanView.vue';
 import SubmittedQuestionsView from './views/student/submissions/SubmittedQuestionsView.vue';
+import CreateTourney from './views/student/tourney/CreateTourney.vue';
+import OpenTourneys from './views/student/tourney/OpenTourneys.vue';
 
 import AdminManagementView from './views/admin/AdminManagementView.vue';
 import NotFoundView from './views/NotFoundView.vue';
@@ -202,6 +204,24 @@ let router = new Router({
           component: SubmittedQuestionsView,
           meta: {
             title: process.env.VUE_APP_NAME + ' - Submit',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+          path: 'tourneys/create',
+          name: 'create-tourney',
+          component: CreateTourney,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Create Tourney',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+          path: 'tourneys',
+          name: 'open-tourney',
+          component: OpenTourneys,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Open Tourneys',
             requiredAuth: 'Student'
           }
         }

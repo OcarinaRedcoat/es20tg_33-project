@@ -1,14 +1,17 @@
 describe('Administration walkthrough', () => {
   beforeEach(() => {
     cy.demoStudentLogin()
+    cy.visitSubmittedQuestionsPage()
     cy.submitQuestion('Question Title', 'Content', 'Options')
     cy.contains('Logout').click()
     cy.demoTeacherLogin()
+    cy.visitApproveRejectPage()
   })
 
   afterEach(() => {
     cy.contains('Logout').click()
     cy.demoStudentLogin()
+    cy.visitSubmittedQuestionsPage()
     cy.deleteSubmittedQuestion('Question Title')
     cy.contains('Logout').click()
   })

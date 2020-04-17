@@ -62,6 +62,7 @@ public class TourneyService {
         User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, userId));
         Tourney tourney = new Tourney(tourneyDto, user);
 
+        if(tourney.getTitle() == null || tourney.getTitle().trim().isEmpty()) throw new TutorException(ErrorMessage.TOURNEY_NOT_CONSISTENT, "title");
         if(tourney.getAvailableDate() == null)  throw new TutorException(ErrorMessage.TOURNEY_NOT_CONSISTENT,"availableDate");
         if(tourney.getConclusionDate() == null)  throw new TutorException(ErrorMessage.TOURNEY_NOT_CONSISTENT, "conclusionDate");
         try{
@@ -70,6 +71,8 @@ public class TourneyService {
         if(tourney.getNumberOfQuestions() == null || tourney.getNumberOfQuestions() <= 0) throw new TutorException(ErrorMessage.TOURNEY_NOT_CONSISTENT, "numberOfQuestions");
 
         CourseDto courseExecutionDto = tourneyDto.getTourneyCourseExecution();
+        if(courseExecutionDto == null) throw new TutorException(ErrorMessage.TOURNEY_NOT_CONSISTENT, "courseExecution");
+        
         tourney.setCourseExecution(courseExecutionRepository.findById(courseExecutionDto.getCourseExecutionId()).orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND, courseExecutionDto.getCourseExecutionId())));
         tourney.setTopics(tourneyDto.getTourneyTopics().stream().map(topicDto -> topicRepository.findTopicByName(tourney.getCourseExecution().getCourse().getId(), topicDto.getName())).collect(Collectors.toList()));
 

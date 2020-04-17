@@ -26,27 +26,28 @@
           <span>{{ item.status }}</span>
         </v-chip>
       </template>
-        <template v-slot:item.action="{ item }">
+      <template v-slot:item.action="{ item }">
         <v-tooltip bottom>
-            <template v-slot:activator="{ on }">
-                <v-icon
-                        small
-                        class="mr-2"
-                        v-on="on"
-                        @click="showQuestionDialog(item)"
-                        data-cy="reviewQuestionButton"
-                >visibility</v-icon>
-            </template>
-            <span>Show and Review Question</span>
+          <template v-slot:activator="{ on }">
+            <v-icon
+              small
+              class="mr-2"
+              v-on="on"
+              @click="showQuestionDialog(item)"
+              data-cy="reviewQuestionButton"
+              >visibility</v-icon
+            >
+          </template>
+          <span>Show and Review Question</span>
         </v-tooltip>
-        </template>
+      </template>
     </v-data-table>
-      <review-question-dialog
-              v-if="currentQuestion"
-              :dialog="questionDialog"
-              :question="currentQuestion"
-              v-on:review-question="onReviewQuestion"
-      />
+    <review-question-dialog
+      v-if="currentQuestion"
+      :dialog="questionDialog"
+      :question="currentQuestion"
+      v-on:review-question="onReviewQuestion"
+    />
   </v-card>
 </template>
 
@@ -123,9 +124,7 @@ export default class StudentQuestionsView extends Vue {
   }
 
   async onReviewQuestion(question: StudentQuestion) {
-    this.questions = this.questions.filter(
-            q => q.id !== question.id
-    );
+    this.questions = this.questions.filter(q => q.id !== question.id);
     this.questions.unshift(question);
     this.questionDialog = false;
     this.currentQuestion = null;
