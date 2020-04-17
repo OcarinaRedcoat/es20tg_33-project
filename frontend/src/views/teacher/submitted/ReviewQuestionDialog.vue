@@ -13,8 +13,9 @@
                     <v-flex xs24 sm12 md12>
                         <v-text-field
                                 class="py-5"
-                                v-model="question.justification"
+                                v-model="editQuestion.justification"
                                 label="Justification"
+                                data-cy="justification"
                                 clearable
                         />
                     </v-flex>
@@ -24,11 +25,11 @@
                 <v-spacer />
                 <v-spacer />
                 <v-spacer />
-                <v-btn dark color="green darken-1" @click="approveQuestion"
+                <v-btn dark color="green darken-1" @click="approveQuestion" data-cy="approveButton"
                 >approve</v-btn>
-                <v-btn dark color="red darken-1" @click="rejectQuestion"
+                <v-btn dark color="red darken-1" @click="rejectQuestion" data-cy="rejectButton"
                 >reject</v-btn>
-                <v-btn dark color="blue darken-1" @click="closeQuestionDialog"
+                <v-btn dark color="blue darken-1" @click="closeQuestionDialog" data-cy="closeQuestionButton"
                 >close</v-btn>
             </v-card-actions>
         </v-card>
@@ -40,6 +41,7 @@
   import ShowQuestion from '@/views/teacher/submitted/ShowStudentQuestion.vue';
   import StudentQuestion from '@/models/submissions/StudentQuestion';
   import RemoteServices from '@/services/RemoteServices';
+  import Question from '@/models/management/Question';
 
   @Component({
     components: {
@@ -50,18 +52,24 @@
     @Prop({ type: StudentQuestion, required: true }) readonly question!: StudentQuestion;
     @Prop({ type: Boolean, required: true }) readonly dialog!: boolean;
 
+    editQuestion!: StudentQuestion;
+
+    created() {
+      this.editQuestion = new StudentQuestion(this.question);
+    }
+
     async approveQuestion() {
-      if (this.question.justification == null || this.question.justification == '') {
+      if (this.editQuestion.justification == null || this.editQuestion.justification == '') {
         try {
-          const result = await RemoteServices.approveQuestion(this.question.id,'none');
-          this.$emit('approve-question', result);
+          const result = await RemoteServices.approveQuestion(this.editQuestion.id,'none');
+          this.$emit('review-question', result);
         } catch (error) {
           await this.$store.dispatch('error', error);
         }
       } else {
         try {
-          const result = await RemoteServices.approveQuestion(this.question.id, this.question.justification);
-          this.$emit('approve-question', result);
+          const result = await RemoteServices.approveQuestion(this.editQuestion.id, this.editQuestion.justification);
+          this.$emit('review-question', result);
         } catch (error) {
           await this.$store.dispatch('error', error);
         }
@@ -69,7 +77,7 @@
     }
 
     async rejectQuestion() {
-      if (this.question.justification == null || this.question.justification == '') {
+      if (this.editQuestion.justification == null || this.editQuestion.justification == '') {
         await this.$store.dispatch(
           'error',
           'Rejection must have a justification'
@@ -77,8 +85,8 @@
         return;
       } else{
         try {
-          const result = await RemoteServices.rejectQuestion(this.question.id, this.question.justification);
-          this.$emit('reject-question', result);
+          const result = await RemoteServices.rejectQuestion(this.editQuestion.id, this.editQuestion.justification);
+          this.$emit('review-question', result);
         } catch (error) {
           await this.$store.dispatch('error', error);
         }
@@ -86,7 +94,7 @@
     }
 
     closeQuestionDialog() {
-      this.$emit('close-show-question-dialog');
+      this.$emit('review-question');
     }
   }
 </script>

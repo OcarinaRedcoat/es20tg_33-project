@@ -31,6 +31,13 @@ Cypress.Commands.add('demoAdminLogin', () => {
     cy.contains('Manage Courses').click()
 })
 
+Cypress.Commands.add('demoTeacherLogin', () => {
+    cy.visit('/')
+    cy.get('[data-cy="teacherButton"]').click()
+    cy.contains('Management').click()
+    cy.contains('Submitted').click()
+})
+
 Cypress.Commands.add('demoStudentLogin', () => {
     cy.visit('/')
     cy.get('[data-cy="studentButton"]').click()
@@ -96,5 +103,39 @@ Cypress.Commands.add('deleteSubmittedQuestion', (title) => {
         .should('have.length', 4)
         .find('[data-cy="deleteSubmittedQuestion"]')
         .click()
+})
+
+Cypress.Commands.add('approveQuestion', (title) => {
+    cy.contains(title)
+      .parent()
+      .should('have.length', 1)
+      .children()
+      .should('have.length', 5)
+      .find('[data-cy="reviewQuestionButton"]')
+      .click()
+    cy.get('[data-cy="approveButton"]').click()
+})
+
+Cypress.Commands.add('rejectQuestion', (title, justification) => {
+    cy.contains(title)
+      .parent()
+      .should('have.length', 1)
+      .children()
+      .should('have.length', 5)
+      .find('[data-cy="reviewQuestionButton"]')
+      .click()
+    cy.get('[data-cy="justification"]').type(justification,{force: true})
+    cy.get('[data-cy="rejectButton"]').click()
+})
+
+Cypress.Commands.add('rejectQuestion', (title) => {
+    cy.contains(title)
+      .parent()
+      .should('have.length', 1)
+      .children()
+      .should('have.length', 5)
+      .find('[data-cy="reviewQuestionButton"]')
+      .click()
+    cy.get('[data-cy="rejectButton"]').click()
 })
 
