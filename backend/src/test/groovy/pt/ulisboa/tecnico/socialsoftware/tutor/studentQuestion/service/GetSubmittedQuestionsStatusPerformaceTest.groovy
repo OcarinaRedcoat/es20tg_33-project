@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestion
 import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestionRepository
@@ -50,19 +51,30 @@ class GetSubmittedQuestionsStatusPerformaceTest extends Specification {
         questionDto.setTitle(QUESTION_TITLE)
         questionDto.setContent(QUESTION_CONTENT)
         questionDto.setStatus(StudentQuestion.Status.PENDING.name())
-        def options = new ArrayList<String>()
-        options.add(OPTION_CONTENT)
-        options.add(OPTION_CONTENT)
-        options.add(OPTION_CONTENT)
-        options.add(OPTION_CONTENT)
+        def options = new ArrayList<OptionDto>()
+        def optionDto = new OptionDto()
+        optionDto.setContent(OPTION_CONTENT)
+        optionDto.setCorrect(true)
+        options.add(optionDto)
+        optionDto = new OptionDto()
+        optionDto.setContent(OPTION_CONTENT)
+        optionDto.setCorrect(false)
+        options.add(optionDto)
+        optionDto = new OptionDto()
+        optionDto.setContent(OPTION_CONTENT)
+        optionDto.setCorrect(false)
+        options.add(optionDto)
+        optionDto = new OptionDto()
+        optionDto.setContent(OPTION_CONTENT)
+        optionDto.setCorrect(false)
+        options.add(optionDto)
         questionDto.setOptions(options)
-        questionDto.setCorrectOptionIndex(1)
         studentQuestionService.submitQuestion(course.getId(), questionDto, user.getUsername())})
 
 
         when: "get 5000"
         1.upto(1, {
-            studentQuestionService.getSubmittedQuestionsStats(USERNAME)})
+            studentQuestionService.getUserSubmittedQuestions(USERNAME)})
         then:
         true
     }

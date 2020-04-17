@@ -58,7 +58,6 @@ public enum ErrorMessage {
     QUESTION_MISSING_DATA("Missing information for quiz"),
     QUESTION_MULTIPLE_CORRECT_OPTIONS("Questions can only have 1 correct option"),
     INVALID_NUMBER_OF_OPTIONS("Questions must have 4 options"),
-    INVALID_CORRECT_OPTION_INDEX("That's not a valid option index"),
     QUESTION_MISSING_TITLE_OR_CONTENT("Questions need a title and content"),
     QUESTION_CHANGE_CORRECT_OPTION_HAS_ANSWERS("Can not change correct option of answered question"),
     QUIZ_HAS_ANSWERS("Quiz already has answers"),
@@ -73,6 +72,8 @@ public enum ErrorMessage {
     QUESTION_MISSING_JUSTIFICATION("Missing a justification in order to reject question"),
     QUESTION_NOT_PENDING("Question status not pending"),
     USER_WITHOUT_SUBMITTED_QUESTIONS("This user doesn't have any submitted questions"),
+    QUESTION_ALREADY_APPROVED("You can't delete an approved question"),
+    QUESTION_MISSING_OPTIONS("You need to fill all the option fields"),
   
     ACCESS_DENIED("You do not have permission to view this resource"),
 

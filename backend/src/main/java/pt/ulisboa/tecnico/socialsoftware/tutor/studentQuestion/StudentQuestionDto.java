@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -15,8 +16,7 @@ public class StudentQuestionDto implements Serializable {
     private String status;
     private String submittingUser;
     private String justification;
-    private List<String> options = new ArrayList<>();
-    private Integer correctOptionIndex = 0;
+    private List<OptionDto> options = new ArrayList<>();
 
     public StudentQuestionDto() {
     }
@@ -29,12 +29,7 @@ public class StudentQuestionDto implements Serializable {
         this.status = question.getStatus().name();
         this.submittingUser = question.getSubmittingUser().getUsername();
         this.justification = question.getJustification();
-        this.options = question.getOptions().stream().map(Option::getContent).collect(Collectors.toList());
-        this.correctOptionIndex = (question.getOptions().stream()
-                .filter(Option::getCorrect)
-                .mapToInt(Option::getSequence)
-                .findAny()
-                .getAsInt()) + 1;
+        this.options = question.getOptions().stream().map(OptionDto::new).collect(Collectors.toList());
     }
 
     public Integer getId() { return id; }
@@ -65,13 +60,9 @@ public class StudentQuestionDto implements Serializable {
 
     public void setJustification(String justification) { this.justification = justification; }
 
-    public List<String> getOptions() { return options; }
+    public List<OptionDto> getOptions() { return options; }
 
-    public void setOptions(List<String> options) { this.options = options; }
-
-    public int getCorrectOptionIndex() { return correctOptionIndex; }
-
-    public void setCorrectOptionIndex(Integer correctOptionIndex) { this.correctOptionIndex = correctOptionIndex; }
+    public void setOptions(List<OptionDto> options) { this.options = options; }
 
     @Override
     public String toString() {
@@ -82,7 +73,6 @@ public class StudentQuestionDto implements Serializable {
                 ", content='" + content + '\'' +
                 ", status=" + status +
                 ", options=" + options +
-                ", correctOptionIndex=" + correctOptionIndex +
                 ", submittingUser=" + submittingUser +
                 ", justification='" + justification + '\'' +
                 '}';
