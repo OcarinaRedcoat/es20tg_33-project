@@ -161,7 +161,7 @@ Cypress.Commands.add('visitCreateTourneyPage', () => {
 
 Cypress.Commands.add('visitSubmittedQuestionsPage', () => {
     cy.get('[data-cy="top-bar-submissions"]').click()
-    cy.get('data-cy="top-bar-submitted-questions"').click()
+    cy.get('[data-cy="top-bar-submitted-questions"]').click()
 });
 
 Cypress.Commands.add('visitOpenTourneysPage', () => {
@@ -174,7 +174,7 @@ Cypress.Commands.add('visitOpenTourneysPage', () => {
 
 Cypress.Commands.add('visitApproveRejectPage', () => {
     cy.get('[data-cy="top-bar-management"]').click()
-    cy.get('data-cy="top-bar-approve-reject"').click()
+    cy.get('[data-cy="top-bar-approve-reject"]').click()
 });
 
 // Tourney commands
