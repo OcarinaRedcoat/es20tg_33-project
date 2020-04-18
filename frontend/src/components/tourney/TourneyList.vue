@@ -48,6 +48,7 @@
 import { Component, Model, Prop, Vue, Watch } from 'vue-property-decorator';
 import Tourney from '../../models/tourney/Tourney';
 import RemoteServices from '../../services/RemoteServices';
+import User from "@/models/user/User";
 
 @Component
 export default class TourneyList extends Vue {
@@ -84,7 +85,7 @@ export default class TourneyList extends Vue {
       sortable: false
     }
   ];
-  
+
   async created() {
     await this.$store.dispatch('loading');
     try {
@@ -104,14 +105,14 @@ export default class TourneyList extends Vue {
     );
   }
 
-	isCreator(tourney: Tourney) {
-		return tourney?.tourneyCreator?.username === this.username;
-	}
+  isCreator(tourney: Tourney) {
+    return tourney?.tourneyCreator?.username === this.username;
+  }
 
   async enrollInTourney(tourney: Tourney) {
     if (confirm('Are you sure you want to enroll in this tourney?')) {
       try {
-				//TODO: TdP-3.1
+				await RemoteServices.enrollInTourney(tourney);
       } catch (error) {
         await this.$store.dispatch('error', error);
       }
