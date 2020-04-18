@@ -202,18 +202,18 @@ public class AnswerService {
         xmlImporter.importAnswers(answersXml, this, questionRepository, quizRepository, quizAnswerRepository, userRepository);
     }
 
-    @Retryable(
+/*    @Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public DiscussionDto createDiscussion(Integer questionAnswerId, DiscussionDto discussionDto){
         QuestionAnswer questionAnswer= questionAnswerRepository.findById(questionAnswerId).orElseThrow(() -> new TutorException(ErrorMessage.QUESTION_ANSWER_NOT_FOUND));
-        Discussion discussion= new Discussion(questionAnswer,discussionDto);
+        Discussion discussion= new Discussion(questionAnswer,discussionDto, 1);
 
         discussionRepository.save(discussion);
 //        entityManager.persist(discussion);
         return new DiscussionDto(discussion);
-    }
+    }*/
 
     @Retryable(
             value = { SQLException.class },
@@ -223,14 +223,9 @@ public class AnswerService {
         User user = userRepository.findById(UserId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, UserId));
         Discussion discussion = discussionRepository.findById(discussionId).orElseThrow(() -> new TutorException(STUDENT_DID_NOT_ANSWER_QUESTION));
 
-        //Discussion discussion = new Discussion(questionAnswer, discussionDto);
-
         Message message = new Message(messageDto, user);
-
         message.setSentence(messageDto.getSentence());
-
         message.checkConsistentMessage(messageDto);
-
         saveMessage(message, user, discussion);
 
         entityManager.persist(discussion);
@@ -243,19 +238,16 @@ public class AnswerService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public DiscussionDto submitStudentMessage(Integer UserId,Integer courseId,Integer questionAnswerId,DiscussionDto discussionDto, MessageDto messageDto) {
+    public DiscussionDto submitStudentMessage(Integer UserId,Integer courseId,Integer questionAnswerId, MessageDto messageDto) {
         User user = userRepository.findById(UserId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, UserId));
         QuestionAnswer questionAnswer = questionAnswerRepository.findById(questionAnswerId).orElseThrow(() -> new TutorException(STUDENT_DID_NOT_ANSWER_QUESTION));
-        Discussion discussion = discussionRepository.findById(discussionDto.getId()).orElse(createNewDiscussion(questionAnswer,discussionDto));
+        Discussion discussion = discussionRepository.findById(messageDto.getDiscussionDto().getId()).orElse(createNewDiscussion(questionAnswer,messageDto.getDiscussionDto(), courseId, user));
 
         Message message = new Message(messageDto, user);
-
+        message.setDiscussion(discussion);
         message.setSentence(messageDto.getSentence());
-
         message.checkConsistentMessage(messageDto);
-
         saveMessage(message, user, discussion);
-
 
         entityManager.persist(discussion);
 
@@ -274,8 +266,8 @@ public class AnswerService {
         }
     }
 
-    private Discussion createNewDiscussion(QuestionAnswer questionAnswer,DiscussionDto discussionDto) {
-        Discussion discussion = new Discussion(questionAnswer,discussionDto);
+    private Discussion createNewDiscussion(QuestionAnswer questionAnswer,DiscussionDto discussionDto, int courseId, User st) {
+        Discussion discussion = new Discussion(questionAnswer,discussionDto, courseId, st);
         discussionRepository.save(discussion);
 
         return discussion;

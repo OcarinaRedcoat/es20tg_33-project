@@ -39,9 +39,9 @@ public class Discussion {
     @JoinColumn(name = "questionAnswer_id")
     private QuestionAnswer questionAnswer;
 
-    @ManyToOne
+
     @JoinColumn(name = "course_id")
-    private Course course;
+    private Integer courseId;
 
     @OneToMany
     private List<Message> discussionListMessages = new ArrayList<>();
@@ -49,11 +49,11 @@ public class Discussion {
     public Discussion(){
     }
 
-    public Discussion(QuestionAnswer questionAnswer,DiscussionDto discussionDto){
+    public Discussion(QuestionAnswer questionAnswer,DiscussionDto discussionDto, int courseId, User student){
         checkConsistentDiscussion(discussionDto, questionAnswer.getId());
         this.questionAnswer = questionAnswer;
-        this.student =  discussionDto.getStudent();
-        this.id = questionAnswer.getId();
+        this.student =  student;
+        this.courseId = courseId;
     }
 
     public Integer getId() {
@@ -113,14 +113,14 @@ public class Discussion {
     }
 
     public void checkConsistentDiscussion(DiscussionDto discussionDto, int id){
-        for (QuizAnswer qzA : discussionDto.getStudent().getQuizAnswers()) {
+        /*for (QuizAnswer qzA : discussionDto.getStudent().getQuizAnswers()) {
             for (QuestionAnswer qA : qzA.getQuestionAnswers()) {
                 if (qA.getId().equals(id)) {
                     return;
                 }
             }
         }
-        throw new TutorException(STUDENT_DID_NOT_ANSWER_QUESTION);
+        throw new TutorException(STUDENT_DID_NOT_ANSWER_QUESTION);*/
 
     }
 
