@@ -46,5 +46,12 @@ public class DiscussionController {
         return answerService.displayDiscussion(user.getId(), discussionId);
     }
 
+    @GetMapping("/visualize/teacher/{courseId}")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public List<DiscussionDto> teacherVisualizesAllDiscussion(@PathVariable Integer courseId, Principal principal){
+        User user = (User) ((Authentication) principal).getPrincipal();
+        if (user == null){ throw new TutorException(AUTHENTICATION_ERROR); }
+        return answerService.teacherVisualizesAllDiscussion(courseId);
+    }
 }
 

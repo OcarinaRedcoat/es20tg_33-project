@@ -13,6 +13,7 @@ import java.util.Optional;
 @Repository
 @Transactional
 public interface DiscussionRepository extends JpaRepository<Discussion, Integer> {
-
+    @Query(value = "SELECT * FROM discussion d WHERE s.course_id = :courseId", nativeQuery = true)
+    List<Discussion> findByCourseId(int courseId);
 }
 

@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain;
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.MessageDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.DiscussionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
@@ -37,6 +38,10 @@ public class Discussion {
     @OneToOne
     @JoinColumn(name = "questionAnswer_id")
     private QuestionAnswer questionAnswerId;
+
+    @ManyToOne
+    @JoinColumn(name = "course_id")
+    private Course course;
 
     @OneToMany
     private List<Message> discussionListMessages = new ArrayList<>();
