@@ -30,12 +30,20 @@ public class DiscussionController {
         return answerService.createDiscussion(questionAnswerId,discussionDto);
     }
 
-    @PostMapping("/discussion/{discussionId}/submit")
+    @PostMapping("/courses/{courseId}/questionAnswer/{questionAnswerId}/discussion/submit")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
-    public DiscussionDto submitMessage(@PathVariable Integer discussionId, @RequestBody MessageDto messageDto, Principal principal) {
+    public DiscussionDto submitStudentMessage(@PathVariable Integer questionAnswerId,@PathVariable Integer courseId,@RequestBody MessageDto messageDto,@RequestBody DiscussionDto discussionDto, Principal principal) {
         User user = (User) ((Authentication) principal).getPrincipal();
         if(user==null){ throw new TutorException(AUTHENTICATION_ERROR); }
-        return answerService.submitMessage(user.getId(),discussionId,messageDto);
+        return answerService.submitStudentMessage(user.getId(),courseId,questionAnswerId,discussionDto,messageDto);
+    }
+
+    @PostMapping("/discussion/{discussionId}/submit")
+    @PreAuthorize("hasRole('ROLE_TEACHER')")
+    public DiscussionDto submitTeacherMessage(@PathVariable Integer discussionId,@RequestBody MessageDto messageDto,Principal principal) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+        if(user==null){ throw new TutorException(AUTHENTICATION_ERROR); }
+        return answerService.submitTeacherMessage(user.getId(),discussionId,messageDto);
     }
 
     @GetMapping("/visualize/{discussionId}")

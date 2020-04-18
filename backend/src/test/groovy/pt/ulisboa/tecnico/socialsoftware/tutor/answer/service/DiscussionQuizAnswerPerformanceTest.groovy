@@ -81,7 +81,7 @@ class DiscussionQuizAnswerPerformanceTest extends Specification {
     @Shared def quiz
     @Shared def option1
 
-
+    /*
     def setup() {
 
 
@@ -163,6 +163,8 @@ class DiscussionQuizAnswerPerformanceTest extends Specification {
         then:
         true
     }
+
+     */
 
     @TestConfiguration
     static class AnswerServiceImplTestContextConfiguration{

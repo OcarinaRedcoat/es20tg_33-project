@@ -37,7 +37,7 @@ public class Discussion {
 
     @OneToOne
     @JoinColumn(name = "questionAnswer_id")
-    private QuestionAnswer questionAnswerId;
+    private QuestionAnswer questionAnswer;
 
     @ManyToOne
     @JoinColumn(name = "course_id")
@@ -49,11 +49,11 @@ public class Discussion {
     public Discussion(){
     }
 
-    public Discussion(QuestionAnswer questionAnswerId, DiscussionDto discussionDto){
-        checkConsistentDiscussion(discussionDto, questionAnswerId.getId());
-        this.questionAnswerId = questionAnswerId;
+    public Discussion(QuestionAnswer questionAnswer,DiscussionDto discussionDto){
+        checkConsistentDiscussion(discussionDto, questionAnswer.getId());
+        this.questionAnswer = questionAnswer;
         this.student =  discussionDto.getStudent();
-        this.id = questionAnswerId.getId();
+        this.id = questionAnswer.getId();
     }
 
     public Integer getId() {
@@ -63,6 +63,8 @@ public class Discussion {
     public void setId(Integer id) {
         this.id = id;
     }
+
+    public QuestionAnswer getQuestionAnswer() { return questionAnswer; }
 
     public void setStudent(User st) { this.student = st; }
 

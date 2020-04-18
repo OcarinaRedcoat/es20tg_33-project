@@ -26,6 +26,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlExport;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
@@ -218,7 +219,7 @@ public class AnswerService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public DiscussionDto submitMessage(Integer UserId, Integer discussionId, MessageDto messageDto) {
+    public DiscussionDto submitTeacherMessage(Integer UserId, Integer discussionId, MessageDto messageDto) {
         User user = userRepository.findById(UserId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, UserId));
         Discussion discussion = discussionRepository.findById(discussionId).orElseThrow(() -> new TutorException(STUDENT_DID_NOT_ANSWER_QUESTION));
 
@@ -238,6 +239,30 @@ public class AnswerService {
 
     }
 
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public DiscussionDto submitStudentMessage(Integer UserId,Integer courseId,Integer questionAnswerId,DiscussionDto discussionDto, MessageDto messageDto) {
+        User user = userRepository.findById(UserId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, UserId));
+        QuestionAnswer questionAnswer = questionAnswerRepository.findById(questionAnswerId).orElseThrow(() -> new TutorException(STUDENT_DID_NOT_ANSWER_QUESTION));
+        Discussion discussion = discussionRepository.findById(discussionDto.getId()).orElse(createNewDiscussion(questionAnswer,discussionDto));
+
+        Message message = new Message(messageDto, user);
+
+        message.setSentence(messageDto.getSentence());
+
+        message.checkConsistentMessage(messageDto);
+
+        saveMessage(message, user, discussion);
+
+
+        entityManager.persist(discussion);
+
+        return new DiscussionDto(discussion);
+
+    }
+
     private void saveMessage(Message message, User user, Discussion discussion) {
         if (user.getRole().equals(User.Role.STUDENT)) {
             discussion.setStudentMessage(message);
@@ -247,6 +272,13 @@ public class AnswerService {
             discussion.setTeacherMessage(message);
             discussion.addDiscussionMessage(message);
         }
+    }
+
+    private Discussion createNewDiscussion(QuestionAnswer questionAnswer,DiscussionDto discussionDto) {
+        Discussion discussion = new Discussion(questionAnswer,discussionDto);
+        discussionRepository.save(discussion);
+
+        return discussion;
     }
 
 
