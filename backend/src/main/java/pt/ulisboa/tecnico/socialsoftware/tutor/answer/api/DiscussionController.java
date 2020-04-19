@@ -38,12 +38,12 @@ public class DiscussionController {
         return answerService.submitStudentMessage(user.getId(),courseId,questionAnswerId,messageDto);
     }
 
-    @PostMapping("/discussion/{discussionId}/submit")
+    @PostMapping("/discussion/teacher/submit")
     @PreAuthorize("hasRole('ROLE_TEACHER')")
-    public DiscussionDto submitTeacherMessage(@PathVariable Integer discussionId,@RequestBody MessageDto messageDto,Principal principal) {
+    public DiscussionDto submitTeacherMessage(@RequestBody MessageDto messageDto,Principal principal) {
         User user = (User) ((Authentication) principal).getPrincipal();
         if(user==null){ throw new TutorException(AUTHENTICATION_ERROR); }
-        return answerService.submitTeacherMessage(user.getId(),discussionId,messageDto);
+        return answerService.submitTeacherMessage(user.getId(),messageDto.getDiscussionDto().getId(),messageDto);
     }
 
     @GetMapping("/visualize/{discussionId}")
