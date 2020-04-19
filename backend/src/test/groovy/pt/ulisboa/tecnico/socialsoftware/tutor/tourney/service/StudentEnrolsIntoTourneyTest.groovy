@@ -29,10 +29,11 @@ import java.time.format.DateTimeFormatter
 @DataJpaTest
 class StudentEnrolsIntoTourneyTest extends Specification{
 
-    static final int NUMBER_QUESTIONS = 5
-    static final int CREATOR_KEY = 1
-    static final int STUDENT_KEY = 2
-    static final int NOT_STUDENT_KEY = 3
+    public static final String TOURNEY_TITLE = "Tourney 1"
+    public static final int NUMBER_QUESTIONS = 5
+    public static final int CREATOR_KEY = 1
+    public static final int STUDENT_KEY = 2
+    public static final int NOT_STUDENT_KEY = 3
 
     def tourney
     def topicDto
@@ -68,6 +69,7 @@ class StudentEnrolsIntoTourneyTest extends Specification{
         def availableDate = LocalDateTime.now()
         def conclusionDate = LocalDateTime.now().plusDays(1)
 
+        tourney.setTourneyTitle(TOURNEY_TITLE)
         tourney.setTourneyAvailableDate(availableDate.format(formatter))
         tourney.setTourneyConclusionDate(conclusionDate.format(formatter))
         tourney.setTourneyNumberOfQuestions(NUMBER_QUESTIONS)

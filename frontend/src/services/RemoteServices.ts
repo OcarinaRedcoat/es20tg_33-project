@@ -15,6 +15,7 @@ import StatementAnswer from '@/models/statement/StatementAnswer';
 import { QuizAnswer } from '@/models/management/QuizAnswer';
 import { QuizAnswers } from '@/models/management/QuizAnswers';
 import StudentQuestion from '@/models/submissions/StudentQuestion';
+import Tourney from '@/models/tourney/Tourney';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 10000;
@@ -621,6 +622,16 @@ export default class RemoteServices {
         throw Error(await this.errorMessage(error));
       });
   }
+  static async createTourney(tourney: Tourney) {
+    return httpClient
+      .post('/tourneys', tourney)
+      .then(response => {
+        return new Tourney(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
 
   static async getPendingQuestions(): Promise<StudentQuestion[]> {
     return httpClient
@@ -630,6 +641,19 @@ export default class RemoteServices {
       .then(response => {
         return response.data.map((question: any) => {
           return new StudentQuestion(question);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getTourneys() {
+    return httpClient
+      .get('/tourneys/open')
+      .then(response => {
+        return response.data.map((tourney: any) => {
+          return new Tourney(tourney);
         });
       })
       .catch(async error => {
