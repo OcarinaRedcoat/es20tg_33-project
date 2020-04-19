@@ -120,6 +120,7 @@
                   <elementProp name="" elementType="HTTPArgument">
                     <boolProp name="HTTPArgument.always_encode">false</boolProp>
                     <stringProp name="Argument.value">{&#xd;
+	&quot;tourneyTitle&quot;: &quot;Demo Tourney&quot;,&#xd;
 	&quot;tourneyNumberOfQuestions&quot;: &quot;${tourneyNumberOfQuestions}&quot;,&#xd;
 	&quot;tourneyAvailableDate&quot;: &quot;${tourneyAvailableDate}&quot;,&#xd;
 	&quot;tourneyConclusionDate&quot;: &quot;${tourneyConclusionDate}&quot;,&#xd;
