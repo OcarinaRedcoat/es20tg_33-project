@@ -27,7 +27,7 @@
         <template v-slot:item.action="{ item }">
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
-              <v-icon small class="mr-2" v-on="on" @click="enrollInTourney(item)">add</v-icon>
+              <v-icon small class="mr-2" v-on="on" @click="enrollInTourney(item)" data-cy="enrollInTourney">add</v-icon>
             </template>
             <span>Enroll in Tourney</span>
           </v-tooltip>

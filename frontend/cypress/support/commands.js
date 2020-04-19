@@ -189,3 +189,17 @@ Cypress.Commands.add(
       .and('contain', conclusionDate);
   }
 );
+
+Cypress.Commands.add(
+    'enrollInTourney',
+    (name) => {
+      cy.contains(name)
+          .parent()
+          .should('have.length', 1)
+          .children()
+          .should('have.length', 5)
+          .find('[data-cy="enrollInTourney"]')
+          .click();
+    }
+);
+
