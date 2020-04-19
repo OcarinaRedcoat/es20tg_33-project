@@ -203,3 +203,16 @@ Cypress.Commands.add(
     }
 );
 
+Cypress.Commands.add(
+    'cancelTourney',
+    (name) => {
+        cy.contains(name)
+            .parent()
+            .should('have.length', 1)
+            .children()
+            .should('have.length', 5)
+            .find('[data-cy="cancelTourney"]')
+            .click();
+    }
+);
+
