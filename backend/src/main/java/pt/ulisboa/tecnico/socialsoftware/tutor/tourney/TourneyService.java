@@ -132,6 +132,10 @@ public class TourneyService {
                 .reduce(false, (acc, elem) -> acc || elem))
             throw new TutorException(ErrorMessage.STUDENT_CANT_ACCESS_COURSE_EXECUTION, tourney.getCourseExecution().getAcronym());
 
+        if(tourney.getEnrolledStudents().stream().anyMatch(elem -> user.getId() == elem.getId())) {
+            throw new TutorException(ErrorMessage.STUDENT_ALREADY_ENROLLED);
+        }
+
         if(tourney.getEnrolledStudents().size() == 1)
             this.createTourneyQuiz(tourney);
 
@@ -170,7 +174,6 @@ public class TourneyService {
 
         quizDto = quizService.createQuiz(tourney.getCourseExecution().getId(), quizDto);
         Quiz quiz = quizRepository.findByKey(quizDto.getKey()).orElseThrow(() -> new TutorException(ErrorMessage.QUIZ_NOT_FOUND));
-        System.out.println(quiz.getKey());
         tourney.setQuiz(quiz);
 
         return new TourneyDto(tourney);

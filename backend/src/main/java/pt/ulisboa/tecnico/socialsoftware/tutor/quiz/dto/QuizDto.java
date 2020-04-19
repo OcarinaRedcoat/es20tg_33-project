@@ -51,8 +51,8 @@ public class QuizDto implements Serializable {
         this.numberOfQuestions = quiz.getQuizQuestions().size();
         this.numberOfAnswers = quiz.getQuizAnswers().size();
 
-        if(quiz.getTourney() != null)
-            this.tourney = new TourneyDto(quiz.getTourney());
+        // if(quiz.getTourney() != null)
+        //     this.tourney = new TourneyDto(quiz.getTourney());
         if (quiz.getCreationDate() != null)
             this.creationDate = quiz.getCreationDate().format(formatter);
         if (quiz.getAvailableDate() != null)

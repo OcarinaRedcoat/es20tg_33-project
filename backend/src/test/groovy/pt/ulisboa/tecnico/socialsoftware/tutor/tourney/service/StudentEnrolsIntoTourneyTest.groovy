@@ -115,6 +115,22 @@ class StudentEnrolsIntoTourneyTest extends Specification{
         enrolledStudents.size() == 1
     }
 
+    def "a student enrols into a tourney twice"() {
+        given: "a studentId and a tourneyId"
+        def userId = userRepository.findAll().get(0).getId()
+        def tourneyId = tourneyRepository.findAll().get(0).getId()
+        tourneyService.enrollStudent(tourneyId, userId)
+
+        when:
+        tourneyService.enrollStudent(tourneyId, userId)
+
+        then:
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.STUDENT_ALREADY_ENROLLED
+        def tourney = tourneyRepository.findAll().get(0)
+        tourney.getEnrolledStudents().size() == 1
+    }
+
     def "two students enroll in a tourney"() {
         given: "two students"
         def user1Id = userRepository.findAll().get(0).getId()

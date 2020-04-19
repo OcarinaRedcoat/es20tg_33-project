@@ -79,6 +79,7 @@ public enum ErrorMessage {
     TOURNEY_DATE_WRONG_FORMAT("Date format not according to the expected."),
     TOURNEY_NOT_FOUND("Tourney not found"),
     TOURNEY_CLOSED("Tourney closed"),
+    STUDENT_ALREADY_ENROLLED("Student already enroled at tourney"),
 
     USER_NOT_STUDENT("The user is not a student"),
     STUDENT_CANT_ACCESS_COURSE_EXECUTION("Student is not enrolled in the course execution: %s"),

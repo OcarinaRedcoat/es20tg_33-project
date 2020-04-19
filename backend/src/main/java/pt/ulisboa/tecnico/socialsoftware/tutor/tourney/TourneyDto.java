@@ -36,6 +36,8 @@ public class TourneyDto implements Serializable {
         this.tourneyCreator = new StudentDto(tourney.getCreator());
         this.tourneyTopics = tourney.getTopics().stream().map(TopicDto::new).collect(Collectors.toList());
         this.tourneyCourseExecution = new CourseDto(tourney.getCourseExecution());
+        if(tourney.getQuiz() != null)
+            this.tourneyQuiz = new QuizDto(tourney.getQuiz(), false);
     }
 
     public Integer getTourneyNumberOfQuestions(){
