@@ -80,7 +80,7 @@
       if (this.editQuestion.justification == null || this.editQuestion.justification == '') {
         await this.$store.dispatch(
           'error',
-          'Rejection must have a justification'
+          'Error: Rejection must have a justification'
         );
         return;
       } else{
