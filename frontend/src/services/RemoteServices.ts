@@ -590,6 +590,13 @@ export default class RemoteServices {
         });
   }
 
+  static async cancelTourney(tourney: Tourney) {
+    return httpClient
+        .put(`/tourneys/${tourney.tourneyId}/cancel`).catch(async error => {
+      throw Error(await this.errorMessage(error));
+    });
+  }
+
   static async exportAll() {
     return httpClient
       .get('/admin/export', {
