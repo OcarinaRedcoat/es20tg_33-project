@@ -112,7 +112,7 @@ export default class TourneyList extends Vue {
   async enrollInTourney(tourney: Tourney) {
     if (confirm('Are you sure you want to enroll in this tourney?')) {
       try {
-				await RemoteServices.enrollInTourney(tourney);
+        await RemoteServices.enrollInTourney(tourney);
       } catch (error) {
         await this.$store.dispatch('error', error);
       }
@@ -121,8 +121,9 @@ export default class TourneyList extends Vue {
 
   async cancelTourney(toDeleteTourney: Tourney) {
     if (confirm('Are you sure you want to cancel this tourney?')) {
-				//TODO: TdP-4.1
       try {
+        await RemoteServices.cancelTourney(toDeleteTourney);
+        this.$emit('cancelTourney', toDeleteTourney);
       } catch (error) {
         await this.$store.dispatch('error', error);
       }
