@@ -4,16 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 
-import java.security.Principal;
 import java.util.List;
 
-import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.AUTHENTICATION_ERROR;
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.USER_NOT_FOUND;
 
 @RestController
@@ -50,7 +45,6 @@ public class UserController {
 //                .map(usr -> userRepository.save(usr)).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
 //    }
 
-
     @DeleteMapping("/users/{userId}")
     public ResponseEntity deleteUser(@PathVariable Integer userId) {
         return userRepository.findById(userId)
@@ -58,15 +52,5 @@ public class UserController {
                     userRepository.delete(user);
                     return ResponseEntity.ok().build();
                 }).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
-    }
-
-    @GetMapping("/courses/{courseId}/questions/status")
-    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#courseId, 'COURSE.ACCESS')")
-    public List<QuestionDto> getSubmittedQuestionsStats(Principal principal, @PathVariable int courseId) {
-        User user = (User) ((Authentication) principal).getPrincipal();
-        if(user == null){
-            throw new TutorException(AUTHENTICATION_ERROR);
-        }
-        return this.userService.getSubmittedQuestionsStats(user.getUsername());
     }
 }

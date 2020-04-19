@@ -14,6 +14,7 @@ import AuthDto from '@/models/user/AuthDto';
 import StatementAnswer from '@/models/statement/StatementAnswer';
 import { QuizAnswer } from '@/models/management/QuizAnswer';
 import { QuizAnswers } from '@/models/management/QuizAnswers';
+import StudentQuestion from '@/models/submissions/StudentQuestion';
 import Tourney from '@/models/tourney/Tourney';
 
 const httpClient = axios.create();
@@ -555,11 +556,92 @@ export default class RemoteServices {
       });
   }
 
+  static async getStudentQuestions(): Promise<StudentQuestion[]> {
+    return httpClient
+      .get(
+        `/courses/${Store.getters.getCurrentCourse.courseId}/studentQuestions/status`
+      )
+      .then(response => {
+        return response.data.map((question: any) => {
+          return new StudentQuestion(question);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async submitQuestion(
+    studentQuestion: StudentQuestion
+  ): Promise<StudentQuestion> {
+    return httpClient
+      .post(
+        `/courses/${Store.getters.getCurrentCourse.courseId}/studentQuestions`,
+        studentQuestion
+      )
+      .then(response => {
+        return new StudentQuestion(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static deleteStudentQuestion(questionId: number) {
+    return httpClient
+      .delete(`/studentQuestions/${questionId}`)
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async approveQuestion(
+    questionId: number | undefined,
+    justification: String
+  ): Promise<StudentQuestion> {
+    return httpClient
+      .put(`/studentQuestions/${questionId}/approve`, justification)
+      .then(response => {
+        return new StudentQuestion(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async rejectQuestion(
+    questionId: number | undefined,
+    justification: String
+  ): Promise<StudentQuestion> {
+    return httpClient
+      .put(`/studentQuestions/${questionId}/reject`, justification)
+      .then(response => {
+        return new StudentQuestion(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
   static async createTourney(tourney: Tourney) {
     return httpClient
       .post('/tourneys', tourney)
       .then(response => {
         return new Tourney(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getPendingQuestions(): Promise<StudentQuestion[]> {
+    return httpClient
+      .get(
+        `/courses/${Store.getters.getCurrentCourse.courseId}/studentQuestions`
+      )
+      .then(response => {
+        return response.data.map((question: any) => {
+          return new StudentQuestion(question);
+        });
       })
       .catch(async error => {
         throw Error(await this.errorMessage(error));

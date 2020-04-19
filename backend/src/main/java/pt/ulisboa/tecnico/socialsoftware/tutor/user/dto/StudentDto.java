@@ -1,12 +1,9 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.user.dto;
 
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import java.io.Serializable;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 
 public class StudentDto implements Serializable {
     private String username;
@@ -27,7 +24,6 @@ public class StudentDto implements Serializable {
     private int percentageOfCorrectStudentAnswers = 0;
     private String creationDate;
     private String lastAccess;
-    private List<Question> submittedQuestions = new ArrayList<>();
 
     public StudentDto(User user) {
         this.username = user.getUsername();
@@ -178,14 +174,6 @@ public class StudentDto implements Serializable {
 
     public void setPercentageOfCorrectStudentAnswers(int percentageOfCorrectStudentAnswers) {
         this.percentageOfCorrectStudentAnswers = percentageOfCorrectStudentAnswers;
-    }
-
-    public List<Question> getSubmittedQuestions() {
-        return submittedQuestions;
-    }
-
-    public void setSubmittedQuestions(List<Question> submittedQuestions) {
-        this.submittedQuestions = submittedQuestions;
     }
 
     public Integer getNumberOfSubmittedQuestions() {

@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.service
+package pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.service
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
@@ -6,14 +6,13 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestion
+import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestionDto
+import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserService
 import spock.lang.Specification
 
 @DataJpaTest
@@ -29,12 +28,10 @@ class GetSubmittedQuestionsStatusPerformaceTest extends Specification {
     UserRepository userRepository
 
     @Autowired
-    UserService userService
+    StudentQuestionRepository studentQuestionRepository
 
     @Autowired
-    QuestionRepository questionRepository
-    @Autowired
-    QuestionService questionService
+    StudentQuestionService studentQuestionService
 
     @Autowired
     CourseRepository courseRepository
@@ -49,11 +46,11 @@ class GetSubmittedQuestionsStatusPerformaceTest extends Specification {
         userRepository.save(user)
         and: "a 100 question dto"
         1.upto(1, {
-        def questionDto = new QuestionDto()
+        def questionDto = new StudentQuestionDto()
         questionDto.setKey(it)
         questionDto.setTitle(QUESTION_TITLE)
         questionDto.setContent(QUESTION_CONTENT)
-        questionDto.setStatus(Question.Status.PENDING.name())
+        questionDto.setStatus(StudentQuestion.Status.PENDING.name())
         def options = new ArrayList<OptionDto>()
         def optionDto = new OptionDto()
         optionDto.setContent(OPTION_CONTENT)
@@ -72,26 +69,22 @@ class GetSubmittedQuestionsStatusPerformaceTest extends Specification {
         optionDto.setCorrect(false)
         options.add(optionDto)
         questionDto.setOptions(options)
-        questionService.submitQuestion(course.getId(), questionDto, user.getUsername())})
+        studentQuestionService.submitQuestion(course.getId(), questionDto, user.getUsername())})
 
 
         when: "get 5000"
         1.upto(1, {
-            userService.getSubmittedQuestionsStats(USERNAME)})
+            studentQuestionService.getUserSubmittedQuestions(USERNAME)})
         then:
         true
     }
 
     @TestConfiguration
-    static class UserServiceImplTestContextConfiguration {
+    static class StudentQuestionServiceImplTestContextConfiguration {
 
         @Bean
-        UserService userService() {
-            return new UserService()
-        }
-        @Bean
-        QuestionService questionService() {
-            return new QuestionService()
+        StudentQuestionService studentQuestionService() {
+            return new StudentQuestionService()
         }
     }
 

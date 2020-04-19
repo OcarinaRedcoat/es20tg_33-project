@@ -31,9 +31,7 @@ public class QuestionDto implements Serializable {
     private ImageDto image;
     private List<TopicDto> topics = new ArrayList<>();
     private Integer sequence;
-    private StudentDto submittingUser = null;
     private Discussion thread;
-    private String justification = null;
 
     public QuestionDto() {
     }
@@ -55,15 +53,12 @@ public class QuestionDto implements Serializable {
         this.status = question.getStatus().name();
         this.options = question.getOptions().stream().map(OptionDto::new).collect(Collectors.toList());
         this.topics = question.getTopics().stream().sorted(Comparator.comparing(Topic::getName)).map(TopicDto::new).collect(Collectors.toList());
-        this.justification = question.getJustification();
         this.thread = question.getDiscussion();
 
         if (question.getImage() != null)
             this.image = new ImageDto(question.getImage());
         if (question.getCreationDate() != null)
             this.creationDate = question.getCreationDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-        if (question.getSubmittingUser() != null)
-            this.submittingUser = new StudentDto(question.getSubmittingUser());
     }
 
     public Integer getId() {
@@ -194,18 +189,6 @@ public class QuestionDto implements Serializable {
         this.thread = thread;
     }
 
-    public StudentDto getSubmittingUser() {
-        return submittingUser;
-    }
-
-    public void setSubmittingUser(StudentDto submittingUser) {
-        this.submittingUser = submittingUser;
-    }
-
-    public String getJustification() { return justification; }
-
-    public void setJustification(String justification) { this.justification = justification; }
-
     @Override
     public String toString() {
         return "QuestionDto{" +
@@ -225,8 +208,6 @@ public class QuestionDto implements Serializable {
                 ", topics=" + topics +
                 ", sequence=" + sequence +
                 ", thread=" + thread +
-                ", submittingUser=" + submittingUser +
-                ", justification='" + justification + '\'' +
                 '}';
     }
 }

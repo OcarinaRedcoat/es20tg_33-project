@@ -10,6 +10,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.AssessmentService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.TopicService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.QuizService;
+import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestionService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserService;
 
@@ -25,6 +26,9 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
 
     @Autowired
     private QuestionService questionService;
+
+    @Autowired
+    private StudentQuestionService studentQuestionService;
 
     @Autowired
     private TopicService topicService;
@@ -67,6 +71,8 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
                     return userHasThisExecution(username, id);
                 case "QUESTION.ACCESS":
                     return userHasAnExecutionOfTheCourse(username, questionService.findQuestionCourse(id).getCourseId());
+                case "STUDENT_QUESTION.ACCESS":
+                    return userHasAnExecutionOfTheCourse(username, studentQuestionService.findQuestionCourse(id).getCourseId());
                 case "TOPIC.ACCESS":
                     return userHasAnExecutionOfTheCourse(username, topicService.findTopicCourse(id).getCourseId());
                 case "ASSESSMENT.ACCESS":

@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.socialsoftware.tutor.question.service
+package pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.service
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
@@ -6,11 +6,11 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestionService
+import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestion
+import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestionDto
+import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
@@ -29,7 +29,7 @@ class SubmitQuestionTest extends Specification {
     public static final String PERSON_NAME = "Name"
 
     @Autowired
-    QuestionService questionService
+    StudentQuestionService studentQuestionService
 
     @Autowired
     CourseRepository courseRepository
@@ -38,7 +38,7 @@ class SubmitQuestionTest extends Specification {
     UserRepository userRepository
 
     @Autowired
-    QuestionRepository questionRepository
+    StudentQuestionRepository studentQuestionRepository
 
     def course
     def user
@@ -56,12 +56,11 @@ class SubmitQuestionTest extends Specification {
     }
 
     def "submit a question with title, content and four options, with one being correct"() {
-        given: "a question dto"
-        def questionDto = new QuestionDto()
-        questionDto.setKey(1)
+        given: "a student question dto"
+        def questionDto = new StudentQuestionDto()
         questionDto.setTitle(QUESTION_TITLE)
         questionDto.setContent(QUESTION_CONTENT)
-        questionDto.setStatus(Question.Status.PENDING.name())
+        questionDto.setStatus(StudentQuestion.Status.PENDING.name())
         and: "four options"
         def options = new ArrayList<OptionDto>()
         def optionDto = new OptionDto()
@@ -83,47 +82,44 @@ class SubmitQuestionTest extends Specification {
         questionDto.setOptions(options)
 
         when:
-        questionService.submitQuestion(course.getId(), questionDto, user.getUsername())
+        studentQuestionService.submitQuestion(course.getId(), questionDto, USERNAME)
 
         then: "the question is submitted successfully"
-        questionRepository.count() == 1L
-        def result = questionRepository.findAll().get(0)
+        studentQuestionRepository.count() == 1L
+        def result = studentQuestionRepository.findAll().get(0)
         result.getId() != null
-        result.getKey() == 1
-        result.getStatus() == Question.Status.PENDING
+        result.getStatus() == StudentQuestion.Status.PENDING
         result.getTitle() == QUESTION_TITLE
         result.getContent() == QUESTION_CONTENT
         result.getOptions().size() == 4
         result.getCourse().getName() == TEST_COURSE
         result.getSubmittingUser().getUsername() == USERNAME
-        course.getQuestions().contains(result)
-        user.getSubmittedQuestions().get(0).getKey() == 1
+        course.getSubmittedQuestions().contains(result)
+        user.getSubmittedQuestions().get(0).getSubmittingUser().getUsername() == USERNAME
     }
 
     def "question submitted without a title or content"() {
         given: "a question dto without title"
-        def questionDto = new QuestionDto()
-        questionDto.setKey(1)
+        def questionDto = new StudentQuestionDto()
         questionDto.setTitle(null)
         questionDto.setContent(null)
-        questionDto.setStatus(Question.Status.PENDING.name())
+        questionDto.setStatus(StudentQuestion.Status.PENDING.name())
 
         when:
-        questionService.submitQuestion(course.getId(), questionDto, user.getUsername())
+        studentQuestionService.submitQuestion(course.getId(), questionDto, USERNAME)
 
         then: "an exception is thrown"
         def exception = thrown(TutorException)
         exception.getErrorMessage() == ErrorMessage.QUESTION_MISSING_TITLE_OR_CONTENT
-        questionRepository.count() == 0L
+        studentQuestionRepository.count() == 0L
     }
 
     def "question with two options"() {
         given: "a question dto"
-        def questionDto = new QuestionDto()
-        questionDto.setKey(1)
+        def questionDto = new StudentQuestionDto()
         questionDto.setTitle(QUESTION_TITLE)
         questionDto.setContent(QUESTION_CONTENT)
-        questionDto.setStatus(Question.Status.PENDING.name())
+        questionDto.setStatus(StudentQuestion.Status.PENDING.name())
         and: "two options"
         def options = new ArrayList<OptionDto>()
         def optionDto = new OptionDto()
@@ -137,31 +133,21 @@ class SubmitQuestionTest extends Specification {
         questionDto.setOptions(options)
 
         when:
-        questionService.submitQuestion(course.getId(), questionDto, user.getUsername())
+        studentQuestionService.submitQuestion(course.getId(), questionDto, USERNAME)
 
-        then: "the question is submitted successfully"
-        questionRepository.count() == 1L
-        def result = questionRepository.findAll().get(0)
-        result.getId() != null
-        result.getKey() == 1
-        result.getStatus() == Question.Status.PENDING
-        result.getTitle() == QUESTION_TITLE
-        result.getContent() == QUESTION_CONTENT
-        result.getOptions().size() == 2
-        result.getCourse().getName() == TEST_COURSE
-        result.getSubmittingUser().getUsername() == USERNAME
-        course.getQuestions().contains(result)
-        user.getSubmittedQuestions().get(0).getKey() == 1
+        then: "an exception is thrown"
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.INVALID_NUMBER_OF_OPTIONS
+        studentQuestionRepository.count() == 0L
     }
 
-    def "question with two correct answers"() {
+    def "question with two correct options"() {
         given: "a question dto"
-        def questionDto = new QuestionDto()
-        questionDto.setKey(1)
+        def questionDto = new StudentQuestionDto()
         questionDto.setTitle(QUESTION_TITLE)
         questionDto.setContent(QUESTION_CONTENT)
-        questionDto.setStatus(Question.Status.PENDING.name())
-        and: "four options with two correct ones"
+        questionDto.setStatus(StudentQuestion.Status.PENDING.name())
+        and: "four options"
         def options = new ArrayList<OptionDto>()
         def optionDto = new OptionDto()
         optionDto.setContent(OPTION_CONTENT)
@@ -182,22 +168,21 @@ class SubmitQuestionTest extends Specification {
         questionDto.setOptions(options)
 
         when:
-        questionService.submitQuestion(course.getId(), questionDto, user.getUsername())
+        studentQuestionService.submitQuestion(course.getId(), questionDto, USERNAME)
 
         then: "an exception is thrown"
         def exception = thrown(TutorException)
         exception.getErrorMessage() == ErrorMessage.QUESTION_MULTIPLE_CORRECT_OPTIONS
-        questionRepository.count() == 0L
+        studentQuestionRepository.count() == 0L
     }
 
     def "question without a correct answer"() {
         given: "a question dto"
-        def questionDto = new QuestionDto()
-        questionDto.setKey(1)
+        def questionDto = new StudentQuestionDto()
         questionDto.setTitle(QUESTION_TITLE)
         questionDto.setContent(QUESTION_CONTENT)
-        questionDto.setStatus(Question.Status.PENDING.name())
-        and: "four options with none being correct"
+        questionDto.setStatus(StudentQuestion.Status.PENDING.name())
+        and: "four options"
         def options = new ArrayList<OptionDto>()
         def optionDto = new OptionDto()
         optionDto.setContent(OPTION_CONTENT)
@@ -218,20 +203,20 @@ class SubmitQuestionTest extends Specification {
         questionDto.setOptions(options)
 
         when:
-        questionService.submitQuestion(course.getId(), questionDto, user.getUsername())
+        studentQuestionService.submitQuestion(course.getId(), questionDto, USERNAME)
 
         then: "an exception is thrown"
         def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.QUESTION_MISSING_CORRECT_OPTION
-        questionRepository.count() == 0L
+        exception.getErrorMessage() == ErrorMessage.NO_CORRECT_OPTION
+        studentQuestionRepository.count() == 0L
     }
 
     @TestConfiguration
-    static class QuestionServiceImplTestContextConfiguration {
+    static class StudentQuestionServiceImplTestContextConfiguration {
 
         @Bean
-        QuestionService questionService() {
-            return new QuestionService()
+        StudentQuestionService studentQuestionService() {
+            return new StudentQuestionService()
         }
     }
 

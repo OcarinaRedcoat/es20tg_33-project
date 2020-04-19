@@ -36,6 +36,16 @@ Cypress.Commands.add('demoStudentLogin', () => {
   cy.get('[data-cy="studentButton"]').click();
 });
 
+Cypress.Commands.add('demoTeacherLogin', () => {
+    cy.visit('/')
+    cy.get('[data-cy="teacherButton"]').click()
+});
+
+Cypress.Commands.add('demoStudentLogin', () => {
+    cy.visit('/')
+    cy.get('[data-cy="studentButton"]').click()
+})
+
 Cypress.Commands.add('createCourseExecution', (name, acronym, academicTerm) => {
   cy.get('[data-cy="createButton"]').click();
   cy.get('[data-cy="Name"]').type(name);
@@ -145,14 +155,26 @@ Cypress.Commands.add('selectDate', (dialog, datePicker, dateTime) => {
 // Student commands
 
 Cypress.Commands.add('visitCreateTourneyPage', () => {
-  cy.get('[data-cy="top-bar-tourneys"]').click();
-  cy.get('[data-cy="top-bar-create-tourney"]').click();
+    cy.get('[data-cy="top-bar-tourneys"]').click();
+    cy.get('[data-cy="top-bar-create-tourney"]').click();
+});
+
+Cypress.Commands.add('visitSubmittedQuestionsPage', () => {
+    cy.get('[data-cy="top-bar-submissions"]').click()
+    cy.get('[data-cy="top-bar-submitted-questions"]').click()
 });
 
 Cypress.Commands.add('visitOpenTourneysPage', () => {
   cy.get('[data-cy="top-bar-tourneys"]').click();
   cy.get('[data-cy="top-bar-open-tourneys"]').click();
   cy.get('.scrollbar').click();
+});
+
+// Teacher commands
+
+Cypress.Commands.add('visitApproveRejectPage', () => {
+    cy.get('[data-cy="top-bar-management"]').click()
+    cy.get('[data-cy="top-bar-approve-reject"]').click()
 });
 
 // Tourney commands
@@ -178,16 +200,16 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add(
-  'getOpenTourney',
-  (name, numberOfQuestions, availableDate, conclusionDate, topics) => {
-    return cy
-      .get('[data-cy="tourneysList"] tbody tr')
-      .last()
-      .should('contain', name)
-      .and('contain', numberOfQuestions)
-      .and('contain', availableDate)
-      .and('contain', conclusionDate);
-  }
+    'getOpenTourney',
+    (name, numberOfQuestions, availableDate, conclusionDate, topics) => {
+        return cy
+            .get('[data-cy="tourneysList"] tbody tr')
+            .last()
+            .should('contain', name)
+            .and('contain', numberOfQuestions)
+            .and('contain', availableDate)
+            .and('contain', conclusionDate);
+    }
 );
 
 Cypress.Commands.add(
@@ -216,3 +238,60 @@ Cypress.Commands.add(
     }
 );
 
+//Student Question commands
+
+Cypress.Commands.add('submitQuestion', (title, content, optionContent) => {
+    cy.get('[data-cy="createSubmissionButton"]').click()
+    cy.get('[data-cy="Title"]').type(title,{force: true})
+    cy.get('[data-cy="QuestionContent"]').type(content)
+    cy.get('[data-cy="OptionContent"]').eq(0).type(optionContent)
+    cy.get('[data-cy="OptionContent"]').eq(1).type(optionContent)
+    cy.get('[data-cy="OptionContent"]').eq(2).type(optionContent)
+    cy.get('[data-cy="OptionContent"]').eq(3).type(optionContent)
+    cy.get('[data-cy="OptionCorrect"]:first').click({force: true})
+    cy.get('[data-cy="submitButton"]').click()
+})
+
+Cypress.Commands.add('deleteSubmittedQuestion', (title) => {
+    cy.contains(title)
+        .parent()
+        .should('have.length', 1)
+        .children()
+        .should('have.length', 4)
+        .find('[data-cy="deleteSubmittedQuestion"]')
+        .click()
+})
+
+Cypress.Commands.add('approveQuestion', (title) => {
+    cy.contains(title)
+      .parent()
+      .should('have.length', 1)
+      .children()
+      .should('have.length', 5)
+      .find('[data-cy="reviewQuestionButton"]')
+      .click()
+    cy.get('[data-cy="approveButton"]').click()
+})
+
+Cypress.Commands.add('rejectQuestion', (title, justification) => {
+    cy.contains(title)
+      .parent()
+      .should('have.length', 1)
+      .children()
+      .should('have.length', 5)
+      .find('[data-cy="reviewQuestionButton"]')
+      .click()
+    cy.get('[data-cy="justification"]').type(justification,{force: true})
+    cy.get('[data-cy="rejectButton"]').click()
+})
+
+Cypress.Commands.add('rejectQuestion', (title) => {
+    cy.contains(title)
+      .parent()
+      .should('have.length', 1)
+      .children()
+      .should('have.length', 5)
+      .find('[data-cy="reviewQuestionButton"]')
+      .click()
+    cy.get('[data-cy="rejectButton"]').click()
+})
