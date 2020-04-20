@@ -236,7 +236,7 @@ Cypress.Commands.add('deleteSubmittedQuestion', (title) => {
         .click()
 })
 
-Cypress.Commands.add('approveQuestion', (title) => {
+Cypress.Commands.add('approveQuestionNoJust', (title) => {
     cy.contains(title)
       .parent()
       .should('have.length', 1)
@@ -247,6 +247,18 @@ Cypress.Commands.add('approveQuestion', (title) => {
     cy.get('[data-cy="approveButton"]').click()
 })
 
+Cypress.Commands.add('approveQuestion', (title, justification) => {
+  cy.contains(title)
+    .parent()
+    .should('have.length', 1)
+    .children()
+    .should('have.length', 5)
+    .find('[data-cy="reviewQuestionButton"]')
+    .click()
+  cy.get('[data-cy="justification"]').type(justification)
+  cy.get('[data-cy="approveButton"]').click()
+})
+
 Cypress.Commands.add('rejectQuestion', (title, justification) => {
     cy.contains(title)
       .parent()
@@ -255,17 +267,7 @@ Cypress.Commands.add('rejectQuestion', (title, justification) => {
       .should('have.length', 5)
       .find('[data-cy="reviewQuestionButton"]')
       .click()
-    cy.get('[data-cy="justification"]').type(justification,{force: true})
+    cy.get('[data-cy="justification"]').type(justification)
     cy.get('[data-cy="rejectButton"]').click()
 })
 
-Cypress.Commands.add('rejectQuestion', (title) => {
-    cy.contains(title)
-      .parent()
-      .should('have.length', 1)
-      .children()
-      .should('have.length', 5)
-      .find('[data-cy="reviewQuestionButton"]')
-      .click()
-    cy.get('[data-cy="rejectButton"]').click()
-})

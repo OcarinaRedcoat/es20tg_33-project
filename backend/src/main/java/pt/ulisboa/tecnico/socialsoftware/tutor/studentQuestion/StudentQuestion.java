@@ -111,7 +111,7 @@ public class StudentQuestion {
     }
 
     public void remove() {
-        //canRemove();
+        canRemove();
         getCourse().getSubmittedQuestions().remove(this);
         getSubmittingUser().getSubmittedQuestions().remove(this);
         course = null;
