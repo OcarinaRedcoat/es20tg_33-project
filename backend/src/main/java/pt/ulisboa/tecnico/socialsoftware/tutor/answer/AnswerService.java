@@ -301,15 +301,14 @@ public class AnswerService {
         }
         return messagesList;
     }
-<<<<<<< HEAD
+
     @Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public List<DiscussionDto> teacherVisualizesAllDiscussion(int courseId){
+    public List<DiscussionDto> teacherVisualizesAllDiscussion(int courseId) {
         return discussionRepository.findByCourseId(courseId).stream().map(DiscussionDto::new).collect(Collectors.toList());
-=======
-    
+    }
     public void deleteQuizAnswer(QuizAnswer quizAnswer) {
         for (QuestionAnswer questionAnswer : quizAnswer.getQuestionAnswers()) {
             questionAnswer.remove();
@@ -317,6 +316,5 @@ public class AnswerService {
         }
         quizAnswer.remove();
         quizAnswerRepository.delete(quizAnswer);
->>>>>>> develop
     }
 }
