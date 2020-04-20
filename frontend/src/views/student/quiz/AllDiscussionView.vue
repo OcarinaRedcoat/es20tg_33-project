@@ -1,7 +1,45 @@
 <template>
-  <div class="container">
-    <h2>All Discussions</h2>
-  </div>
+  <v-card class="table">
+    <v-card-title>Discussions</v-card-title>
+    <v-data-table
+      :headers="headers"
+      :items="discussions"
+      :search="search"
+      disable-pagination
+      :hide-default-footer="true"
+      :mobile-breakpoint="0"
+      multi-sort
+      :items-per-page="5"
+      :footer-props="{ itemsPerPageOptions: [5, 10, 15, 50, 100] }"
+    >
+      <template v-slot:top>
+        <v-card-title>
+          <v-text-field
+            v-model="search"
+            append-icon="search"
+            label="Search"
+            class="mx-2"
+          />
+          <v-spacer />
+        </v-card-title>
+      </template>
+      <template v-slot:item.action="{ item }">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-icon
+              small
+              class="mr-2"
+              v-on="on"
+              @click="deleteQuestion(item)"
+              color="red"
+              >delete</v-icon
+            >
+          </template>
+          <span>Delete Student Question</span>
+        </v-tooltip>
+      </template>
+    </v-data-table>
+  </v-card>
 </template>
 
 <script>

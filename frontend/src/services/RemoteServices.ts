@@ -16,7 +16,7 @@ import { QuizAnswers } from '@/models/management/QuizAnswers';
 import StudentQuestion from '@/models/submissions/StudentQuestion';
 import Tourney from '@/models/tourney/Tourney';
 import Discussion from '@/models/statement/Discussion';
-import Message from '@/models/statement/Message.ts';
+import Message from '@/models/statement/Message';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 10000;
