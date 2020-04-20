@@ -19,9 +19,6 @@ public interface QuestionRepository extends JpaRepository<Question, Integer> {
     @Query(value = "SELECT * FROM questions q WHERE q.course_id = :courseId AND q.status = 'AVAILABLE'", nativeQuery = true)
     List<Question> findAvailableQuestions(int courseId);
 
-    @Query(value = "SELECT * FROM questions q WHERE q.course_id = :courseId AND q.status = 'PENDING'", nativeQuery = true)
-    List<Question> findPendingQuestions(int courseId);
-
     @Query(value = "SELECT count(*) FROM questions q WHERE q.course_id = :courseId AND q.status = 'AVAILABLE'", nativeQuery = true)
     Integer getAvailableQuestionsSize(Integer courseId);
 
@@ -30,4 +27,7 @@ public interface QuestionRepository extends JpaRepository<Question, Integer> {
 
     @Query(value = "SELECT * FROM questions q WHERE q.key = :key", nativeQuery = true)
     Optional<Question> findByKey(Integer key);
+
+    @Query(value = "DELETE FROM questions WHERE id = :id", nativeQuery = true)
+    Optional<Question> deleteQById(Integer id);
 }

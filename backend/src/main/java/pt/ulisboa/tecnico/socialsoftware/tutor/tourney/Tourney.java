@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.tourney;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import java.util.ArrayList;
@@ -27,6 +28,8 @@ public class Tourney {
 
     private String availableDate, conclusionDate;
 
+    private String title;
+
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "topicTourneys", fetch=FetchType.LAZY)
     private List<Topic> topics = new ArrayList<>();
 
@@ -37,23 +40,27 @@ public class Tourney {
     @JoinColumn(name = "course_execution_id")
     private CourseExecution courseExecution;
 
+    @OneToOne
+    @JoinColumn(name = "quiz_id")
+    private Quiz quiz;
+
     @ManyToOne
     @JoinColumn(name="user_id")
     private User creator;
 
     public Tourney(){}
 
-    public Tourney(Integer numberOfQuestions, String availableDate, String conclusionDate, User creator){
+    public Tourney(String title, Integer numberOfQuestions, String availableDate, String conclusionDate, User creator){
+        this.title = title;
         this.numberOfQuestions = numberOfQuestions;
         this.availableDate = availableDate;
         this.conclusionDate = conclusionDate;
         this.status = Tourney.Status.OPEN;
         this.creator = creator;
-
-        this.creator.addCreatedTourneys(this);
     }
 
     public Tourney(TourneyDto tourneyDto, User user){
+        this.title = tourneyDto.getTourneyTitle();
         this.numberOfQuestions = tourneyDto.getTourneyNumberOfQuestions();
         this.id = tourneyDto.getTourneyId();
         this.availableDate = tourneyDto.getTourneyAvailableDate();
@@ -127,5 +134,21 @@ public class Tourney {
 
     public void setCourseExecution(CourseExecution courseExecution) {
         this.courseExecution = courseExecution;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public Quiz getQuiz() {
+        return this.quiz;
+    }
+
+    public void setQuiz(Quiz quiz) {
+        this.quiz = quiz;
     }
 }

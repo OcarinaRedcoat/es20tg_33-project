@@ -4,11 +4,15 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService
+import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.QuizService
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.Tourney
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyService
@@ -19,6 +23,7 @@ import spock.lang.Specification
 @DataJpaTest
 class GetOpenTourneysTest extends Specification {
 
+    public static final String TOURNEY_TITLE = "Tourney 1"
     public static final Integer TOURNEY_ONE_NUMBER_QUESTIONS = 1
     public static final Integer TOURNEY_TWO_NUMBER_QUESTIONS = 2
     public static final String TOURNEY_AVAILABLE_DATE = "2020-01-01 21:12"
@@ -73,11 +78,11 @@ class GetOpenTourneysTest extends Specification {
 
         and: "two tourneys"
 
-        def tourney = new Tourney(TOURNEY_ONE_NUMBER_QUESTIONS, TOURNEY_AVAILABLE_DATE, TOURNEY_CONCLUSION_DATE, user)
+        def tourney = new Tourney(TOURNEY_TITLE, TOURNEY_ONE_NUMBER_QUESTIONS, TOURNEY_AVAILABLE_DATE, TOURNEY_CONCLUSION_DATE, user)
         tourney.setCourseExecution(courseExecution)
         tourneyRepository.save(tourney)
 
-        tourney = new Tourney(TOURNEY_TWO_NUMBER_QUESTIONS, TOURNEY_AVAILABLE_DATE, TOURNEY_CONCLUSION_DATE, user)
+        tourney = new Tourney(TOURNEY_TITLE, TOURNEY_TWO_NUMBER_QUESTIONS, TOURNEY_AVAILABLE_DATE, TOURNEY_CONCLUSION_DATE, user)
         tourney.setCourseExecution(courseExecution2)
         tourneyRepository.save(tourney)
 
@@ -92,6 +97,26 @@ class GetOpenTourneysTest extends Specification {
 
     @TestConfiguration
     static class TourneyServiceImplTestContextConfiguration {
+
+        @Bean
+        AnswerService answerService() {
+            return new AnswerService()
+        }
+                
+        @Bean
+        AnswersXmlImport answersXmlImport() {
+            return new AnswersXmlImport()
+        }
+
+        @Bean
+        QuizService quizService() {
+            return new QuizService()
+        }
+
+        @Bean
+        QuestionService questionService() {
+            return new QuestionService()
+        }
 
         @Bean
         TourneyService tourneyService() {

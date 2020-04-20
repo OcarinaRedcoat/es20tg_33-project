@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService
+import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
@@ -15,6 +17,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.TopicService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.QuizService
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.Tourney
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyRepository
@@ -29,14 +32,17 @@ import java.time.format.DateTimeFormatter
 @DataJpaTest
 class StudentEnrolsIntoTourneyTest extends Specification{
 
-    static final int NUMBER_QUESTIONS = 5
-    static final int CREATOR_KEY = 1
-    static final int STUDENT_KEY = 2
-    static final int NOT_STUDENT_KEY = 3
+    public static final String TOURNEY_TITLE = "Tourney 1"
+    public static final int NUMBER_QUESTIONS = 5
+    public static final int CREATOR_KEY = 1
+    public static final int STUDENT_KEY = 2
+    public static final int NOT_STUDENT_KEY = 3
+    public static final int OTHER_STUDENT_KEY = 4
 
     def tourney
     def topicDto
     def course
+    def courseExecution
 
     @Autowired
     TourneyService tourneyService
@@ -60,7 +66,7 @@ class StudentEnrolsIntoTourneyTest extends Specification{
         course = new Course()
         courseRepository.save(course)
         def courseId = courseRepository.findAll().get(0).getId()
-        def courseExecution = new CourseExecution(course, "AC", "1", Course.Type.TECNICO)
+        courseExecution = new CourseExecution(course, "AC", "1", Course.Type.TECNICO)
         courseExecutionRepository.save(courseExecution)
 
         tourney = new TourneyDto()
@@ -68,6 +74,7 @@ class StudentEnrolsIntoTourneyTest extends Specification{
         def availableDate = LocalDateTime.now()
         def conclusionDate = LocalDateTime.now().plusDays(1)
 
+        tourney.setTourneyTitle(TOURNEY_TITLE)
         tourney.setTourneyAvailableDate(availableDate.format(formatter))
         tourney.setTourneyConclusionDate(conclusionDate.format(formatter))
         tourney.setTourneyNumberOfQuestions(NUMBER_QUESTIONS)
@@ -82,14 +89,14 @@ class StudentEnrolsIntoTourneyTest extends Specification{
         topics.add(topicDto)
         tourney.setTourneyTopics(topics)
 
-        def user = new User("name", "username",CREATOR_KEY, User.Role.STUDENT)
+        def user = new User("name1", "username1",CREATOR_KEY, User.Role.STUDENT)
         user.addCourse(courseExecution)
         userRepository.save(user)
 
-        user = new User("name", "username1",STUDENT_KEY, User.Role.STUDENT)
+        user = new User("name2", "username2",STUDENT_KEY, User.Role.STUDENT)
         userRepository.save(user)
 
-        user = new User("name", "username2",NOT_STUDENT_KEY, User.Role.TEACHER)
+        user = new User("name3", "username3",NOT_STUDENT_KEY, User.Role.TEACHER)
         userRepository.save(user)
 
         tourneyService.createTourney(tourney, userRepository.findAll().get(0).getId())
@@ -108,6 +115,42 @@ class StudentEnrolsIntoTourneyTest extends Specification{
         def enrolledStudents = tourney.getEnrolledStudents()
         enrolledStudents.get(0).getKey() == CREATOR_KEY
         enrolledStudents.size() == 1
+    }
+
+    def "a student enrols into a tourney twice"() {
+        given: "a studentId and a tourneyId"
+        def userId = userRepository.findAll().get(0).getId()
+        def tourneyId = tourneyRepository.findAll().get(0).getId()
+        tourneyService.enrollStudent(tourneyId, userId)
+
+        when:
+        tourneyService.enrollStudent(tourneyId, userId)
+
+        then:
+        def exception = thrown(TutorException)
+        exception.getErrorMessage() == ErrorMessage.STUDENT_ALREADY_ENROLLED
+        def tourney = tourneyRepository.findAll().get(0)
+        tourney.getEnrolledStudents().size() == 1
+    }
+
+    def "two students enroll in a tourney"() {
+        given: "two students"
+        def user1Id = userRepository.findAll().get(0).getId()
+        def user = new User("name4", "username4", OTHER_STUDENT_KEY, User.Role.STUDENT)
+        user.addCourse(courseExecution)
+        userRepository.save(user)
+        def user2Id = userRepository.findAll().get(3).getId()
+
+        and: "a tourney"
+        def tourneyId = tourneyRepository.findAll().get(0).getId()
+        tourneyService.enrollStudent(tourneyId, user1Id)
+
+        when:
+        tourneyService.enrollStudent(tourneyId, user2Id)
+
+        then:
+        def tourney = tourneyRepository.findAll().get(0)
+        tourney.getQuiz().getTourney().getId() == tourneyId
     }
 
     def "tourney doesn't exist"() {
@@ -191,6 +234,21 @@ class StudentEnrolsIntoTourneyTest extends Specification{
 
     @TestConfiguration
     static class TourneyServiceImplTestContextConfiguration{
+
+        @Bean
+        AnswerService answerService() {
+            return new AnswerService()
+        }
+
+        @Bean
+        AnswersXmlImport answersXmlImport() {
+            return new AnswersXmlImport()
+        }
+
+        @Bean
+        QuizService quizService() {
+            return new QuizService()
+        }
 
         @Bean
         TourneyService tourneyService(){

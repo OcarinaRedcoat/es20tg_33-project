@@ -103,7 +103,8 @@
 	&quot;title&quot;: &quot;${title}&quot;,&#xd;
 	&quot;content&quot;: &quot;${content}&quot;,&#xd;
 	&quot;status&quot;: &quot;${status}&quot;,&#xd;
-	&quot;options&quot;: [{&quot;sequence&quot;: 1, &quot;content&quot;: &quot;TestOptCont&quot;, &quot;correct&quot;: true}, {&quot;sequence&quot;: 2, &quot;content&quot;: &quot;TestOptCont&quot;, &quot;correct&quot;: false}, {&quot;sequence&quot;: 3, &quot;content&quot;: &quot;TestOptCont&quot;, &quot;correct&quot;: false}, {&quot;sequence&quot;: 4, &quot;content&quot;: &quot;TestOptCont&quot;, &quot;correct&quot;: false}]&#xd;
+	&quot;options&quot;: [&quot;TestOptCont&quot;, &quot;TestOptCont&quot;, &quot;TestOptCont&quot;, &quot;TestOptCont&quot;],&#xd;
+	&quot;correctOptionIndex&quot;: 1&#xd;
 }</stringProp>
                     <stringProp name="Argument.metadata">=</stringProp>
                   </elementProp>
@@ -113,7 +114,7 @@
               <stringProp name="HTTPSampler.port">${port}</stringProp>
               <stringProp name="HTTPSampler.protocol"></stringProp>
               <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-              <stringProp name="HTTPSampler.path">/courses/2/questions/pending</stringProp>
+              <stringProp name="HTTPSampler.path">/courses/2/studentQuestions</stringProp>
               <stringProp name="HTTPSampler.method">POST</stringProp>
               <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
               <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -127,7 +128,7 @@
             <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Data to create questions to submit" enabled="true">
               <stringProp name="delimiter">,</stringProp>
               <stringProp name="fileEncoding"></stringProp>
-              <stringProp name="filename">QuestionsData.csv</stringProp>
+              <stringProp name="filename">StudentQuestionsData.csv</stringProp>
               <boolProp name="ignoreFirstLine">false</boolProp>
               <boolProp name="quotedData">false</boolProp>
               <boolProp name="recycle">true</boolProp>
@@ -249,7 +250,7 @@
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
           <stringProp name="dataSource">sampleReq</stringProp>
           <stringProp name="query">DELETE FROM options WHERE content=&apos;TestOptCont&apos;;
-DELETE FROM questions WHERE title=&apos;Test Question title&apos;;</stringProp>
+DELETE FROM student_questions WHERE title=&apos;Test Question title&apos;;</stringProp>
           <stringProp name="queryArguments"></stringProp>
           <stringProp name="queryArgumentsTypes"></stringProp>
           <stringProp name="queryTimeout"></stringProp>

@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.user
+package pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.service
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
@@ -6,11 +6,13 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestion
+import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserService
 import spock.lang.Specification
 
 @DataJpaTest
@@ -23,18 +25,23 @@ class GetSubmittedQuestionsStatus extends Specification {
     public static final String QUESTION_TITLE2 = "qTitle2"
     public static final String QUESTION_TITLE3 = "qTitle3"
     public static final String QUESTION_CONTENT = "qContent"
+    public static final String OPTION_CONTENT = "optionId content"
 
     @Autowired
     UserRepository userRepository
 
     @Autowired
-    UserService userService
+    StudentQuestionService studentQuestionService
 
     @Autowired
-    QuestionRepository questionRepository
+    StudentQuestionRepository studentQuestionRepository
+
+    @Autowired
+    OptionRepository optionRepository
 
     def userWithQuestions
     def userWithoutQuestions
+    def option
 
     def setup() {
         userWithQuestions = new User(PERSON_NAME, USERNAME_1, 1, User.Role.STUDENT)
@@ -42,43 +49,51 @@ class GetSubmittedQuestionsStatus extends Specification {
 
         userWithoutQuestions = new User(PERSON_NAME, USERNAME_2, 2, User.Role.STUDENT)
         userRepository.save(userWithoutQuestions)
+
+        option = new Option()
+        option.setContent(OPTION_CONTENT)
+        option.setCorrect(true)
+        option.setSequence(1)
+        optionRepository.save(option)
     }
 
     def "a student tries to get the state of his submitted questions"() {
         given:
-        def question = new Question()
+        def question = new StudentQuestion()
         question.setKey(key)
         question.setTitle(title)
         question.setContent(content)
         question.setStatus(status)
+        question.setSubmittingUser(userWithQuestions)
+        question.addOption(option)
+        option.setStudentQuestion(question)
         userWithQuestions.addSubmittedQuestion(question)
-        questionRepository.save(question)
+        studentQuestionRepository.save(question)
 
         when: "the student tries to see the stats about his submitted questions"
-        userService.getSubmittedQuestionsStats(USERNAME_1)
+        studentQuestionService.getUserSubmittedQuestions(USERNAME_1)
 
         then: "the correct information is stored"
         def result = userRepository.findByUsername(USERNAME_1)
-        result.numberOfSubmittedQuestions == 1
-        result.numberOfApprovedQuestions == nrApprQ
         def questions = result.getSubmittedQuestions()
         questions.size() == 1
         def resQuestion = questions.get(0)
-        resQuestion.getKey() == resK
+        resQuestion.getKey() == resKey
         resQuestion.getTitle() == resTitle
         resQuestion.getContent() == resContent
         resQuestion.getStatus() == resStatus
+        resQuestion.getSubmittingUser().getUsername() == resUsername
 
         where:
-        key | title           | content          | status                    | resK | resTitle        | resContent       | resStatus                 | nrApprQ
-        1   | QUESTION_TITLE1 | QUESTION_CONTENT | Question.Status.PENDING   | 1    | QUESTION_TITLE1 | QUESTION_CONTENT | Question.Status.PENDING   | 0
-        2   | QUESTION_TITLE2 | QUESTION_CONTENT | Question.Status.PENDING   | 2    | QUESTION_TITLE2 | QUESTION_CONTENT | Question.Status.PENDING   | 0
-        3   | QUESTION_TITLE3 | QUESTION_CONTENT | Question.Status.AVAILABLE | 3    | QUESTION_TITLE3 | QUESTION_CONTENT | Question.Status.AVAILABLE | 1
+        key     | title           | content          | status                           | resKey    | resTitle        | resContent       | resStatus                        | resUsername
+        1       | QUESTION_TITLE1 | QUESTION_CONTENT | StudentQuestion.Status.PENDING   | 1         | QUESTION_TITLE1 | QUESTION_CONTENT | StudentQuestion.Status.PENDING   | USERNAME_1
+        2       | QUESTION_TITLE2 | QUESTION_CONTENT | StudentQuestion.Status.PENDING   | 2         | QUESTION_TITLE2 | QUESTION_CONTENT | StudentQuestion.Status.PENDING   | USERNAME_1
+        3       | QUESTION_TITLE3 | QUESTION_CONTENT | StudentQuestion.Status.APPROVED  | 3         | QUESTION_TITLE3 | QUESTION_CONTENT | StudentQuestion.Status.APPROVED  | USERNAME_1
     }
 
     def "the student doesn't have submitted questions"() {
         when: "the student tries to see the stats about his submitted questions"
-        userService.getSubmittedQuestionsStats(USERNAME_2)
+        studentQuestionService.getUserSubmittedQuestionsStats(USERNAME_2)
 
         then: "an exception is thrown"
         def exception = thrown(TutorException)
@@ -87,7 +102,7 @@ class GetSubmittedQuestionsStatus extends Specification {
 
     def "the student doesn't exist"() {
         when: "the student tries to see the stats about his submitted questions"
-        userService.getSubmittedQuestionsStats(USERNAME_3)
+        studentQuestionService.getUserSubmittedQuestions(USERNAME_3)
 
         then: "an exception is thrown"
         def exception = thrown(TutorException)
@@ -95,11 +110,11 @@ class GetSubmittedQuestionsStatus extends Specification {
     }
 
     @TestConfiguration
-    static class UserServiceImplTestContextConfiguration {
+    static class StudentQuestionServiceImplTestContextConfiguration {
 
         @Bean
-        UserService userService() {
-            return new UserService()
+        StudentQuestionService studentQuestionService() {
+            return new StudentQuestionService()
         }
     }
 

@@ -12,12 +12,15 @@ import TopicsView from '@/views/teacher/TopicsView.vue';
 import QuizzesView from '@/views/teacher/quizzes/QuizzesView.vue';
 import StudentsView from '@/views/teacher/students/StudentsView.vue';
 import StudentView from '@/views/student/StudentView.vue';
-import AvailableQuizzesView from '@/views/student/AvailableQuizzesView.vue';
-import SolvedQuizzesView from '@/views/student/SolvedQuizzesView.vue';
-import QuizView from '@/views/student/quiz/QuizView.vue';
-import ResultsView from '@/views/student/quiz/ResultsView.vue';
-import StatsView from '@/views/student/StatsView.vue';
-import ScanView from '@/views/student/ScanView.vue';
+import AvailableQuizzesView from './views/student/AvailableQuizzesView.vue';
+import SolvedQuizzesView from './views/student/SolvedQuizzesView.vue';
+import QuizView from './views/student/quiz/QuizView.vue';
+import ResultsView from './views/student/quiz/ResultsView.vue';
+import StatsView from './views/student/StatsView.vue';
+import ScanView from './views/student/ScanView.vue';
+import SubmittedQuestionsView from './views/student/submissions/SubmittedQuestionsView.vue';
+import CreateTourney from './views/student/tourney/CreateTourney.vue';
+import OpenTourneys from './views/student/tourney/OpenTourneys.vue';
 
 import AdminManagementView from '@/views/admin/AdminManagementView.vue';
 import NotFoundView from '@/views/NotFoundView.vue';
@@ -25,6 +28,7 @@ import ImpExpView from '@/views/teacher/impexp/ImpExpView.vue';
 import AssessmentsView from '@/views/teacher/assessments/AssessmentsView.vue';
 import CreateQuizzesView from '@/views/student/CreateQuizzesView.vue';
 import CoursesView from '@/views/admin/Courses/CoursesView.vue';
+import StudentQuestionsView from '@/views/teacher/submitted/StudentQuestionsView.vue';
 
 Vue.use(Router);
 
@@ -107,6 +111,15 @@ let router = new Router({
           }
         },
         {
+          path: 'submitted',
+          name: 'student-questions',
+          component: StudentQuestionsView,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Submitted',
+            requiredAuth: 'Teacher'
+          }
+        },
+        {
           path: 'impexp',
           name: 'impexp-management',
           component: ImpExpView,
@@ -182,6 +195,33 @@ let router = new Router({
           component: ScanView,
           meta: {
             title: process.env.VUE_APP_NAME + ' - Scan',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+          path: 'submit',
+          name: 'submit',
+          component: SubmittedQuestionsView,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Submit',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+          path: 'tourneys/create',
+          name: 'create-tourney',
+          component: CreateTourney,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Create Tourney',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+          path: 'tourneys',
+          name: 'open-tourney',
+          component: OpenTourneys,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Open Tourneys',
             requiredAuth: 'Student'
           }
         }

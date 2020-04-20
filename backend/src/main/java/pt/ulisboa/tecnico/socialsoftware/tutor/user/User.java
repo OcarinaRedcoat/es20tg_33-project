@@ -10,6 +10,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
+import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.Tourney;
 
 import javax.persistence.*;
@@ -64,7 +65,7 @@ public class User implements UserDetails, DomainEntity {
     private Set<CourseExecution> courseExecutions = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "submittingUser", fetch = FetchType.LAZY, orphanRemoval=true)
-    private List<Question> submittedQuestions = new ArrayList<>();
+    private List<StudentQuestion> submittedQuestions = new ArrayList<>();
 
     @ManyToMany
     private Set<Tourney> enrolledTourneys = new HashSet<>();
@@ -177,9 +178,11 @@ public class User implements UserDetails, DomainEntity {
         this.courseExecutions = courseExecutions;
     }
 
-    public List<Question> getSubmittedQuestions() { return submittedQuestions; }
+    public List<StudentQuestion> getSubmittedQuestions() { return submittedQuestions; }
 
-    public void setSubmittedQuestions(List<Question> submittedQuestions) { this.submittedQuestions = submittedQuestions; }
+    public void setSubmittedQuestions(List<StudentQuestion> submittedQuestions) { this.submittedQuestions = submittedQuestions; }
+
+    public void addSubmittedQuestion(StudentQuestion question) { this.submittedQuestions.add(question); }
 
     public Set<Tourney> getEnrolledTourneys() {
         return enrolledTourneys;
@@ -201,25 +204,19 @@ public class User implements UserDetails, DomainEntity {
         return numberOfSubmittedQuestions;
     }
 
-    public void setNumberOfSubmittedQuestions(Integer numberOfSubmittedQuestions) {
-        this.numberOfSubmittedQuestions = numberOfSubmittedQuestions;
-    }
+    public void setNumberOfSubmittedQuestions(Integer numberOfSubmittedQuestions) { this.numberOfSubmittedQuestions = numberOfSubmittedQuestions; }
 
     public Integer getNumberOfApprovedQuestions() {
         return numberOfApprovedQuestions;
     }
 
-    public void setNumberOfApprovedQuestions(Integer numberOfApprovedQuestions) {
-        this.numberOfApprovedQuestions = numberOfApprovedQuestions;
-    }
+    public void setNumberOfApprovedQuestions(Integer numberOfApprovedQuestions) { this.numberOfApprovedQuestions = numberOfApprovedQuestions; }
 
     public Integer getNumberOfRejectedQuestions() {
         return numberOfRejectedQuestions;
     }
 
-    public void setNumberOfRejectedQuestions(Integer numberOfRejectedQuestions) {
-        this.numberOfRejectedQuestions = numberOfRejectedQuestions;
-    }
+    public void setNumberOfRejectedQuestions(Integer numberOfRejectedQuestions) { this.numberOfRejectedQuestions = numberOfRejectedQuestions; }
 
     public Integer getNumberOfTeacherQuizzes() {
         if (this.numberOfTeacherQuizzes == null)
@@ -407,24 +404,6 @@ public class User implements UserDetails, DomainEntity {
         }
     }
 
-    public void increaseNumberOfSubmittedQuestions() {
-        this.numberOfSubmittedQuestions ++;
-    }
-
-    public void increaseNumberOfApprovedQuestions() {
-        this.numberOfApprovedQuestions ++;
-    }
-
-    public void increaseNumberOfRejectedQuestions() {
-        this.numberOfRejectedQuestions ++;
-    }
-
-    public void clearSubmittedQuestionsStatus() {
-        this.numberOfSubmittedQuestions = 0;
-        this.numberOfApprovedQuestions = 0;
-        this.numberOfRejectedQuestions = 0;
-    }
-
     public void addQuizAnswer(QuizAnswer quizAnswer) {
         this.quizAnswers.add(quizAnswer);
     }
@@ -432,8 +411,6 @@ public class User implements UserDetails, DomainEntity {
     public void addCourse(CourseExecution course) {
         this.courseExecutions.add(course);
     }
-
-    public void addSubmittedQuestion(Question question) { this.submittedQuestions.add(question); }
 
     @Override
     public String toString() {

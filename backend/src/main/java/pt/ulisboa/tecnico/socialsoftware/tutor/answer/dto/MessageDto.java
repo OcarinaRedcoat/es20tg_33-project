@@ -7,9 +7,13 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 public class MessageDto implements Serializable {
+
     private Integer id;
+
     private User user;
+
     private String sentence;
+
     private LocalDateTime messageDate;
 
     public MessageDto(){
@@ -19,6 +23,7 @@ public class MessageDto implements Serializable {
         this.id=message.getId();
         this.sentence=message.getSentence();
         this.messageDate=message.getMessageDate();
+        this.user = message.getUser();
     }
 
     public Integer getId() {

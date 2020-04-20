@@ -4,10 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService
+import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.QuizService
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.Tourney
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyService
@@ -17,7 +21,7 @@ import spock.lang.Specification
 
 @DataJpaTest
 class GetOpenTourneysPerformanceTest extends Specification {
-
+    public static final String TOURNEY_TITLE = "Tourney 1"
     public static final Integer TOURNEY_ONE_NUMBER_QUESTIONS = 1
     public static final String TOURNEY_AVAILABLE_DATE = "2020-01-01 21:12"
     public static final String TOURNEY_CONCLUSION_DATE = "2020-01-06 21:12"
@@ -56,7 +60,7 @@ class GetOpenTourneysPerformanceTest extends Specification {
 
         and: "a 10000 tourneys"
         1.upto(1, {
-            def tourney = new Tourney(TOURNEY_ONE_NUMBER_QUESTIONS, TOURNEY_AVAILABLE_DATE, TOURNEY_CONCLUSION_DATE, user)
+            def tourney = new Tourney(TOURNEY_TITLE, TOURNEY_ONE_NUMBER_QUESTIONS, TOURNEY_AVAILABLE_DATE, TOURNEY_CONCLUSION_DATE, user)
             tourney.setCourseExecution(courseExecution)
             tourneyRepository.save(tourney)
         })
@@ -71,6 +75,26 @@ class GetOpenTourneysPerformanceTest extends Specification {
 
     @TestConfiguration
     static class TourneyServiceImplTestContextConfiguration {
+
+        @Bean
+        AnswerService answerService() {
+            return new AnswerService()
+        }
+        
+        @Bean
+        AnswersXmlImport answersXmlImport() {
+            return new AnswersXmlImport()
+        }
+
+        @Bean
+        QuizService quizService() {
+            return new QuizService()
+        }
+
+        @Bean
+        QuestionService questionService() {
+            return new QuestionService()
+        }
 
         @Bean
         TourneyService tourneyService() {

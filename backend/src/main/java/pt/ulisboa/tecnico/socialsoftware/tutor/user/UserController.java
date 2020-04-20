@@ -45,7 +45,6 @@ public class UserController {
 //                .map(usr -> userRepository.save(usr)).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
 //    }
 
-
     @DeleteMapping("/users/{userId}")
     public ResponseEntity deleteUser(@PathVariable Integer userId) {
         return userRepository.findById(userId)
