@@ -202,6 +202,14 @@ Cypress.Commands.add(
 });
 
 
+Cypress.Commands.add(
+  'teacherResponse', (sentence) => {
+    cy.get('[data-cy="submitDiscussionMessage"]').click();
+    cy.get('[data-cy="searchDiscussion"').click();
+    cy.get('[data-cy="submitMessage"').type(sentence);
+    cy.get('[data-cy="submitResponse"').click()
+  });
+
 // Tourney commands
 
 Cypress.Commands.add(
