@@ -24,18 +24,26 @@ public class DiscussionController {
     private AnswerService answerService;
 
 
-    @PostMapping("/question_answers/{questionAnswerId}/discussion")
+    /*@PostMapping("/question_answers/{questionAnswerId}/discussion")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     public DiscussionDto createDiscussion(@PathVariable Integer questionAnswerId, @RequestBody DiscussionDto discussionDto) {
         return answerService.createDiscussion(questionAnswerId,discussionDto);
-    }
+    }*/
 
-    @PostMapping("/discussion/{discussionId}/submit")
+    @PostMapping("/courses/{courseId}/questionAnswer/{questionAnswerId}/discussion/submit")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
-    public DiscussionDto submitMessage(@PathVariable Integer discussionId, @RequestBody MessageDto messageDto, Principal principal) {
+    public DiscussionDto submitStudentMessage(@PathVariable Integer questionAnswerId,@PathVariable Integer courseId,@RequestBody MessageDto messageDto, Principal principal) {
         User user = (User) ((Authentication) principal).getPrincipal();
         if(user==null){ throw new TutorException(AUTHENTICATION_ERROR); }
-        return answerService.submitMessage(user.getId(),discussionId,messageDto);
+        return answerService.submitStudentMessage(user.getId(),courseId,questionAnswerId,messageDto);
+    }
+
+    @PostMapping("/discussion/teacher/submit")
+    @PreAuthorize("hasRole('ROLE_TEACHER')")
+    public DiscussionDto submitTeacherMessage(@RequestBody MessageDto messageDto,Principal principal) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+        if(user==null){ throw new TutorException(AUTHENTICATION_ERROR); }
+        return answerService.submitTeacherMessage(user.getId(),messageDto.getDiscussionDto().getId(),messageDto);
     }
 
     @GetMapping("/visualize/{discussionId}")
@@ -46,5 +54,12 @@ public class DiscussionController {
         return answerService.displayDiscussion(user.getId(), discussionId);
     }
 
+    @GetMapping("/visualize/teacher/{courseId}")
+    @PreAuthorize("hasRole('ROLE_TEACHER')")
+    public List<DiscussionDto> teacherVisualizesAllDiscussion(@PathVariable Integer courseId, Principal principal){
+        User user = (User) ((Authentication) principal).getPrincipal();
+        if (user == null){ throw new TutorException(AUTHENTICATION_ERROR); }
+        return answerService.teacherVisualizesAllDiscussion(courseId);
+    }
 }
 

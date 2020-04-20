@@ -9,10 +9,12 @@ public class StatementAnswerDto implements Serializable {
     private Integer timeTaken;
     private Integer sequence;
     private Integer optionId;
+    private Integer questionAnswerId;
 
     public StatementAnswerDto(){}
 
     public StatementAnswerDto(QuestionAnswer questionAnswer) {
+        this.questionAnswerId = questionAnswer.getId();
         this.timeTaken = questionAnswer.getTimeTaken();
         this.sequence = questionAnswer.getSequence();
 

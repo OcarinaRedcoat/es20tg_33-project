@@ -3,9 +3,11 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 import pt.ulisboa.tecnico.socialsoftware.tutor.TutorApplication;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Discussion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Message;
@@ -24,6 +26,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlExport;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
@@ -35,6 +39,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.security.Principal;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -197,35 +202,51 @@ public class AnswerService {
         xmlImporter.importAnswers(answersXml, this, questionRepository, quizRepository, quizAnswerRepository, userRepository);
     }
 
-    @Retryable(
+/*    @Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public DiscussionDto createDiscussion(Integer questionAnswerId, DiscussionDto discussionDto){
         QuestionAnswer questionAnswer= questionAnswerRepository.findById(questionAnswerId).orElseThrow(() -> new TutorException(ErrorMessage.QUESTION_ANSWER_NOT_FOUND));
-        Discussion discussion= new Discussion(questionAnswer,discussionDto);
+        Discussion discussion= new Discussion(questionAnswer,discussionDto, 1);
 
         discussionRepository.save(discussion);
 //        entityManager.persist(discussion);
         return new DiscussionDto(discussion);
+    }*/
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public DiscussionDto submitTeacherMessage(Integer UserId, Integer discussionId, MessageDto messageDto) {
+        User user = userRepository.findById(UserId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, UserId));
+        Discussion discussion = discussionRepository.findById(discussionId).orElseThrow(() -> new TutorException(STUDENT_DID_NOT_ANSWER_QUESTION));
+
+        Message message = new Message(messageDto, user);
+        message.setSentence(messageDto.getSentence());
+        message.checkConsistentMessage(messageDto);
+        saveMessage(message, user, discussion);
+
+        entityManager.persist(discussion);
+
+        return new DiscussionDto(discussion);
+
     }
 
     @Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public DiscussionDto submitMessage(Integer UserId, Integer discussionId, MessageDto messageDto) {
+    public DiscussionDto submitStudentMessage(Integer UserId,Integer courseId,Integer questionAnswerId, MessageDto messageDto) {
         User user = userRepository.findById(UserId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, UserId));
-        Discussion discussion = discussionRepository.findById(discussionId).orElseThrow(() -> new TutorException(STUDENT_DID_NOT_ANSWER_QUESTION));
-
-        //Discussion discussion = new Discussion(questionAnswer, discussionDto);
+        QuestionAnswer questionAnswer = questionAnswerRepository.findById(questionAnswerId).orElseThrow(() -> new TutorException(STUDENT_DID_NOT_ANSWER_QUESTION));
+        Discussion discussion = discussionRepository.findById(messageDto.getDiscussionDto().getId()).orElse(createNewDiscussion(questionAnswer,messageDto.getDiscussionDto(), courseId, user));
 
         Message message = new Message(messageDto, user);
-
+        message.setDiscussion(discussion);
         message.setSentence(messageDto.getSentence());
-
         message.checkConsistentMessage(messageDto);
-
         saveMessage(message, user, discussion);
 
         entityManager.persist(discussion);
@@ -243,6 +264,13 @@ public class AnswerService {
             discussion.setTeacherMessage(message);
             discussion.addDiscussionMessage(message);
         }
+    }
+
+    private Discussion createNewDiscussion(QuestionAnswer questionAnswer,DiscussionDto discussionDto, int courseId, User st) {
+        Discussion discussion = new Discussion(questionAnswer,discussionDto, courseId, st);
+        discussionRepository.save(discussion);
+
+        return discussion;
     }
 
 
@@ -273,7 +301,14 @@ public class AnswerService {
         }
         return messagesList;
     }
-    
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<DiscussionDto> teacherVisualizesAllDiscussion(int courseId) {
+        return discussionRepository.findByCourseId(courseId).stream().map(DiscussionDto::new).collect(Collectors.toList());
+    }
     public void deleteQuizAnswer(QuizAnswer quizAnswer) {
         for (QuestionAnswer questionAnswer : quizAnswer.getQuestionAnswers()) {
             questionAnswer.remove();

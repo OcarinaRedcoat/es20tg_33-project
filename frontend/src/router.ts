@@ -21,6 +21,9 @@ import ScanView from './views/student/ScanView.vue';
 import SubmittedQuestionsView from './views/student/submissions/SubmittedQuestionsView.vue';
 import CreateTourney from './views/student/tourney/CreateTourney.vue';
 import OpenTourneys from './views/student/tourney/OpenTourneys.vue';
+import DiscussionAnswerView from './views/student/quiz/DiscussionAnswerView.vue';
+import AllDiscussionView from './views/student/quiz/AllDiscussionView.vue';
+import TeacherDiscussionView from './views/teacher/TeacherDiscussionView.vue';
 
 import AdminManagementView from '@/views/admin/AdminManagementView.vue';
 import NotFoundView from '@/views/NotFoundView.vue';
@@ -111,6 +114,15 @@ let router = new Router({
           }
         },
         {
+          path: 'discussions',
+          name: 'discussions',
+          component: TeacherDiscussionView,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Discussions',
+            requiredAuth: 'Teacher'
+          }
+        },
+        {
           path: 'submitted',
           name: 'student-questions',
           component: StudentQuestionsView,
@@ -167,7 +179,7 @@ let router = new Router({
           name: 'solve-quiz',
           component: QuizView,
           meta: {
-            title: process.env.VUE_APP_NAME + ' - Quiz',
+            title: process.env.VUE_APP_NAME + ' - quiz',
             requiredAuth: 'Student'
           }
         },
@@ -195,6 +207,24 @@ let router = new Router({
           component: ScanView,
           meta: {
             title: process.env.VUE_APP_NAME + ' - Scan',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+          path: 'discussion',
+          name: 'discussion',
+          component: DiscussionAnswerView,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Discussion',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+          path: 'discussions',
+          name: 'discussions',
+          component: AllDiscussionView,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Discussions',
             requiredAuth: 'Student'
           }
         },
