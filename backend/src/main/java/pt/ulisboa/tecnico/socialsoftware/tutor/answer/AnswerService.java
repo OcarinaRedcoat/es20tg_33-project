@@ -268,5 +268,13 @@ public class AnswerService {
            }
         }
         return messagesList;
+        
+    public void deleteQuizAnswer(QuizAnswer quizAnswer) {
+        for (QuestionAnswer questionAnswer : quizAnswer.getQuestionAnswers()) {
+            questionAnswer.remove();
+            questionAnswerRepository.delete(questionAnswer);
+        }
+        quizAnswer.remove();
+        quizAnswerRepository.delete(quizAnswer);
     }
 }
