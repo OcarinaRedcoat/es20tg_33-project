@@ -6,6 +6,7 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import pt.ulisboa.tecnico.socialsoftware.tutor.config.Demo;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository;
@@ -114,6 +115,16 @@ public class TopicService {
         TopicsXmlImport xmlImporter = new TopicsXmlImport();
 
         xmlImporter.importTopics(topicsXML, this, questionService, courseRepository);
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void resetDemoTopics() {
+        this.topicRepository.findTopics(Demo.COURSE_ID).stream().filter(topic -> topic.getId() > 125).forEach(topic ->
+                this.topicRepository.delete(topic)
+        );
     }
 }
 

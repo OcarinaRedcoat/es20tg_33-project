@@ -112,4 +112,9 @@ public class Option implements DomainEntity {
                 ", content='" + content + '\'' +
                 '}';
     }
+
+    public void remove() {
+        this.question = null;
+        this.questionAnswers.clear();
+    }
 }

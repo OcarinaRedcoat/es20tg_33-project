@@ -4,11 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService
+import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.QuizService
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.Tourney
 import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyRepository
@@ -96,8 +99,23 @@ class GetOpenTourneysTest extends Specification {
     static class TourneyServiceImplTestContextConfiguration {
 
         @Bean
+        AnswerService answerService() {
+            return new AnswerService()
+        }
+                
+        @Bean
+        AnswersXmlImport answersXmlImport() {
+            return new AnswersXmlImport()
+        }
+
+        @Bean
         QuizService quizService() {
             return new QuizService()
+        }
+
+        @Bean
+        QuestionService questionService() {
+            return new QuestionService()
         }
 
         @Bean
