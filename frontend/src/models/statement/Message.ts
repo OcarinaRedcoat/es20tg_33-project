@@ -8,7 +8,6 @@ export default class Message {
   user: User | undefined;
   discussionDto: Discussion | undefined;
 
-
   constructor(jsonObj?: Message) {
     if (jsonObj) {
       this.id = jsonObj.id;

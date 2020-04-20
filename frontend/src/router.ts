@@ -22,7 +22,7 @@ import CreateTourney from './views/student/tourney/CreateTourney.vue';
 import OpenTourneys from './views/student/tourney/OpenTourneys.vue';
 import DiscussionAnswerView from './views/student/quiz/DiscussionAnswerView.vue';
 import AllDiscussionView from './views/student/quiz/AllDiscussionView.vue';
-
+import TeacherDiscussionView from './views/teacher/TeacherDiscussionView.vue';
 import AdminManagementView from './views/admin/AdminManagementView.vue';
 import NotFoundView from './views/NotFoundView.vue';
 import ImpExpView from '@/views/teacher/impexp/ImpExpView.vue';
@@ -111,6 +111,15 @@ let router = new Router({
           }
         },
         {
+          path: 'discussions',
+          name: 'discussions',
+          component: TeacherDiscussionView,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Discussions',
+            requiredAuth: 'Teacher'
+          }
+        },
+        {
           path: 'impexp',
           name: 'impexp-management',
           component: ImpExpView,
@@ -195,15 +204,6 @@ let router = new Router({
           component: DiscussionAnswerView,
           meta: {
             title: process.env.VUE_APP_NAME + ' - Discussion',
-            requiredAuth: 'Student'
-          }
-        },
-        {
-          path: 'discussions',
-          name: 'discussions',
-          component: AllDiscussionView,
-          meta: {
-            title: process.env.VUE_APP_NAME + ' - Discussions',
             requiredAuth: 'Student'
           }
         },

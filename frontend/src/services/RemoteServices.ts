@@ -569,10 +569,7 @@ export default class RemoteServices {
       });
   }
 
-  static async submitStudentAnswer(
-    questionAnswerId: number,
-    message: Message
-  ) {
+  static async submitStudentAnswer(questionAnswerId: number, message: Message) {
     return httpClient
       .post(
         `/courses/${Store.getters.getCurrentCourse.courseExecutionId}/questionAnswer/${questionAnswerId}/discussion/submit`,
@@ -593,6 +590,32 @@ export default class RemoteServices {
         return response.data.map((tourney: any) => {
           return new Tourney(tourney);
         });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getDiscussions() {
+    return httpClient
+      .get(
+        `/visualize/teacher/${Store.getters.getCurrentCourse.courseExecutionId}`
+      )
+      .then(response => {
+        return response.data.map((discussion: any) => {
+          return new Discussion(discussion);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async teacherMessageSub(message: Message) {
+    return httpClient
+      .post('/discussion/teacher/submit', message)
+      .then(response => {
+        return new Discussion(response.data);
       })
       .catch(async error => {
         throw Error(await this.errorMessage(error));
