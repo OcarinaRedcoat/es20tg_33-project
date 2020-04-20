@@ -10,7 +10,16 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.QuizService;
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.dto.QuizDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.dto.QuizQuestionDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
@@ -19,6 +28,9 @@ import javax.persistence.PersistenceContext;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -27,6 +39,13 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.CO
 
 @Service
 public class TourneyService {
+
+
+    @Autowired
+    private QuizService quizService;
+
+    @Autowired
+    private QuizRepository quizRepository;
 
     @Autowired
     private TourneyRepository tourneyRepository;
@@ -87,6 +106,7 @@ public class TourneyService {
                 .reduce(false, (acc, elem) -> acc || elem))
             throw new TutorException(ErrorMessage.TOPICS_NOT_FROM_SAME_COURSE);
 
+        user.addCreatedTourneys(tourney);
         entityManager.persist(tourney);
         return new TourneyDto(tourney);
     }
@@ -112,8 +132,49 @@ public class TourneyService {
                 .reduce(false, (acc, elem) -> acc || elem))
             throw new TutorException(ErrorMessage.STUDENT_CANT_ACCESS_COURSE_EXECUTION, tourney.getCourseExecution().getAcronym());
 
+        if(tourney.getEnrolledStudents().stream().anyMatch(elem -> user.getId() == elem.getId())) {
+            throw new TutorException(ErrorMessage.STUDENT_ALREADY_ENROLLED);
+        }
+
+        if(tourney.getEnrolledStudents().size() == 1)
+            this.createTourneyQuiz(tourney);
+
         tourney.enrollStudent(user);
         user.addEnrolledTourneys(tourney);
+
+        return new TourneyDto(tourney);
+    }
+
+    @Retryable(
+        value = { SQLException.class },
+        backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public TourneyDto createTourneyQuiz(Tourney tourney) {
+        TourneyDto tourneyDto = new TourneyDto(tourney);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        QuizDto quizDto = new QuizDto();
+        LocalDateTime creationDate = LocalDateTime.now();
+        String availableDate = tourney.getAvailableDate();
+        String conclusionDate = tourney.getConclusionDate();
+        quizDto.setTitle(tourney.getTitle() + " - Quiz");
+        quizDto.setType(Quiz.QuizType.TOURNEY);
+        quizDto.setScramble(true);
+        quizDto.setOneWay(true);
+        quizDto.setQrCodeOnly(true);
+        quizDto.setCreationDate(creationDate.format(formatter));
+        quizDto.setAvailableDate(availableDate);
+        quizDto.setConclusionDate(conclusionDate);
+
+        List<QuestionDto> questions = new ArrayList<>();
+        for(Topic topic : tourney.getTopics()) {
+            questions.addAll(topic.getQuestions().stream().map(QuestionDto::new).collect(Collectors.toList()));
+        }
+        quizDto.setQuestions(questions);
+        quizDto.setTourney(tourneyDto);
+
+        quizDto = quizService.createQuiz(tourney.getCourseExecution().getId(), quizDto);
+        Quiz quiz = quizRepository.findByKey(quizDto.getKey()).orElseThrow(() -> new TutorException(ErrorMessage.QUIZ_NOT_FOUND));
+        tourney.setQuiz(quiz);
 
         return new TourneyDto(tourney);
     }

@@ -7,8 +7,11 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.QuizAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.QuizAnswersDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.config.Demo;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
@@ -18,6 +21,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.CSVQuizExportVisito
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.LatexQuizExportVisitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.QuizzesXmlExport;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.QuizzesXmlImport;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
@@ -28,11 +32,14 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.dto.QuizDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.dto.QuizQuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizQuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.Tourney;
+import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyRepository;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -56,6 +63,15 @@ public class QuizService {
 
     @Autowired
     private QuizQuestionRepository quizQuestionRepository;
+
+    @Autowired
+    private AnswerService answerService;
+
+    @Autowired
+    private QuestionService questionService;
+
+    @Autowired
+    private TourneyRepository tourneyRepository;
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public CourseDto findQuizCourseExecution(int quizId) {
@@ -106,7 +122,14 @@ public class QuizService {
         if (quizDto.getKey() == null) {
             quizDto.setKey(getMaxQuizKey() + 1);
         }
-        Quiz quiz = new Quiz(quizDto);
+        Quiz quiz;
+
+        if(quizDto.getTourney() != null) {
+            Tourney tourney = tourneyRepository.findById(quizDto.getTourney().getTourneyId()).orElseThrow(() -> new TutorException(TOURNEY_NOT_FOUND, executionId));
+            quiz = new Quiz(quizDto, tourney);
+        } else {
+            quiz = new Quiz(quizDto);
+        }
         quiz.setCourseExecution(courseExecution);
 
         if (quizDto.getQuestions() != null) {
@@ -122,6 +145,7 @@ public class QuizService {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
             quiz.setCreationDate(LocalDateTime.parse(quizDto.getCreationDate(), formatter));
         }
+
         quizRepository.save(quiz);
 
         return new QuizDto(quiz, true);
@@ -243,6 +267,9 @@ public class QuizService {
         xmlImport.importQuizzes(quizzesXml, this, questionRepository, quizQuestionRepository, courseExecutionRepository);
     }
 
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public String exportQuizzesToLatex(int quizId) {
         Quiz quiz = quizRepository.findById(quizId).orElseThrow(() -> new TutorException(QUIZ_NOT_FOUND, quizId));
@@ -281,8 +308,6 @@ public class QuizService {
             copyToZipStream(zos, in);
             zos.closeEntry();
 
-            zos.close();
-
             baos.flush();
 
             return baos;
@@ -300,4 +325,27 @@ public class QuizService {
         in.close();
     }
 
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void resetDemoQuizzes() {
+        quizRepository.findQuizzes(Demo.COURSE_EXECUTION_ID).stream().filter(quiz -> quiz.getId() > 5360).forEach(quiz -> {
+            for (QuizAnswer quizAnswer : new ArrayList<>(quiz.getQuizAnswers())) {
+                answerService.deleteQuizAnswer(quizAnswer);
+            }
+
+            for (QuizQuestion quizQuestion : quiz.getQuizQuestions().stream().filter(quizQuestion -> quizQuestion.getQuestionAnswers().isEmpty()).collect(Collectors.toList())) {
+                questionService.deleteQuizQuestion(quizQuestion);
+            }
+
+            quiz.remove();
+            this.quizRepository.delete(quiz);
+        });
+
+        // remove questions that werent in any quiz
+        for (Question question: questionRepository.findQuestions(Demo.COURSE_ID).stream().filter(question -> question.getQuizQuestions().isEmpty()).collect(Collectors.toList())) {
+            questionService.deleteQuestion(question);
+        }
+    }
 }

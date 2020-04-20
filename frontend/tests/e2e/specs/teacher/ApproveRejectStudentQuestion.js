@@ -51,7 +51,4 @@ describe('Administration walkthrough', () => {
     cy.contains('Logout').click()
 
   });
-
-
-
 });

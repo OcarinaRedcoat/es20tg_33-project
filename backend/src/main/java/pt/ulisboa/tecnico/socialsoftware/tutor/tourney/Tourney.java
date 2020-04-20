@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.tourney;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import java.util.ArrayList;
@@ -39,6 +40,10 @@ public class Tourney {
     @JoinColumn(name = "course_execution_id")
     private CourseExecution courseExecution;
 
+    @OneToOne
+    @JoinColumn(name = "quiz_id")
+    private Quiz quiz;
+
     @ManyToOne
     @JoinColumn(name="user_id")
     private User creator;
@@ -52,8 +57,6 @@ public class Tourney {
         this.conclusionDate = conclusionDate;
         this.status = Tourney.Status.OPEN;
         this.creator = creator;
-
-        this.creator.addCreatedTourneys(this);
     }
 
     public Tourney(TourneyDto tourneyDto, User user){
@@ -139,5 +142,13 @@ public class Tourney {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public Quiz getQuiz() {
+        return this.quiz;
+    }
+
+    public void setQuiz(Quiz quiz) {
+        this.quiz = quiz;
     }
 }

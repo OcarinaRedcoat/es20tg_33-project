@@ -27,13 +27,13 @@
         <template v-slot:item.action="{ item }">
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
-              <v-icon small class="mr-2" v-on="on" @click="enrollInTourney(item)">add</v-icon>
+              <v-icon small class="mr-2" v-on="on" @click="enrollInTourney(item)" data-cy="enrollInTourney">add</v-icon>
             </template>
             <span>Enroll in Tourney</span>
           </v-tooltip>
           <v-tooltip bottom v-if="isCreator(item)">
             <template v-slot:activator="{ on }">
-              <v-icon small class="mr-2" v-on="on" @click="cancelTourney(item)" color="red">close</v-icon>
+              <v-icon small class="mr-2" v-on="on" @click="cancelTourney(item)" color="red" data-cy="cancelTourney">delete</v-icon>
             </template>
             <span>Cancel</span>
           </v-tooltip>
@@ -48,6 +48,7 @@
 import { Component, Model, Prop, Vue, Watch } from 'vue-property-decorator';
 import Tourney from '../../models/tourney/Tourney';
 import RemoteServices from '../../services/RemoteServices';
+import User from "@/models/user/User";
 
 @Component
 export default class TourneyList extends Vue {
@@ -84,7 +85,7 @@ export default class TourneyList extends Vue {
       sortable: false
     }
   ];
-  
+
   async created() {
     await this.$store.dispatch('loading');
     try {
@@ -104,14 +105,14 @@ export default class TourneyList extends Vue {
     );
   }
 
-	isCreator(tourney: Tourney) {
-		return tourney?.tourneyCreator?.username === this.username;
-	}
+  isCreator(tourney: Tourney) {
+    return tourney?.tourneyCreator?.username === this.username;
+  }
 
   async enrollInTourney(tourney: Tourney) {
     if (confirm('Are you sure you want to enroll in this tourney?')) {
       try {
-				//TODO: TdP-3.1
+        await RemoteServices.enrollInTourney(tourney);
       } catch (error) {
         await this.$store.dispatch('error', error);
       }
@@ -120,8 +121,9 @@ export default class TourneyList extends Vue {
 
   async cancelTourney(toDeleteTourney: Tourney) {
     if (confirm('Are you sure you want to cancel this tourney?')) {
-				//TODO: TdP-4.1
       try {
+        await RemoteServices.cancelTourney(toDeleteTourney);
+        this.tourneys = this.tourneys.filter(tourney => tourney.tourneyId !== toDeleteTourney.tourneyId)
       } catch (error) {
         await this.$store.dispatch('error', error);
       }
