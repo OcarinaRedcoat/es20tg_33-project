@@ -18,6 +18,7 @@ import QuizView from './views/student/quiz/QuizView.vue';
 import ResultsView from './views/student/quiz/ResultsView.vue';
 import StatsView from './views/student/StatsView.vue';
 import ScanView from './views/student/ScanView.vue';
+import SubmittedQuestionsView from './views/student/submissions/SubmittedQuestionsView.vue';
 import CreateTourney from './views/student/tourney/CreateTourney.vue';
 import OpenTourneys from './views/student/tourney/OpenTourneys.vue';
 import DiscussionAnswerView from './views/student/quiz/DiscussionAnswerView.vue';
@@ -29,6 +30,7 @@ import ImpExpView from '@/views/teacher/impexp/ImpExpView.vue';
 import AssessmentsView from '@/views/teacher/assessments/AssessmentsView.vue';
 import CreateQuizzesView from '@/views/student/CreateQuizzesView.vue';
 import CoursesView from '@/views/admin/Courses/CoursesView.vue';
+import StudentQuestionsView from '@/views/teacher/submitted/StudentQuestionsView.vue';
 
 Vue.use(Router);
 
@@ -116,6 +118,15 @@ let router = new Router({
           component: TeacherDiscussionView,
           meta: {
             title: process.env.VUE_APP_NAME + ' - Discussions',
+            requiredAuth: 'Teacher'
+          }
+        },
+        {
+          path: 'submitted',
+          name: 'student-questions',
+          component: StudentQuestionsView,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Submitted',
             requiredAuth: 'Teacher'
           }
         },
@@ -208,6 +219,15 @@ let router = new Router({
           }
         },
         {
+          path: 'submit',
+          name: 'submit',
+          component: SubmittedQuestionsView,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Submit',
+            requiredAuth: 'Student'
+          }
+        },
+        {
           path: 'tourneys/create',
           name: 'create-tourney',
           component: CreateTourney,
@@ -224,7 +244,7 @@ let router = new Router({
             title: process.env.VUE_APP_NAME + ' - Open Tourneys',
             requiredAuth: 'Student'
           }
-        },
+        }
       ]
     },
     {

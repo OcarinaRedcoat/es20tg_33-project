@@ -47,7 +47,7 @@
 
         <v-menu offset-y v-if="isTeacher && currentCourse" open-on-hover>
           <template v-slot:activator="{ on }">
-            <v-btn v-on="on" text dark>
+            <v-btn v-on="on" text dark data-cy="top-bar-management">
               Management
               <v-icon>fas fa-file-alt</v-icon>
             </v-btn>
@@ -59,6 +59,14 @@
               </v-list-item-action>
               <v-list-item-content>
                 <v-list-item-title>Questions</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item to="/management/submitted">
+              <v-list-item-action>
+                <v-icon>fas fa-certificate</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title data-cy="top-bar-approve-reject">Submitted</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-list-item to="/management/topics">
@@ -132,6 +140,25 @@
               </v-list-item-action>
               <v-list-item-content>
                 <v-list-item-title data-cy="top-bar-open-tourneys">Open Tourneys List</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+
+        <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
+          <template v-slot:activator="{ on }">
+            <v-btn v-on="on" text dark data-cy="top-bar-submissions">
+              Submissions
+              <v-icon>fas fa-arrow-alt-circle-up</v-icon>
+            </v-btn>
+          </template>
+          <v-list dense>
+            <v-list-item to="/student/submit">
+              <v-list-item-action>
+                <v-icon>fas fa-file-alt</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title data-cy="top-bar-submitted-questions">Submitted Questions</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </v-list>

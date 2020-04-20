@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.persistence.*;
@@ -60,17 +61,12 @@ public class StudentQuestion {
         this.course = course;
         course.addStudentQuestion(this);
 
-        int correctOptionIndex = questionDto.getCorrectOptionIndex();
-        int i = 0;
-        List<String> options = questionDto.getOptions();
-        for (String optionContent : options) {
-            Option option = new Option();
-            option.setStudentQuestion(this);
-            option.setContent(optionContent);
-            option.setSequence(i++);
-            if (i == correctOptionIndex)
-                option.setCorrect(true);
+        int index = 0;
+        for (OptionDto optionDto : questionDto.getOptions()) {
+            optionDto.setSequence(index++);
+            Option option = new Option(optionDto);
             this.addOption(option);
+            option.setStudentQuestion(this);
         }
     }
 
@@ -114,6 +110,13 @@ public class StudentQuestion {
         this.studentQuestionOptions.add(option);
     }
 
+    public void remove() {
+        //canRemove();
+        getCourse().getSubmittedQuestions().remove(this);
+        getSubmittingUser().getSubmittedQuestions().remove(this);
+        course = null;
+    }
+
     @Override
     public String toString() {
         return "StudentQuestion{" +
@@ -136,16 +139,26 @@ public class StudentQuestion {
             throw new TutorException(QUESTION_MISSING_TITLE_OR_CONTENT);
         }
 
-        if (questionDto.getOptions().stream().anyMatch(option -> option.trim().length() == 0)) {
-            throw new TutorException(QUESTION_MISSING_DATA);
-        }
-
         if (questionDto.getOptions().size() != 4) {
             throw new TutorException(INVALID_NUMBER_OF_OPTIONS);
         }
 
-        if (questionDto.getCorrectOptionIndex() < 1 || questionDto.getCorrectOptionIndex() > 4 || questionDto.getCorrectOptionIndex() == 0){
-            throw new TutorException(INVALID_CORRECT_OPTION_INDEX);
+        if (questionDto.getOptions().stream().anyMatch(optionDto -> optionDto.getContent().trim().length() == 0)) {
+            throw new TutorException(QUESTION_MISSING_OPTIONS);
+        }
+
+        if (questionDto.getOptions().stream().filter(OptionDto::getCorrect).count() < 1) {
+            throw new TutorException(NO_CORRECT_OPTION);
+        }
+
+        if (questionDto.getOptions().stream().filter(OptionDto::getCorrect).count() > 1) {
+            throw new TutorException(QUESTION_MULTIPLE_CORRECT_OPTIONS);
+        }
+    }
+
+    private void canRemove() {
+        if (this.status == Status.APPROVED) {
+            throw new TutorException(QUESTION_ALREADY_APPROVED);
         }
     }
 

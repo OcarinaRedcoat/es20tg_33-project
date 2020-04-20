@@ -28,6 +28,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.dto.QuizDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.dto.QuizQuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizQuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.Tourney;
+import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyRepository;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -56,6 +58,9 @@ public class QuizService {
 
     @Autowired
     private QuizQuestionRepository quizQuestionRepository;
+
+    @Autowired
+    private TourneyRepository tourneyRepository;
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public CourseDto findQuizCourseExecution(int quizId) {
@@ -106,7 +111,14 @@ public class QuizService {
         if (quizDto.getKey() == null) {
             quizDto.setKey(getMaxQuizKey() + 1);
         }
-        Quiz quiz = new Quiz(quizDto);
+        Quiz quiz;
+
+        if(quizDto.getTourney() != null) {
+            Tourney tourney = tourneyRepository.findById(quizDto.getTourney().getTourneyId()).orElseThrow(() -> new TutorException(TOURNEY_NOT_FOUND, executionId));
+            quiz = new Quiz(quizDto, tourney);
+        } else {
+            quiz = new Quiz(quizDto);
+        }
         quiz.setCourseExecution(courseExecution);
 
         if (quizDto.getQuestions() != null) {
@@ -122,6 +134,7 @@ public class QuizService {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
             quiz.setCreationDate(LocalDateTime.parse(quizDto.getCreationDate(), formatter));
         }
+
         quizRepository.save(quiz);
 
         return new QuizDto(quiz, true);

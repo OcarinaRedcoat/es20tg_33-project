@@ -12,12 +12,11 @@ import { Student } from '@/models/management/Student';
 import Assessment from '@/models/management/Assessment';
 import AuthDto from '@/models/user/AuthDto';
 import StatementAnswer from '@/models/statement/StatementAnswer';
-import { QuizAnswer } from '@/models/management/QuizAnswer';
 import { QuizAnswers } from '@/models/management/QuizAnswers';
-// @ts-ignore
+import StudentQuestion from '@/models/submissions/StudentQuestion';
 import Tourney from '@/models/tourney/Tourney';
 import Discussion from '@/models/statement/Discussion';
-import Message from '@/models/statement/Message';
+import Message from '@/models/statement/Message.ts';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 10000;
@@ -558,6 +557,72 @@ export default class RemoteServices {
       });
   }
 
+  static async getStudentQuestions(): Promise<StudentQuestion[]> {
+    return httpClient
+      .get(
+        `/courses/${Store.getters.getCurrentCourse.courseId}/studentQuestions/status`
+      )
+      .then(response => {
+        return response.data.map((question: any) => {
+          return new StudentQuestion(question);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async submitQuestion(
+    studentQuestion: StudentQuestion
+  ): Promise<StudentQuestion> {
+    return httpClient
+      .post(
+        `/courses/${Store.getters.getCurrentCourse.courseId}/studentQuestions`,
+        studentQuestion
+      )
+      .then(response => {
+        return new StudentQuestion(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static deleteStudentQuestion(questionId: number) {
+    return httpClient
+      .delete(`/studentQuestions/${questionId}`)
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async approveQuestion(
+    questionId: number | undefined,
+    justification: String
+  ): Promise<StudentQuestion> {
+    return httpClient
+      .put(`/studentQuestions/${questionId}/approve`, justification)
+      .then(response => {
+        return new StudentQuestion(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async rejectQuestion(
+    questionId: number | undefined,
+    justification: String
+  ): Promise<StudentQuestion> {
+    return httpClient
+      .put(`/studentQuestions/${questionId}/reject`, justification)
+      .then(response => {
+        return new StudentQuestion(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
   static async createTourney(tourney: Tourney) {
     return httpClient
       .post('/tourneys', tourney)
@@ -568,6 +633,7 @@ export default class RemoteServices {
         throw Error(await this.errorMessage(error));
       });
   }
+
 
   static async submitStudentAnswer(questionAnswerId: number, message: Message) {
     return httpClient
@@ -583,6 +649,22 @@ export default class RemoteServices {
       });
   }
 
+  static async getPendingQuestions(): Promise<StudentQuestion[]> {
+    return httpClient
+      .get(
+        `/courses/${Store.getters.getCurrentCourse.courseId}/studentQuestions`
+      )
+      .then(response => {
+        return response.data.map((question: any) => {
+          return new StudentQuestion(question);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+
   static async getTourneys() {
     return httpClient
       .get('/tourneys/open')
@@ -595,6 +677,7 @@ export default class RemoteServices {
         throw Error(await this.errorMessage(error));
       });
   }
+
 
   static async getDiscussions() {
     return httpClient
@@ -618,6 +701,24 @@ export default class RemoteServices {
         return new Discussion(response.data);
       })
       .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async enrollInTourney(tourney: Tourney) {
+    return httpClient
+      .put(`/tourneys/${tourney.tourneyId}/enroll`)
+      .then(response => {
+        return new Tourney(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async cancelTourney(tourney: Tourney) {
+    return httpClient
+      .put(`/tourneys/${tourney.tourneyId}/cancel`).catch(async error => {
         throw Error(await this.errorMessage(error));
       });
   }
@@ -659,4 +760,5 @@ export default class RemoteServices {
       return 'Unknown Error - Contact admin';
     }
   }
+
 }

@@ -175,6 +175,39 @@ public class QuestionService {
         question.getImage().setUrl(question.getKey() + "." + type);
     }
 
+    @Retryable(
+      value = { SQLException.class },
+      backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void updateQuestionTopics(Integer questionId, TopicDto[] topics) {
+        Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
+
+        question.updateTopics(Arrays.stream(topics).map(topicDto -> topicRepository.findTopicByName(question.getCourse().getId(), topicDto.getName())).collect(Collectors.toSet()));
+    }
+
+    public String exportQuestionsToXml() {
+        XMLQuestionExportVisitor xmlExporter = new XMLQuestionExportVisitor();
+
+        return xmlExporter.export(questionRepository.findAll());
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void importQuestionsFromXml(String questionsXML) {
+        QuestionsXmlImport xmlImporter = new QuestionsXmlImport();
+
+        xmlImporter.importQuestions(questionsXML, this, courseRepository);
+    }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public String exportQuestionsToLatex() {
+        LatexQuestionExportVisitor latexExporter = new LatexQuestionExportVisitor();
+
+        return latexExporter.export(questionRepository.findAll());
+    }
+
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public ByteArrayOutputStream exportCourseQuestions(int courseId) {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new TutorException(COURSE_NOT_FOUND, courseId));
@@ -217,33 +250,6 @@ public class QuestionService {
             zos.write(buffer, 0, len);
         }
         in.close();
-    }
-
-
-    @Retryable(
-      value = { SQLException.class },
-      backoff = @Backoff(delay = 5000))
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public void updateQuestionTopics(Integer questionId, TopicDto[] topics) {
-        Question question = questionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
-
-        question.updateTopics(Arrays.stream(topics).map(topicDto -> topicRepository.findTopicByName(question.getCourse().getId(), topicDto.getName())).collect(Collectors.toSet()));
-    }
-
-    public String exportQuestionsToXml() {
-        XMLQuestionExportVisitor xmlExporter = new XMLQuestionExportVisitor();
-
-        return xmlExporter.export(questionRepository.findAll());
-    }
-
-    @Retryable(
-            value = { SQLException.class },
-            backoff = @Backoff(delay = 5000))
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public void importQuestionsFromXml(String questionsXML) {
-        QuestionsXmlImport xmlImporter = new QuestionsXmlImport();
-
-        xmlImporter.importQuestions(questionsXML, this, courseRepository);
     }
 }
 

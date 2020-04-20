@@ -8,6 +8,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.dto.QuizDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.Tourney;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -27,7 +28,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.QU
         })
 public class Quiz implements DomainEntity {
     public enum QuizType {
-        EXAM, TEST, GENERATED, PROPOSED, IN_CLASS
+        EXAM, TEST, GENERATED, PROPOSED, IN_CLASS, TOURNEY
     }
 
     @Id
@@ -74,6 +75,9 @@ public class Quiz implements DomainEntity {
     @JoinColumn(name = "course_execution_id")
     private CourseExecution courseExecution;
 
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "quiz")
+    private Tourney tourney;
+
     public Quiz() {}
 
     public Quiz(QuizDto quizDto) {
@@ -90,6 +94,11 @@ public class Quiz implements DomainEntity {
         setConclusionDate(quizDto.getConclusionDateDate());
         this.series = quizDto.getSeries();
         this.version = quizDto.getVersion();
+    }
+
+    public Quiz(QuizDto quizDto, Tourney tourney) {
+        this(quizDto);
+        this.tourney = tourney;
     }
 
     @Override
@@ -293,5 +302,13 @@ public class Quiz implements DomainEntity {
         this.setCreationDate(LocalDateTime.now());
         this.setType(QuizType.GENERATED);
         this.title = "Generated Quiz";
+    }
+
+    public Tourney getTourney() {
+        return tourney;
+    }
+
+    public void setTourney(Tourney tourney) {
+        this.tourney = tourney;
     }
 }
