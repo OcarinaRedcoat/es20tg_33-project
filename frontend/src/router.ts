@@ -219,6 +219,15 @@ let router = new Router({
           }
         },
         {
+          path: 'discussions',
+          name: 'discussions',
+          component: AllDiscussionView,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Discussions',
+            requiredAuth: 'Student'
+          }
+        },
+        {
           path: 'submit',
           name: 'submit',
           component: SubmittedQuestionsView,

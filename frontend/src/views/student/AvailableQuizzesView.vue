@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <h2>Available Quizzes</h2>
-    <ul>
+    <ul data-cy="tableQuizzes">
       <li class="list-header">
         <div class="col">Title</div>
         <div class="col">Available since</div>
@@ -10,11 +10,12 @@
       </li>
       <li
         class="list-row"
+        multiple data-cy="quizzes"
         v-for="quiz in quizzes"
         :key="quiz.quizAnswerId"
         @click="solveQuiz(quiz)"
       >
-        <div class="col">
+        <div class="col" data-cy="quizTitle">
           {{ quiz.title }}
         </div>
         <div class="col">

@@ -154,6 +154,11 @@ Cypress.Commands.add('selectDate', (dialog, datePicker, dateTime) => {
 
 // Student commands
 
+Cypress.Commands.add('visitAvailableQuizesPage', () => {
+  cy.get('[data-cy="top-bar-quizzes"]').click();
+  cy.get('[data-cy="top-bar-available"]').click();
+});
+
 Cypress.Commands.add('visitCreateTourneyPage', () => {
     cy.get('[data-cy="top-bar-tourneys"]').click();
     cy.get('[data-cy="top-bar-create-tourney"]').click();
@@ -176,6 +181,26 @@ Cypress.Commands.add('visitApproveRejectPage', () => {
     cy.get('[data-cy="top-bar-management"]').click()
     cy.get('[data-cy="top-bar-approve-reject"]').click()
 });
+
+//Discussion commands
+
+Cypress.Commands.add(
+  'getQuizAndSolve',
+  (quizName) => {
+    for(let quizTitle of quizName){
+      cy.get('[data-cy="quizTitle"]').contains(quizTitle).click();
+    }
+    cy.get('[data-cy="endQuiz"]').click()
+  }
+);
+
+Cypress.Commands.add(
+  'sendDiscussionMessage', (sentence) => {
+    cy.get('[data-cy="submitDiscussionMessage"]').click();
+    cy.get('[data-cy="message"').type(sentence);
+    cy.get('[data-cy="submitMessage"}').click();
+});
+
 
 // Tourney commands
 

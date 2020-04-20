@@ -62,7 +62,7 @@
     </ul>
     <p></p>
     <div class="discussion-buttons">
-      <v-btn depressed small color="primary" dark to="discussion">
+      <v-btn depressed small color="primary" dark to="discussion" data-cy="submitDiscussionMessage">
         <i class="fa fa-comment" />Submit Discussion Message
       </v-btn>
     </div>
