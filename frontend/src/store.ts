@@ -4,11 +4,13 @@ import RemoteServices from '@/services/RemoteServices';
 import AuthDto from '@/models/user/AuthDto';
 import Course from '@/models/user/Course';
 import User from '@/models/user/User';
+import StatementAnswer from '@/models/statement/StatementAnswer';
 
 interface State {
   token: string;
   user: User | null;
   currentCourse: Course | null;
+  statementAnswer: StatementAnswer | null;
   error: boolean;
   errorMessage: string;
   loading: boolean;
@@ -18,6 +20,7 @@ const state: State = {
   token: '',
   user: null,
   currentCourse: null,
+  statementAnswer: null,
   error: false,
   errorMessage: '',
   loading: false
@@ -54,6 +57,9 @@ export default new Vuex.Store({
     },
     currentCourse(state, currentCourse: Course) {
       state.currentCourse = currentCourse;
+    },
+    currentStatementAnswer(State, statementAnswer: StatementAnswer) {
+      state.statementAnswer = statementAnswer;
     }
   },
   actions: {
@@ -142,6 +148,9 @@ export default new Vuex.Store({
     },
     getCurrentCourse(state): Course | null {
       return state.currentCourse;
+    },
+    getStatementAnswer(state): StatementAnswer | null{
+      return state.statementAnswer;
     },
     getError(state): boolean {
       return state.error;

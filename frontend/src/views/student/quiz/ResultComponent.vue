@@ -63,10 +63,7 @@
     <p></p>
     <div class="discussion-buttons">
       <v-btn depressed small color="primary" dark to="discussion">
-        <i class="fa fa-comment" />Create Discussion
-      </v-btn>
-      <v-btn depressed small color="primary" dark to="discussion">
-        <i class="fa fa-comment" />See Discussion
+        <i class="fa fa-comment" />Submit Discussion Message
       </v-btn>
     </div>
   </div>

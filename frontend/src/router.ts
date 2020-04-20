@@ -158,7 +158,7 @@ let router = new Router({
           name: 'solve-quiz',
           component: QuizView,
           meta: {
-            title: process.env.VUE_APP_NAME + ' - Quiz',
+            title: process.env.VUE_APP_NAME + ' - quiz',
             requiredAuth: 'Student'
           }
         },

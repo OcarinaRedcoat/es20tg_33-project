@@ -172,7 +172,7 @@ export default class QuizList extends Vue {
     { text: 'Scramble', value: 'scramble', align: 'center', width: '5%' },
     { text: 'QRCode Only', value: 'qrCodeOnly', align: 'center', width: '5%' },
     {
-      text: 'One Way Quiz',
+      text: 'One Way quiz',
       value: 'oneWay',
       align: 'center',
       width: '5%'

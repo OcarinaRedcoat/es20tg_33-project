@@ -79,13 +79,13 @@ export default class StudentsView extends Vue {
       width: '10%'
     },
     {
-      text: 'Answers Teacher Quiz',
+      text: 'Answers Teacher quiz',
       value: 'numberOfTeacherAnswers',
       align: 'center',
       width: '10%'
     },
     {
-      text: 'Correct Answers Teacher Quiz',
+      text: 'Correct Answers Teacher quiz',
       value: 'percentageOfCorrectTeacherAnswers',
       align: 'center',
       width: '10%'

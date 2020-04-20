@@ -17,6 +17,7 @@ import { QuizAnswers } from '@/models/management/QuizAnswers';
 // @ts-ignore
 import Tourney from '@/models/tourney/Tourney';
 import Discussion from '@/models/statement/Discussion';
+import Message from '@/models/statement/Message';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 10000;
@@ -568,11 +569,17 @@ export default class RemoteServices {
       });
   }
 
-  static async submitQuestion(discussionId: number, discussion: Discussion) {
+  static async submitStudentAnswer(
+    questionAnswerId: number,
+    message: Message
+  ) {
     return httpClient
-      .post('/discussion/${discussionId}/submit', discussion)
+      .post(
+        `/courses/${Store.getters.getCurrentCourse.courseExecutionId}/questionAnswer/${questionAnswerId}/discussion/submit`,
+        message
+      )
       .then(response => {
-        return new Discussion(response.data);
+        return new Message(response.data);
       })
       .catch(async error => {
         throw Error(await this.errorMessage(error));
