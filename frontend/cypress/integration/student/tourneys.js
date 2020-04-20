@@ -32,5 +32,13 @@ describe('Student create a Tourney', () => {
       CONCLUSION_DATE,
       TOPICS
     );
+
+    cy.enrollInTourney(
+        TITLE
+    );
+
+    cy.cancelTourney(
+        TITLE
+    );
   });
 });

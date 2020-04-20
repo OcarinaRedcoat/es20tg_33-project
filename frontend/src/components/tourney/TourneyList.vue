@@ -27,13 +27,13 @@
         <template v-slot:item.action="{ item }">
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
-              <v-icon small class="mr-2" v-on="on" @click="enrollInTourney(item)">add</v-icon>
+              <v-icon small class="mr-2" v-on="on" @click="enrollInTourney(item)" data-cy="enrollInTourney">add</v-icon>
             </template>
             <span>Enroll in Tourney</span>
           </v-tooltip>
           <v-tooltip bottom v-if="isCreator(item)">
             <template v-slot:activator="{ on }">
-              <v-icon small class="mr-2" v-on="on" @click="cancelTourney(item)" color="red">close</v-icon>
+              <v-icon small class="mr-2" v-on="on" @click="cancelTourney(item)" color="red" data-cy="cancelTourney">delete</v-icon>
             </template>
             <span>Cancel</span>
           </v-tooltip>
@@ -123,7 +123,7 @@ export default class TourneyList extends Vue {
     if (confirm('Are you sure you want to cancel this tourney?')) {
       try {
         await RemoteServices.cancelTourney(toDeleteTourney);
-        this.$emit('cancelTourney', toDeleteTourney);
+        this.tourneys = this.tourneys.filter(tourney => tourney.tourneyId !== toDeleteTourney.tourneyId)
       } catch (error) {
         await this.$store.dispatch('error', error);
       }
