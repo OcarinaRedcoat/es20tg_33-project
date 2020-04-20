@@ -101,15 +101,12 @@ export default class ReviewQuestionDialog extends Vue {
   }
 
   async rejectQuestion() {
-    if (
-      this.editQuestion.justification == null ||
-      this.editQuestion.justification == ''
-    ) {
+    if (this.editQuestion.justification == null || this.editQuestion.justification == '') {
       await this.$store.dispatch(
         'error',
-        'Rejection must have a justification'
-      );
-      return;
+        'Error: Rejection must have a justification'
+       );
+    return;
     } else {
       try {
         const result = await RemoteServices.rejectQuestion(
