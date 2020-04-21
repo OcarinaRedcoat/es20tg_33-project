@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.validation.Valid;
@@ -57,6 +58,13 @@ public class StudentQuestionController {
             throw new TutorException(AUTHENTICATION_ERROR);
         }
         return this.studentQuestionService.getUserSubmittedQuestions(user.getUsername());
+    }
+
+    @PostMapping("/courses/{courseId}/questions")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#courseId, 'COURSE.ACCESS')")
+    public QuestionDto makeStudentQuestionAvailable(@PathVariable int courseId, @RequestBody Integer studentQuestionId) {
+
+        return this.studentQuestionService.makeStudentQuestionAvailable(studentQuestionId);
     }
 
     @GetMapping("/courses/{courseId}/studentQuestions")

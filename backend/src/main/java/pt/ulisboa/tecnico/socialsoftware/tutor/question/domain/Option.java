@@ -59,7 +59,9 @@ public class Option implements DomainEntity {
     }
 
     public Integer getSequence() {
-        if (sequence == null) {
+        if (sequence == null && question == null) {
+            getStudentQuestion().setOptionsSequence();
+        } else if (sequence == null) {
             getQuestion().setOptionsSequence();
         }
         return sequence;

@@ -86,8 +86,6 @@ class ApprovalRejectionQuestionPerformanceTest extends Specification {
 
             studentQuestionService.rejectQuestion(it, JUSTIFICATION_CONTENT)})
 
-
-
         then:
         true
     }

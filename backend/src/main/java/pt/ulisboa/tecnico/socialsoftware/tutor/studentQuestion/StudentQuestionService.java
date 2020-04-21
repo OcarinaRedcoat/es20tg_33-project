@@ -10,6 +10,10 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
@@ -23,6 +27,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 @Service
 public class StudentQuestionService {
+    private QuestionService questionService = new QuestionService();
 
     @Autowired
     private UserRepository userRepository;
@@ -144,6 +149,18 @@ public class StudentQuestionService {
         studentQuestionRepository.delete(question);
     }
 
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public QuestionDto makeStudentQuestionAvailable(Integer questionId) {
+        StudentQuestion studentQuestion = studentQuestionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
+        checkIfApproved(studentQuestion);
+        QuestionDto questionDto = setupQuestionDto(studentQuestion);
+
+        return questionService.createQuestion(studentQuestion.getCourse().getId(), questionDto);
+    }
+
     private void checkSubmittedQuestions(User user) {
         if (user.getSubmittedQuestions().isEmpty())
             throw new TutorException(USER_WITHOUT_SUBMITTED_QUESTIONS);
@@ -159,11 +176,27 @@ public class StudentQuestionService {
             question.setStatus(StudentQuestion.Status.PENDING);
     }
 
+    private void checkIfApproved(StudentQuestion question) {
+        if (question.getStatus() != StudentQuestion.Status.APPROVED)
+            throw new TutorException(QUESTION_NOT_APPROVED);
+    }
+
     private void checkQuestionKey(StudentQuestionDto questionDto) {
         if (questionDto.getKey() == null) {
             int maxQuestionNumber = studentQuestionRepository.getMaxQuestionNumber() != null ?
                     studentQuestionRepository.getMaxQuestionNumber() : 0;
             questionDto.setKey(maxQuestionNumber + 1);
         }
+    }
+
+    private QuestionDto setupQuestionDto(StudentQuestion studentQuestion) {
+        QuestionDto questionDto = new QuestionDto();
+        questionDto.setTitle(studentQuestion.getTitle());
+        questionDto.setContent(studentQuestion.getContent());
+        questionDto.setKey(null);
+        questionDto.setStatus(Question.Status.AVAILABLE.name());
+        List<OptionDto> options = studentQuestion.getOptions().stream().map(OptionDto::new).collect(Collectors.toList());
+        questionDto.setOptions(options);
+        return questionDto;
     }
 }

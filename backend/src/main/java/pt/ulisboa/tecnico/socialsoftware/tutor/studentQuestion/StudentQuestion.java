@@ -108,6 +108,7 @@ public class StudentQuestion {
 
     public void addOption(Option option) {
         this.studentQuestionOptions.add(option);
+        option.setStudentQuestion(this);
     }
 
     public void remove() {
@@ -162,4 +163,10 @@ public class StudentQuestion {
         }
     }
 
+    public void setOptionsSequence() {
+        int index = 0;
+        for (Option option: getOptions()) {
+            option.setSequence(index++);
+        }
+    }
 }

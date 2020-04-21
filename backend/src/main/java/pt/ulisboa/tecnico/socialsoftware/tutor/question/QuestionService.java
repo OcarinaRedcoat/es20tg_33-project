@@ -24,11 +24,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.ImageReposito
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository;
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
-import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizQuestionRepository;
@@ -48,15 +44,9 @@ import java.util.zip.ZipOutputStream;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.COURSE_NOT_FOUND;
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.QUESTION_NOT_FOUND;
-import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.QUESTION_NOT_PENDING;
-import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.USERNAME_NOT_FOUND;
-import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.QUESTION_MISSING_JUSTIFICATION;
 
 @Service
 public class QuestionService {
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private CourseRepository courseRepository;
@@ -69,9 +59,6 @@ public class QuestionService {
 
     @Autowired
     private ImageRepository imageRepository;
-
-    @PersistenceContext
-    EntityManager entityManager;
     
     @Autowired
     private QuizQuestionRepository quizQuestionRepository;
