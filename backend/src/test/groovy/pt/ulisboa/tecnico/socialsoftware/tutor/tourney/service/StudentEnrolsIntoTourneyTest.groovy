@@ -5,6 +5,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService
+import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto
@@ -38,6 +39,7 @@ class StudentEnrolsIntoTourneyTest extends Specification{
     public static final int STUDENT_KEY = 2
     public static final int NOT_STUDENT_KEY = 3
     public static final int OTHER_STUDENT_KEY = 4
+    public static final String COURSE_NAME = "Arquitetura de Software"
 
     def tourney
     def topicDto
@@ -63,27 +65,25 @@ class StudentEnrolsIntoTourneyTest extends Specification{
     CourseExecutionRepository  courseExecutionRepository
 
     def setup() {
-        course = new Course()
+        course = new Course(COURSE_NAME, Course.Type.TECNICO)
         courseRepository.save(course)
         def courseId = courseRepository.findAll().get(0).getId()
         courseExecution = new CourseExecution(course, "AC", "1", Course.Type.TECNICO)
         courseExecutionRepository.save(courseExecution)
 
         tourney = new TourneyDto()
-        def formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
-        def availableDate = LocalDateTime.now()
-        def conclusionDate = LocalDateTime.now().plusDays(1)
+        def availableDate = DateHandler.now()
+        def conclusionDate = DateHandler.now().plusDays(1)
 
         tourney.setTourneyTitle(TOURNEY_TITLE)
-        tourney.setTourneyAvailableDate(availableDate.format(formatter))
-        tourney.setTourneyConclusionDate(conclusionDate.format(formatter))
+        tourney.setTourneyAvailableDate(DateHandler.toISOString(availableDate))
+        tourney.setTourneyConclusionDate(DateHandler.toISOString(conclusionDate))
         tourney.setTourneyNumberOfQuestions(NUMBER_QUESTIONS)
         tourney.setTourneyCourseExecution(new CourseDto(courseExecution))
         tourney.setTourneyStatus(Tourney.Status.OPEN)
 
         topicDto = new TopicDto()
         topicDto.setName("topic")
-        course.addTopic(new Topic(topicDto))
         topicService.createTopic(courseId, topicDto)
         def topics = new ArrayList()
         topics.add(topicDto)

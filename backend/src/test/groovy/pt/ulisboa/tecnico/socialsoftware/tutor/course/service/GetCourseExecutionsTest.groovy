@@ -5,16 +5,16 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.*
-import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import spock.lang.Specification
 
 @DataJpaTest
 class GetCourseExecutionsTest extends Specification {
-    public static final String COURSE_ONE = "CourseOne"
-    public static final String ACRONYM_ONE = "C12"
-    public static final String ACRONYM_TWO = "C11"
-    public static final String ACADEMIC_TERM_ONE = "1º Semestre"
-    public static final String ACADEMIC_TERM_TWO = "2º Semestre"
+    static final String COURSE_ONE = "CourseOne"
+    static final String ACRONYM_ONE = "C12"
+    static final String ACADEMIC_TERM_ONE = "1º Semestre"
+    static final String ACRONYM_TWO = "C22"
+    static final String ACADEMIC_TERM_TWO = "2º Semestre"
 
     @Autowired
     CourseService courseService
@@ -25,58 +25,41 @@ class GetCourseExecutionsTest extends Specification {
     @Autowired
     CourseExecutionRepository courseExecutionRepository
 
-    def "two execution courses"() {
+    def "the tecnico course exists and create execution course"() {
         given: "a course"
         def course = new Course(COURSE_ONE, Course.Type.TECNICO)
         courseRepository.save(course)
-        and: "with two execution courses"
-        def CourseExecution = new CourseExecution(course, ACRONYM_ONE, ACADEMIC_TERM_ONE, Course.Type.TECNICO)
-        courseExecutionRepository.save(CourseExecution)
-        CourseExecution = new CourseExecution(course, ACRONYM_TWO, ACADEMIC_TERM_TWO, Course.Type.TECNICO)
-        courseExecutionRepository.save(CourseExecution)
+        and: "two course executions"
+        def courseExecution = new CourseExecution(course, ACRONYM_ONE, ACADEMIC_TERM_ONE, Course.Type.TECNICO)
+        courseExecutionRepository.save(courseExecution)
+        courseExecution = new CourseExecution(course, ACRONYM_TWO, ACADEMIC_TERM_TWO, Course.Type.EXTERNAL)
+        courseExecutionRepository.save(courseExecution)
 
         when:
-        def result = courseService.getCourseExecutions(course.getId())
+        def result = courseService.getCourseExecutions(User.Role.ADMIN)
 
         then: "the returned data are correct"
         result.size() == 2
-        and: "correctly reverse sorted"
-        result.get(0).name == COURSE_ONE
-        result.get(0).acronym == ACRONYM_TWO
-        result.get(0).academicTerm == ACADEMIC_TERM_TWO
-        result.get(1).name == COURSE_ONE
-        result.get(1).acronym == ACRONYM_ONE
-        result.get(1).academicTerm == ACADEMIC_TERM_ONE
+        def tecnicoExecutionCourse = result.get(0)
+        tecnicoExecutionCourse.name == COURSE_ONE
+        tecnicoExecutionCourse.courseType == Course.Type.TECNICO
+        tecnicoExecutionCourse.acronym == ACRONYM_ONE
+        tecnicoExecutionCourse.academicTerm == ACADEMIC_TERM_ONE
+        tecnicoExecutionCourse.courseExecutionType == Course.Type.TECNICO
+        def externalExecutionCourse = result.get(1)
+        externalExecutionCourse.name == COURSE_ONE
+        externalExecutionCourse.courseType == Course.Type.TECNICO
+        externalExecutionCourse.acronym == ACRONYM_TWO
+        externalExecutionCourse.academicTerm == ACADEMIC_TERM_TWO
+        externalExecutionCourse.courseExecutionType == Course.Type.EXTERNAL
     }
-
-    def "does not exist course with the name"() {
-        when:
-        courseService.getCourseExecutions(0)
-
-        then: "the returned data are correct"
-        TutorException ex = thrown()
-    }
-
-    def "no execution courses"() {
-        given: "a course"
-        def course = new Course(COURSE_ONE, Course.Type.TECNICO)
-        courseRepository.save(course)
-
-        when:
-        def result = courseService.getCourseExecutions(course.getId())
-
-        then: "the returned data are correct"
-        result.size() == 0
-    }
-
 
     @TestConfiguration
-    static class CourseServiceImplTestContextConfiguration {
+    static class ServiceImplTestContextConfiguration {
 
         @Bean
         CourseService courseService() {
             return new CourseService()
         }
     }
-
 }

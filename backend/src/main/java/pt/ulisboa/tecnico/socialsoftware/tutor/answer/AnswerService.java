@@ -22,6 +22,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.DiscussionRepos
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuestionAnswerRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuizAnswerRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
+import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlExport;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport;
@@ -41,7 +42,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.security.Principal;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -101,19 +101,19 @@ public class AnswerService {
         QuizAnswer quizAnswer = user.getQuizAnswers().stream().filter(qa -> qa.getQuiz().getId().equals(quizId)).findFirst().orElseThrow(() ->
                 new TutorException(QUIZ_NOT_FOUND, quizId));
 
-        if(quizAnswer.getQuiz().getAvailableDate() != null && quizAnswer.getQuiz().getAvailableDate().isAfter(LocalDateTime.now())) {
+        if (quizAnswer.getQuiz().getAvailableDate() != null && quizAnswer.getQuiz().getAvailableDate().isAfter(DateHandler.now())) {
             throw new TutorException(QUIZ_NOT_YET_AVAILABLE);
         }
 
         if (!quizAnswer.isCompleted()) {
-            quizAnswer.setAnswerDate(LocalDateTime.now());
+            quizAnswer.setAnswerDate(DateHandler.now());
             quizAnswer.setCompleted(true);
         }
 
-        // In class quiz When student submits before conclusionDate
-        if (quizAnswer.getQuiz().getConclusionDate() != null &&
+        // In class quiz when student submits before resultsDate
+        if (quizAnswer.getQuiz().getResultsDate() != null &&
             quizAnswer.getQuiz().getType().equals(Quiz.QuizType.IN_CLASS) &&
-            LocalDateTime.now().isBefore(quizAnswer.getQuiz().getConclusionDate())) {
+            DateHandler.now().isBefore(quizAnswer.getQuiz().getResultsDate())) {
 
             return new ArrayList<>();
         }
@@ -143,11 +143,11 @@ public class AnswerService {
             throw new TutorException(QUIZ_USER_MISMATCH, String.valueOf(quizAnswer.getQuiz().getId()), user.getUsername());
         }
 
-        if (quizAnswer.getQuiz().getConclusionDate() != null && quizAnswer.getQuiz().getConclusionDate().isBefore(LocalDateTime.now())) {
+        if (quizAnswer.getQuiz().getConclusionDate() != null && quizAnswer.getQuiz().getConclusionDate().isBefore(DateHandler.now())) {
             throw new TutorException(QUIZ_NO_LONGER_AVAILABLE);
         }
 
-        if (quizAnswer.getQuiz().getAvailableDate() != null && quizAnswer.getQuiz().getAvailableDate().isAfter(LocalDateTime.now())) {
+        if (quizAnswer.getQuiz().getAvailableDate() != null && quizAnswer.getQuiz().getAvailableDate().isAfter(DateHandler.now())) {
             throw new TutorException(QUIZ_NOT_YET_AVAILABLE);
         }
 
@@ -167,11 +167,9 @@ public class AnswerService {
                 }
 
                 questionAnswer.setOption(option);
-                option.addQuestionAnswer(questionAnswer);
                 questionAnswer.setTimeTaken(answer.getTimeTaken());
-                quizAnswer.setAnswerDate(LocalDateTime.now());
+                quizAnswer.setAnswerDate(DateHandler.now());
             }
-
         }
     }
 
@@ -310,10 +308,12 @@ public class AnswerService {
         return discussionRepository.findByCourseId(courseId).stream().map(DiscussionDto::new).collect(Collectors.toList());
     }
     public void deleteQuizAnswer(QuizAnswer quizAnswer) {
-        for (QuestionAnswer questionAnswer : quizAnswer.getQuestionAnswers()) {
+        List<QuestionAnswer> questionAnswers = new ArrayList<>(quizAnswer.getQuestionAnswers());
+        questionAnswers.forEach(questionAnswer ->
+        {
             questionAnswer.remove();
             questionAnswerRepository.delete(questionAnswer);
-        }
+        });
         quizAnswer.remove();
         quizAnswerRepository.delete(quizAnswer);
     }
