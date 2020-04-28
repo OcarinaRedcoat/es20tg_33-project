@@ -28,6 +28,7 @@ class GetOpenTourneysTest extends Specification {
     public static final Integer TOURNEY_TWO_NUMBER_QUESTIONS = 2
     public static final String TOURNEY_AVAILABLE_DATE = "2020-01-01 21:12"
     public static final String TOURNEY_CONCLUSION_DATE = "2020-01-06 21:12"
+    public static final String COURSE_NAME = "Arquitetura de Software"
 
     public static final String NAME = "name"
     public static final String USERNAME = "username"
@@ -62,7 +63,7 @@ class GetOpenTourneysTest extends Specification {
     def "two tourneys - open one the user can access and other he cannot"(){
         given: "two course executions"
 
-        def course = new Course()
+        def course = new Course(COURSE_NAME, Course.Type.TECNICO)
         courseRepository.save(course)
         def courseExecution = new CourseExecution(course, "AC", "1", Course.Type.TECNICO)
         courseExecutionRepository.save(courseExecution)

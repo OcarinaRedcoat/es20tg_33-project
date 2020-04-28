@@ -153,7 +153,6 @@ class CreateTecnicoCourseExecutionTest extends Specification {
         thrown(TutorException)
     }
 
-
     @TestConfiguration
     static class CourseServiceImplTestContextConfiguration {
 
@@ -162,5 +161,4 @@ class CreateTecnicoCourseExecutionTest extends Specification {
             return new CourseService()
         }
     }
-
 }
