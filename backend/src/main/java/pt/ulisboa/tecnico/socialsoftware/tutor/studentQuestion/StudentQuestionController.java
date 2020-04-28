@@ -60,7 +60,7 @@ public class StudentQuestionController {
         return this.studentQuestionService.getUserSubmittedQuestions(user.getUsername());
     }
 
-    @PostMapping("/courses/{courseId}/questions")
+    @PostMapping("/courses/{courseId}/questionsFromStudents")
     @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#courseId, 'COURSE.ACCESS')")
     public QuestionDto makeStudentQuestionAvailable(@PathVariable int courseId, @RequestBody Integer studentQuestionId) {
 

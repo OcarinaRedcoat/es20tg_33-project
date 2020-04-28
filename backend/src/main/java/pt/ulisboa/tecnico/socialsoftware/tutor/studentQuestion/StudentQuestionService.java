@@ -27,7 +27,6 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 @Service
 public class StudentQuestionService {
-    private QuestionService questionService = new QuestionService();
 
     @Autowired
     private UserRepository userRepository;
@@ -37,6 +36,9 @@ public class StudentQuestionService {
 
     @Autowired
     private StudentQuestionRepository studentQuestionRepository;
+
+    @Autowired
+    private QuestionService questionService;
 
     @PersistenceContext
     EntityManager entityManager;
