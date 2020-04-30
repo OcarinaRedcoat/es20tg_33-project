@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestionDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestionRepository
@@ -25,6 +26,9 @@ class SubmitQuestionPerformanceTest extends Specification {
 
     @Autowired
     StudentQuestionService studentQuestionService
+
+    @Autowired
+    QuestionService questionService
 
     @Autowired
     CourseRepository courseRepository
@@ -82,6 +86,11 @@ class SubmitQuestionPerformanceTest extends Specification {
         @Bean
         StudentQuestionService studentQuestionService() {
             return new StudentQuestionService()
+        }
+
+        @Bean
+        QuestionService questionService() {
+            return new QuestionService()
         }
     }
 }

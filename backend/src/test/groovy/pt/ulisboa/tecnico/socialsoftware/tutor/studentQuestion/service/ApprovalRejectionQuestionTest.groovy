@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestion
@@ -26,6 +27,9 @@ class ApprovalRejectionQuestionTest extends Specification {
 
     @Autowired
     StudentQuestionService studentQuestionService
+
+    @Autowired
+    QuestionService questionService
 
     @Autowired
     OptionRepository optionRepository
@@ -176,6 +180,11 @@ class ApprovalRejectionQuestionTest extends Specification {
         @Bean
         StudentQuestionService studentQuestionService() {
             return new StudentQuestionService()
+        }
+
+        @Bean
+        QuestionService questionService() {
+            return new QuestionService()
         }
     }
 }

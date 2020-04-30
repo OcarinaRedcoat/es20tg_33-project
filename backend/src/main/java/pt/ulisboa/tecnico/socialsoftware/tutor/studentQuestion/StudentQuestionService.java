@@ -11,6 +11,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
@@ -22,6 +23,7 @@ import javax.persistence.PersistenceContext;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
@@ -163,6 +165,35 @@ public class StudentQuestionService {
         return questionService.createQuestion(studentQuestion.getCourse().getId(), questionDto);
     }
 
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public StudentQuestionDto resubmitQuestion(int questionId, StudentQuestionDto questionDto, String username) {
+        Integer index = 0;
+        StudentQuestion question = studentQuestionRepository.findById(questionId).orElseThrow(() -> new TutorException(STUDENT_QUESTION_NOT_FOUND, questionId));
+        User user = userRepository.findByUsername(username);
+        if (user == null)
+            throw new TutorException(USERNAME_NOT_FOUND);
+        checkIfRejected(question);
+        //checkIfChanged(question, questionDto);
+        question.setTitle(questionDto.getTitle());
+        question.setContent(questionDto.getContent());
+        question.setJustification("");
+        question.setStatus(StudentQuestion.Status.PENDING);
+
+        List<Option> options = new ArrayList<>();
+        for (OptionDto optionDto : questionDto.getOptions()) {
+            optionDto.setSequence(index++);
+            Option option = new Option(optionDto);
+            options.add(option);
+            option.setStudentQuestion(question);
+        }
+        question.setOptions(options);
+        entityManager.persist(question);
+        return new StudentQuestionDto(question);
+    }
+
     private void checkSubmittedQuestions(User user) {
         if (user.getSubmittedQuestions().isEmpty())
             throw new TutorException(USER_WITHOUT_SUBMITTED_QUESTIONS);
@@ -176,6 +207,11 @@ public class StudentQuestionService {
     private void checkIfPending(StudentQuestion question) {
         if (question.getStatus() != StudentQuestion.Status.PENDING)
             question.setStatus(StudentQuestion.Status.PENDING);
+    }
+
+    private void checkIfRejected(StudentQuestion question) {
+        if (question.getStatus() != StudentQuestion.Status.REJECTED)
+            throw new TutorException(QUESTION_NOT_REJECTED);
     }
 
     private void checkIfApproved(StudentQuestion question) {
