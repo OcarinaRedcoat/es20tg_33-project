@@ -157,6 +157,7 @@ class ResubmissionOfRejectedQuestion extends Specification{
         def questionDto = new StudentQuestionDto()
         questionDto.setTitle(CHANGED_QUESTION_TITLE)
         questionDto.setContent(QUESTION_CONTENT)
+        questionDto.setStatus(StudentQuestion.Status.PENDING.name())
         and: "four options"
         def options = new ArrayList<OptionDto>()
         def optionDto = new OptionDto()
