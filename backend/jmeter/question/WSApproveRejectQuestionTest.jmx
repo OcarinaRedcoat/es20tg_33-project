@@ -118,8 +118,7 @@
 	&quot;title&quot;: &quot;Test Question title&quot;,&#xd;
 	&quot;content&quot;: &quot;Question content&quot;,&#xd;
 	&quot;status&quot;: &quot;PENDING&quot;,&#xd;
-	&quot;options&quot;: [&quot;TestOptCont&quot;, &quot;TestOptCont&quot;, &quot;TestOptCont&quot;, &quot;TestOptCont&quot;],&#xd;
-	&quot;correctOptionIndex&quot;: 1&#xd;
+	&quot;options&quot;: [{&quot;content&quot;: &quot;TestOptCont&quot;, &quot;correct&quot;: true}, {&quot;content&quot;: &quot;TestOptCont&quot;, &quot;correct&quot;: false}, {&quot;content&quot;: &quot;TestOptCont&quot;, &quot;correct&quot;: false}, {&quot;content&quot;: &quot;TestOptCont&quot;, &quot;correct&quot;: false}]&#xd;
 }</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                 </elementProp>
@@ -202,8 +201,7 @@
 	&quot;title&quot;: &quot;Test Question title&quot;,&#xd;
 	&quot;content&quot;: &quot;Question content&quot;,&#xd;
 	&quot;status&quot;: &quot;PENDING&quot;,&#xd;
-	&quot;options&quot;: [&quot;TestOptCont&quot;, &quot;TestOptCont&quot;, &quot;TestOptCont&quot;, &quot;TestOptCont&quot;],&#xd;
-	&quot;correctOptionIndex&quot;: 1&#xd;
+	&quot;options&quot;: [{&quot;content&quot;: &quot;TestOptCont&quot;, &quot;correct&quot;: true}, {&quot;content&quot;: &quot;TestOptCont&quot;, &quot;correct&quot;: false}, {&quot;content&quot;: &quot;TestOptCont&quot;, &quot;correct&quot;: false}, {&quot;content&quot;: &quot;TestOptCont&quot;, &quot;correct&quot;: false}]&#xd;
 }</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                 </elementProp>
