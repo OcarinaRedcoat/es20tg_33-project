@@ -111,6 +111,10 @@ public class StudentQuestion {
         option.setStudentQuestion(this);
     }
 
+    public void removeOptions() {
+        studentQuestionOptions = new ArrayList<>();
+    }
+
     public void remove() {
         canRemove();
         getCourse().getSubmittedQuestions().remove(this);

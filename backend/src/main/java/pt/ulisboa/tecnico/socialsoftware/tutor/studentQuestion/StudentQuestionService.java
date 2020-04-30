@@ -15,6 +15,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
@@ -41,6 +42,9 @@ public class StudentQuestionService {
 
     @Autowired
     private QuestionService questionService;
+
+    @Autowired
+    private OptionRepository optionRepository;
 
     @PersistenceContext
     EntityManager entityManager;
@@ -170,28 +174,15 @@ public class StudentQuestionService {
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public StudentQuestionDto resubmitQuestion(int questionId, StudentQuestionDto questionDto, String username) {
-        Integer index = 0;
+        int courseId;
         StudentQuestion question = studentQuestionRepository.findById(questionId).orElseThrow(() -> new TutorException(STUDENT_QUESTION_NOT_FOUND, questionId));
         User user = userRepository.findByUsername(username);
         if (user == null)
             throw new TutorException(USERNAME_NOT_FOUND);
         checkIfRejected(question);
-        //checkIfChanged(question, questionDto);
-        question.setTitle(questionDto.getTitle());
-        question.setContent(questionDto.getContent());
-        question.setJustification("");
-        question.setStatus(StudentQuestion.Status.PENDING);
-
-        List<Option> options = new ArrayList<>();
-        for (OptionDto optionDto : questionDto.getOptions()) {
-            optionDto.setSequence(index++);
-            Option option = new Option(optionDto);
-            options.add(option);
-            option.setStudentQuestion(question);
-        }
-        question.setOptions(options);
-        entityManager.persist(question);
-        return new StudentQuestionDto(question);
+        courseId = question.getCourse().getId();
+        removeStudentQuestion(questionId);
+        return this.submitQuestion(courseId, questionDto, username);
     }
 
     private void checkSubmittedQuestions(User user) {
