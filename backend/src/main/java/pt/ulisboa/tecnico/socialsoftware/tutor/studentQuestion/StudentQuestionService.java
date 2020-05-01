@@ -174,15 +174,13 @@ public class StudentQuestionService {
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public StudentQuestionDto resubmitQuestion(int questionId, StudentQuestionDto questionDto, String username) {
-        int courseId;
         StudentQuestion question = studentQuestionRepository.findById(questionId).orElseThrow(() -> new TutorException(STUDENT_QUESTION_NOT_FOUND, questionId));
         User user = userRepository.findByUsername(username);
         if (user == null)
             throw new TutorException(USERNAME_NOT_FOUND);
         checkIfRejected(question);
-        courseId = question.getCourse().getId();
-        removeStudentQuestion(questionId);
-        return this.submitQuestion(courseId, questionDto, username);
+        question.resubmit(questionDto);
+        return new StudentQuestionDto(question);
     }
 
     private void checkSubmittedQuestions(User user) {

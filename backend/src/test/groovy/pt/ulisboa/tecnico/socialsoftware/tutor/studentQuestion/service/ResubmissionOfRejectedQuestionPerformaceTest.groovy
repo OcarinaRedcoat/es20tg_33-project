@@ -49,7 +49,9 @@ class ResubmissionOfRejectedQuestionPerformaceTest extends Specification {
 
     def question
     def option
-    def optionF
+    def optionB
+    def optionC
+    def optionD
     def user
     def course
 
@@ -65,6 +67,28 @@ class ResubmissionOfRejectedQuestionPerformaceTest extends Specification {
         option.setStudentQuestion(question)
         option.setSequence(1)
         optionRepository.save(option)
+
+        optionB = new Option()
+        optionB.setContent(OPTION_CONTENT)
+        optionB.setCorrect(false)
+        optionB.setStudentQuestion(question)
+        optionB.setSequence(2)
+        optionRepository.save(optionB)
+
+        optionC = new Option()
+        optionC.setContent(OPTION_CONTENT)
+        optionC.setCorrect(false)
+        optionC.setStudentQuestion(question)
+        optionC.setSequence(3)
+        optionRepository.save(optionC)
+
+
+        optionD = new Option()
+        optionD.setContent(OPTION_CONTENT)
+        optionD.setCorrect(false)
+        optionD.setStudentQuestion(question)
+        optionD.setSequence(4)
+        optionRepository.save(optionD)
     }
 
     def "performance test to resubmit 2500 times a question"() {
@@ -79,21 +103,25 @@ class ResubmissionOfRejectedQuestionPerformaceTest extends Specification {
         optionDto.setContent(CHANGED_OPTION_CONTENT)
         optionDto.setSequence(1)
         optionDto.setCorrect(true)
+        optionDto.setId(option.getId())
         options.add(optionDto)
         optionDto = new OptionDto()
         optionDto.setContent(OPTION_CONTENT)
         optionDto.setSequence(2)
         optionDto.setCorrect(false)
+        optionDto.setId(optionB.getId())
         options.add(optionDto)
         optionDto = new OptionDto()
         optionDto.setContent(OPTION_CONTENT)
         optionDto.setSequence(3)
         optionDto.setCorrect(false)
+        optionDto.setId(optionC.getId())
         options.add(optionDto)
         optionDto = new OptionDto()
         optionDto.setContent(OPTION_CONTENT)
         optionDto.setSequence(4)
         optionDto.setCorrect(false)
+        optionDto.setId(optionD.getId())
         options.add(optionDto)
         questionDto.setOptions(options)
 
@@ -107,6 +135,9 @@ class ResubmissionOfRejectedQuestionPerformaceTest extends Specification {
             question.setStatus(StudentQuestion.Status.REJECTED)
             question.setSubmittingUser(user)
             question.addOption(option)
+            question.addOption(optionB)
+            question.addOption(optionC)
+            question.addOption(optionD)
             question.setCourse(course)
             option.setStudentQuestion(question)
             studentQuestionRepository.save(question)

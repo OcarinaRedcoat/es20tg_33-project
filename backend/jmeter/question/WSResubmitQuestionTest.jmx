@@ -118,7 +118,7 @@
 	&quot;title&quot;: &quot;Test Question title&quot;,&#xd;
 	&quot;content&quot;: &quot;Question content&quot;,&#xd;
 	&quot;status&quot;: &quot;PENDING&quot;,&#xd;
-	&quot;options&quot;: [{&quot;content&quot;: &quot;TestOptCont&quot;, &quot;correct&quot;: true}, {&quot;content&quot;: &quot;TestOptCont&quot;, &quot;correct&quot;: false}, {&quot;content&quot;: &quot;TestOptCont&quot;, &quot;correct&quot;: false}, {&quot;content&quot;: &quot;TestOptCont&quot;, &quot;correct&quot;: false}]&#xd;
+	&quot;options&quot;: [{&quot;id&quot;: 1, &quot;content&quot;: &quot;TestOptCont&quot;, &quot;correct&quot;: true}, {&quot;id&quot;: 2, &quot;content&quot;: &quot;TestOptCont&quot;, &quot;correct&quot;: false}, {&quot;id&quot;: 3, &quot;content&quot;: &quot;TestOptCont&quot;, &quot;correct&quot;: false}, {&quot;id&quot;: 4, &quot;content&quot;: &quot;TestOptCont&quot;, &quot;correct&quot;: false}]&#xd;
 }</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                 </elementProp>
@@ -181,12 +181,68 @@
               <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
             </JSONPostProcessor>
             <hashTree/>
+            <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor options0" enabled="true">
+              <stringProp name="JSONPostProcessor.referenceNames">options0</stringProp>
+              <stringProp name="JSONPostProcessor.jsonPathExprs">$.options[0].id</stringProp>
+              <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+            </JSONPostProcessor>
+            <hashTree/>
+            <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor options1" enabled="true">
+              <stringProp name="JSONPostProcessor.referenceNames">options1</stringProp>
+              <stringProp name="JSONPostProcessor.jsonPathExprs">$.options[1].id</stringProp>
+              <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+            </JSONPostProcessor>
+            <hashTree/>
+            <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor options2" enabled="true">
+              <stringProp name="JSONPostProcessor.referenceNames">options2</stringProp>
+              <stringProp name="JSONPostProcessor.jsonPathExprs">$.options[2].id</stringProp>
+              <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+            </JSONPostProcessor>
+            <hashTree/>
+            <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="JSON Extractor options3" enabled="true">
+              <stringProp name="JSONPostProcessor.referenceNames">options3</stringProp>
+              <stringProp name="JSONPostProcessor.jsonPathExprs">$.options[3].id</stringProp>
+              <stringProp name="JSONPostProcessor.match_numbers"></stringProp>
+            </JSONPostProcessor>
+            <hashTree/>
             <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor" enabled="true">
               <stringProp name="TestPlan.comments">Set property questionid1 so another thread group can access</stringProp>
               <boolProp name="resetInterpreter">false</boolProp>
               <stringProp name="parameters">questionId1</stringProp>
               <stringProp name="filename"></stringProp>
               <stringProp name="script">${__setProperty(questionId1,${questionId1})}</stringProp>
+            </BeanShellPostProcessor>
+            <hashTree/>
+            <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor options0" enabled="true">
+              <stringProp name="TestPlan.comments">Set property questionid1 so another thread group can access</stringProp>
+              <boolProp name="resetInterpreter">false</boolProp>
+              <stringProp name="parameters">options0</stringProp>
+              <stringProp name="filename"></stringProp>
+              <stringProp name="script">${__setProperty(options0,${options0})}</stringProp>
+            </BeanShellPostProcessor>
+            <hashTree/>
+            <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor options1" enabled="true">
+              <stringProp name="TestPlan.comments">Set property questionid1 so another thread group can access</stringProp>
+              <boolProp name="resetInterpreter">false</boolProp>
+              <stringProp name="parameters">options1</stringProp>
+              <stringProp name="filename"></stringProp>
+              <stringProp name="script">${__setProperty(options1,${options1})}</stringProp>
+            </BeanShellPostProcessor>
+            <hashTree/>
+            <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor options2" enabled="true">
+              <stringProp name="TestPlan.comments">Set property questionid1 so another thread group can access</stringProp>
+              <boolProp name="resetInterpreter">false</boolProp>
+              <stringProp name="parameters">options2</stringProp>
+              <stringProp name="filename"></stringProp>
+              <stringProp name="script">${__setProperty(options2,${options2})}</stringProp>
+            </BeanShellPostProcessor>
+            <hashTree/>
+            <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="BeanShell PostProcessor options3" enabled="true">
+              <stringProp name="TestPlan.comments">Set property questionid1 so another thread group can access</stringProp>
+              <boolProp name="resetInterpreter">false</boolProp>
+              <stringProp name="parameters">options3</stringProp>
+              <stringProp name="filename"></stringProp>
+              <stringProp name="script">${__setProperty(options3,${options3})}</stringProp>
             </BeanShellPostProcessor>
             <hashTree/>
           </hashTree>
@@ -446,7 +502,7 @@
 	&quot;title&quot;: &quot;New Test Question title&quot;,&#xd;
 	&quot;content&quot;: &quot;New Question content&quot;,&#xd;
 	&quot;status&quot;: &quot;PENDING&quot;,&#xd;
-	&quot;options&quot;: [{&quot;content&quot;: &quot;TestOptCont&quot;, &quot;correct&quot;: true}, {&quot;content&quot;: &quot;TestOptCont&quot;, &quot;correct&quot;: false}, {&quot;content&quot;: &quot;TestOptCont&quot;, &quot;correct&quot;: false}, {&quot;content&quot;: &quot;TestOptCont&quot;, &quot;correct&quot;: false}]&#xd;
+	&quot;options&quot;: [{&quot;id&quot;: ${__property(options0)}, &quot;content&quot;: &quot;TestOptCont&quot;, &quot;correct&quot;: true}, {&quot;id&quot;: ${__property(options1)}, &quot;content&quot;: &quot;TestOptCont&quot;, &quot;correct&quot;: false}, {&quot;id&quot;: ${__property(options2)}, &quot;content&quot;: &quot;TestOptCont&quot;, &quot;correct&quot;: false}, {&quot;id&quot;: ${__property(options3)}, &quot;content&quot;: &quot;TestOptCont&quot;, &quot;correct&quot;: false}]&#xd;
 }</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                 </elementProp>
@@ -457,7 +513,7 @@
             <stringProp name="HTTPSampler.protocol"></stringProp>
             <stringProp name="HTTPSampler.contentEncoding"></stringProp>
             <stringProp name="HTTPSampler.path">/studentQuestions/${__property(questionId1)}/resubmit</stringProp>
-            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <stringProp name="HTTPSampler.method">PUT</stringProp>
             <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
             <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
             <boolProp name="HTTPSampler.use_keepalive">true</boolProp>

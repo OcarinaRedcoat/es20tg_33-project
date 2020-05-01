@@ -51,7 +51,9 @@ class ResubmissionOfRejectedQuestion extends Specification{
 
     def question
     def option
-    def optionF
+    def optionB
+    def optionC
+    def optionD
     def user
     def course
 
@@ -76,30 +78,30 @@ class ResubmissionOfRejectedQuestion extends Specification{
         optionRepository.save(option)
         question.addOption(option)
 
-        optionF = new Option()
-        optionF.setContent(OPTION_CONTENT)
-        optionF.setCorrect(false)
-        optionF.setStudentQuestion(question)
-        optionF.setSequence(2)
-        question.addOption(optionF)
-        optionRepository.save(optionF)
+        optionB = new Option()
+        optionB.setContent(OPTION_CONTENT)
+        optionB.setCorrect(false)
+        optionB.setStudentQuestion(question)
+        optionB.setSequence(2)
+        question.addOption(optionB)
+        optionRepository.save(optionB)
 
-        optionF = new Option()
-        optionF.setContent(OPTION_CONTENT)
-        optionF.setCorrect(false)
-        optionF.setStudentQuestion(question)
-        optionF.setSequence(3)
-        question.addOption(optionF)
-        optionRepository.save(optionF)
+        optionC = new Option()
+        optionC.setContent(OPTION_CONTENT)
+        optionC.setCorrect(false)
+        optionC.setStudentQuestion(question)
+        optionC.setSequence(3)
+        question.addOption(optionC)
+        optionRepository.save(optionC)
 
 
-        optionF = new Option()
-        optionF.setContent(OPTION_CONTENT)
-        optionF.setCorrect(false)
-        optionF.setStudentQuestion(question)
-        optionF.setSequence(4)
-        question.addOption(optionF)
-        optionRepository.save(optionF)
+        optionD = new Option()
+        optionD.setContent(OPTION_CONTENT)
+        optionD.setCorrect(false)
+        optionD.setStudentQuestion(question)
+        optionD.setSequence(4)
+        question.addOption(optionD)
+        optionRepository.save(optionD)
 
         question.setSubmittingUser(user)
         user.addSubmittedQuestion(question)
@@ -119,21 +121,25 @@ class ResubmissionOfRejectedQuestion extends Specification{
         optionDto.setContent(CHANGED_OPTION_CONTENT)
         optionDto.setSequence(1)
         optionDto.setCorrect(true)
+        optionDto.setId(option.getId())
         options.add(optionDto)
         optionDto = new OptionDto()
         optionDto.setContent(OPTION_CONTENT)
         optionDto.setSequence(2)
         optionDto.setCorrect(false)
+        optionDto.setId(optionB.getId())
         options.add(optionDto)
         optionDto = new OptionDto()
         optionDto.setContent(OPTION_CONTENT)
         optionDto.setSequence(3)
         optionDto.setCorrect(false)
+        optionDto.setId(optionC.getId())
         options.add(optionDto)
         optionDto = new OptionDto()
         optionDto.setContent(OPTION_CONTENT)
         optionDto.setSequence(4)
         optionDto.setCorrect(false)
+        optionDto.setId(optionD.getId())
         options.add(optionDto)
         questionDto.setOptions(options)
 
@@ -152,7 +158,7 @@ class ResubmissionOfRejectedQuestion extends Specification{
         user.getSubmittedQuestions().get(0).getSubmittingUser().getUsername() == USERNAME
     }
 
-    def "resubmit question not in REJECTED status"() {
+    def "resubmit question not in rejected status"() {
         given: "a student question dto"
         def questionDto = new StudentQuestionDto()
         questionDto.setTitle(CHANGED_QUESTION_TITLE)
@@ -164,21 +170,25 @@ class ResubmissionOfRejectedQuestion extends Specification{
         optionDto.setContent(CHANGED_OPTION_CONTENT)
         optionDto.setSequence(1)
         optionDto.setCorrect(true)
+        optionDto.setId(option.getId())
         options.add(optionDto)
         optionDto = new OptionDto()
         optionDto.setContent(OPTION_CONTENT)
         optionDto.setSequence(2)
         optionDto.setCorrect(false)
+        optionDto.setId(optionB.getId())
         options.add(optionDto)
         optionDto = new OptionDto()
         optionDto.setContent(OPTION_CONTENT)
         optionDto.setSequence(3)
         optionDto.setCorrect(false)
+        optionDto.setId(optionC.getId())
         options.add(optionDto)
         optionDto = new OptionDto()
         optionDto.setContent(OPTION_CONTENT)
         optionDto.setSequence(4)
         optionDto.setCorrect(false)
+        optionDto.setId(optionD.getId())
         options.add(optionDto)
         questionDto.setOptions(options)
         and:
