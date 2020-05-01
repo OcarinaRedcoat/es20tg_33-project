@@ -51,6 +51,19 @@
           </template>
           <span>Delete Question</span>
         </v-tooltip>
+        <v-tooltip bottom v-if="item.status === 'REJECTED'">
+            <template v-slot:activator="{ on }">
+              <v-icon
+                      small
+                      class="mr-2"
+                      v-on="on"
+                      @click="resubmitQuestion(item)"
+                      data-cy="ResubmittedQuestion"
+              >fas fa-edit</v-icon
+              >
+            </template>
+            <span>Resubmit Question</span>
+        </v-tooltip>
       </template>
     </v-data-table>
     <edit-student-question-dialog
@@ -58,6 +71,12 @@
       v-model="editStudentQuestionDialog"
       :question="currentQuestion"
       v-on:submit-question="onSubmitQuestion"
+    />
+    <resubmit-student-question-dialog
+            v-if="currentQuestion"
+            v-model="resubmitStudentQuestionDialog"
+            :question="currentQuestion"
+            v-on:submit-question="onResubmitQuestion"
     />
   </v-card>
 </template>
@@ -67,17 +86,20 @@ import { Component, Vue, Watch } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import StudentQuestion from '@/models/submissions/StudentQuestion';
 import EditStudentQuestionDialog from '@/views/student/submissions/EditStudentQuestionDialog.vue';
+import ResubmitStudentQuestionDialog from '@/views/student/submissions/ResubmitStudentQuestionDialog.vue';
 import Question from '@/models/management/Question';
 
 @Component({
   components: {
-    'edit-student-question-dialog': EditStudentQuestionDialog
+    'edit-student-question-dialog': EditStudentQuestionDialog,
+    'resubmit-student-question-dialog': ResubmitStudentQuestionDialog
   }
 })
 export default class SubmittedQuestionsView extends Vue {
   student_questions: StudentQuestion[] = [];
   currentQuestion: StudentQuestion | null = null;
   editStudentQuestionDialog: boolean = false;
+  resubmitStudentQuestionDialog: boolean = false;
   search: string = '';
 
   headers: object = [
@@ -95,6 +117,13 @@ export default class SubmittedQuestionsView extends Vue {
   @Watch('editStudentQuestionDialog')
   closeError() {
     if (!this.editStudentQuestionDialog) {
+      this.currentQuestion = null;
+    }
+  }
+
+  @Watch('resubmitStudentQuestionDialog')
+  closeError() {
+    if (!this.resubmitStudentQuestionDialog) {
       this.currentQuestion = null;
     }
   }
@@ -127,15 +156,20 @@ export default class SubmittedQuestionsView extends Vue {
     else return 'green';
   }
 
+  getStatusReject(status: string) {
+    if (status === 'REJECTED') return true;
+    else return false;
+  }
+
   submitQuestion() {
     this.currentQuestion = new StudentQuestion();
     this.editStudentQuestionDialog = true;
   }
 
-  /*editQuestion(question: StudentQuestion) {
+  resubmitQuestion(question: StudentQuestion) {
     this.currentQuestion = question;
-    this.editQuestionDialog = true;
-  }*/
+    this.resubmitStudentQuestionDialog = true;
+  }
 
   async onSubmitQuestion(question: StudentQuestion) {
     this.student_questions = this.student_questions.filter(
@@ -143,6 +177,15 @@ export default class SubmittedQuestionsView extends Vue {
     );
     this.student_questions.unshift(question);
     this.editStudentQuestionDialog = false;
+    this.currentQuestion = null;
+  }
+
+  async onResubmitQuestion(question: StudentQuestion) {
+    this.student_questions = this.student_questions.filter(
+            q => q.id !== question.id
+    );
+    this.student_questions.unshift(question);
+    this.resubmitStudentQuestionDialog = false;
     this.currentQuestion = null;
   }
 
