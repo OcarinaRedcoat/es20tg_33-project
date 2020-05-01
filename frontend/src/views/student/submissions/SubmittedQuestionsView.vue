@@ -58,7 +58,7 @@
                       class="mr-2"
                       v-on="on"
                       @click="resubmitQuestion(item)"
-                      data-cy="ResubmittedQuestion"
+                      data-cy="ResubmitQuestion"
               >fas fa-edit</v-icon
               >
             </template>
@@ -120,13 +120,13 @@ export default class SubmittedQuestionsView extends Vue {
       this.currentQuestion = null;
     }
   }
-
+/*
   @Watch('resubmitStudentQuestionDialog')
   closeError() {
     if (!this.resubmitStudentQuestionDialog) {
       this.currentQuestion = null;
     }
-  }
+  }*/
 
   async created() {
     await this.$store.dispatch('loading');
@@ -156,14 +156,10 @@ export default class SubmittedQuestionsView extends Vue {
     else return 'green';
   }
 
-  getStatusReject(status: string) {
-    if (status === 'REJECTED') return true;
-    else return false;
-  }
-
   submitQuestion() {
     this.currentQuestion = new StudentQuestion();
     this.editStudentQuestionDialog = true;
+
   }
 
   resubmitQuestion(question: StudentQuestion) {

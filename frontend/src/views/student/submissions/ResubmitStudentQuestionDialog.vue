@@ -17,7 +17,7 @@
                     <v-flex xs24 sm12 md12>
                         <v-text-field
                                 class="py-5"
-                                v-model="editStudentQuestion.justification"
+                                v-model="resubmitStudentQuestion.justification"
                                 label="Rejection justification"
                                 data-cy="justification"
                                 readonly
@@ -29,7 +29,7 @@
                     <v-flex xs24 sm12 md12>
                         <v-text-field
                                 class="py-5"
-                                v-model="editStudentQuestion.title"
+                                v-model="resubmitStudentQuestion.title"
                                 label="Title"
                                 data-cy="Title"
                         />
@@ -37,7 +37,7 @@
                     <v-flex xs24 sm12 md12>
                         <v-textarea
                                 class="py-5 mx-auto"
-                                v-model="editStudentQuestion.content"
+                                v-model="resubmitStudentQuestion.content"
                                 label="Question Content"
                                 data-cy="QuestionContent"
                         ></v-textarea>
@@ -47,17 +47,17 @@
                             xs24
                             sm12
                             md12
-                            v-for="index in editStudentQuestion.options.length"
+                            v-for="index in resubmitStudentQuestion.options.length"
                             :key="index"
                     >
                         <v-switch
-                                v-model="editStudentQuestion.options[index - 1].correct"
+                                v-model="resubmitStudentQuestion.options[index - 1].correct"
                                 class="ma-4"
                                 label="Correct"
                                 data-cy="OptionCorrect"
                         />
                         <v-textarea
-                                v-model="editStudentQuestion.options[index - 1].content"
+                                v-model="resubmitStudentQuestion.options[index - 1].content"
                                 label="Option Content"
                                 data-cy="OptionContent"
                         ></v-textarea>
@@ -95,17 +95,17 @@
     @Prop({ type: StudentQuestion, required: true })
     readonly question!: StudentQuestion;
 
-    editStudentQuestion!: StudentQuestion;
+    resubmitStudentQuestion!: StudentQuestion;
 
     async created() {
-      this.editStudentQuestion = new StudentQuestion(this.question);
-      this.editStudentQuestion.submittingUser = await this.getSubmittingUser();
+      this.resubmitStudentQuestion = new StudentQuestion(this.question);
+      this.resubmitStudentQuestion.submittingUser = await this.getSubmittingUser();
     }
 
     async resubmitQuestion() {
       if (
-        this.editStudentQuestion &&
-        (!this.editStudentQuestion.title || !this.editStudentQuestion.content)
+        this.resubmitStudentQuestion &&
+        (!this.resubmitStudentQuestion.title || !this.resubmitStudentQuestion.content)
       ) {
         await this.$store.dispatch(
           'error',
@@ -114,8 +114,8 @@
         return;
       } else {
         try {
-          const result = await RemoteServices.resubmitQuestion(this.editStudentQuestion.id,
-            this.editStudentQuestion
+          const result = await RemoteServices.resubmitQuestion(this.resubmitStudentQuestion.id,
+            this.resubmitStudentQuestion
           );
           this.$emit('submit-question', result);
         } catch (error) {

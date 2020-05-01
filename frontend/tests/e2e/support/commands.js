@@ -294,3 +294,11 @@ Cypress.Commands.add('rejectQuestion', (title, justification) => {
   cy.get('[data-cy="justification"]').type(justification)
   cy.get('[data-cy="rejectButton"]').click()
 })
+
+Cypress.Commands.add('resubmitQuestion', (title, content, optionContent) => {
+  cy.get('[data-cy="ResubmitQuestion"]').click()
+  cy.get('[data-cy="Title"]').type(title,{force: true})
+  cy.get('[data-cy="QuestionContent"]').type(content)
+  cy.get('[data-cy="OptionContent"]').eq(0).type(optionContent)
+  cy.get('[data-cy="resubmitButton"]').click()
+})
