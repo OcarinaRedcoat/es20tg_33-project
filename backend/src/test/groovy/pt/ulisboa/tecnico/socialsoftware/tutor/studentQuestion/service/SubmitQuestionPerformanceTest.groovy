@@ -23,6 +23,7 @@ class SubmitQuestionPerformanceTest extends Specification {
     public static final String QUESTION_TITLE = "qTitle"
     public static final String QUESTION_CONTENT = "qContent"
     public static final String OPTION_CONTENT = "optContent"
+    public static final String COURSE_NAME = "Arquitetura de Software"
 
     @Autowired
     StudentQuestionService studentQuestionService
@@ -41,7 +42,7 @@ class SubmitQuestionPerformanceTest extends Specification {
 
     def "performance test to submit 2000 questions"(){
         given: "a course"
-        def course = new Course()
+        def course = new Course(COURSE_NAME, Course.Type.TECNICO)
         courseRepository.save(course)
         def courseId = courseRepository.findAll().get(0).getId()
 
@@ -58,18 +59,22 @@ class SubmitQuestionPerformanceTest extends Specification {
             def options = new ArrayList<OptionDto>()
             def optionDto = new OptionDto()
             optionDto.setContent(OPTION_CONTENT)
+            optionDto.setSequence(0)
             optionDto.setCorrect(true)
             options.add(optionDto)
             optionDto = new OptionDto()
             optionDto.setContent(OPTION_CONTENT)
+            optionDto.setSequence(1)
             optionDto.setCorrect(false)
             options.add(optionDto)
             optionDto = new OptionDto()
             optionDto.setContent(OPTION_CONTENT)
+            optionDto.setSequence(2)
             optionDto.setCorrect(false)
             options.add(optionDto)
             optionDto = new OptionDto()
             optionDto.setContent(OPTION_CONTENT)
+            optionDto.setSequence(3)
             optionDto.setCorrect(false)
             options.add(optionDto)
             questionDto.setOptions(options)

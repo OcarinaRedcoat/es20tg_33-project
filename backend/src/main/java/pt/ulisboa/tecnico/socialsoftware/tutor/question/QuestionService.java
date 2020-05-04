@@ -25,7 +25,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionReposit
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository;
 
-import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizQuestionRepository;
 
@@ -114,13 +115,6 @@ public class QuestionService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public QuestionDto createQuestion(int courseId, QuestionDto questionDto) {
         Course course = courseRepository.findById(courseId).orElseThrow(() -> new TutorException(COURSE_NOT_FOUND, courseId));
-
-        if (questionDto.getKey() == null) {
-            int maxQuestionNumber = questionRepository.getMaxQuestionNumber() != null ?
-                    questionRepository.getMaxQuestionNumber() : 0;
-            questionDto.setKey(maxQuestionNumber + 1);
-        }
-
         Question question = new Question(course, questionDto);
         question.setCreationDate(LocalDateTime.now());
         questionRepository.save(question);
@@ -214,7 +208,6 @@ public class QuestionService {
 
         return latexExporter.export(questionRepository.findAll());
     }
-
 
     @Retryable(
             value = { SQLException.class },

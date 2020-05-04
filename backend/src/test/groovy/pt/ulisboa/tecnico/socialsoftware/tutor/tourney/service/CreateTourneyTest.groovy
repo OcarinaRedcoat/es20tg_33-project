@@ -5,6 +5,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService
+import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto
@@ -33,6 +34,7 @@ class CreateTourneyTest extends Specification{
 
     public static final int QUESTION_NUMBER = 5
     public static final String TOURNEY_TITLE = "Tourney 1"
+    public static final String COURSE_NAME = "Arquitetura de Software"
 
     def tourney
     def formatter
@@ -60,26 +62,24 @@ class CreateTourneyTest extends Specification{
     CourseRepository courseRepository
 
     def setup(){
-        course = new Course()
+        course = new Course(COURSE_NAME, Course.Type.TECNICO)
         courseRepository.save(course)
         def courseId = courseRepository.findAll().get(0).getId()
         def courseExecution = new CourseExecution(course, "AC", "1", Course.Type.TECNICO)
         courseExecutionRepository.save(courseExecution)
 
         tourney = new TourneyDto()
-        formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
-        availableDate = LocalDateTime.now()
-        conclusionDate = LocalDateTime.now().plusDays(1)
+        availableDate = DateHandler.toISOString(DateHandler.now())
+        conclusionDate = DateHandler.toISOString(DateHandler.now().plusDays(1))
 
         tourney.setTourneyTitle(TOURNEY_TITLE)
         tourney.setTourneyStatus(Tourney.Status.CLOSED)
-        tourney.setTourneyAvailableDate(availableDate.format(formatter))
-        tourney.setTourneyConclusionDate(conclusionDate.format(formatter))
+        tourney.setTourneyAvailableDate(availableDate)
+        tourney.setTourneyConclusionDate(conclusionDate)
         tourney.setTourneyCourseExecution(new CourseDto(courseExecution))
 
         topicDto = new TopicDto()
         topicDto.setName("topic")
-        course.addTopic(new Topic(topicDto))
         topicService.createTopic(courseId, topicDto)
 
         def topics = new ArrayList()
@@ -103,9 +103,9 @@ class CreateTourneyTest extends Specification{
         tourneyRepository.count() == 1L
         def result = tourneyRepository.findAll().get(0)
         result.getId() != null
-        result.getTitle().equals(TOURNEY_TITLE)
-        result.getAvailableDate().equals(availableDate.format(formatter))
-        result.getConclusionDate().equals(conclusionDate.format(formatter))
+        result.getTitle() == TOURNEY_TITLE
+        result.getAvailableDate() == availableDate
+        result.getConclusionDate() == conclusionDate
         result.getTopics().size() == 1
         result.getStatus() == Tourney.Status.CLOSED
         result.getNumberOfQuestions() == QUESTION_NUMBER
@@ -226,12 +226,11 @@ class CreateTourneyTest extends Specification{
     def "topics are not from the same course"(){
         given: "a tourney with no end date"
         def userId = userRepository.findAll().get(0).getId()
-        def newCourse = new Course()
+        def newCourse = new Course("Other Course", Course.Type.TECNICO)
         courseRepository.save(newCourse)
         def courseId = courseRepository.findAll().get(1).getId()
         topicDto = new TopicDto()
         topicDto.setName("topic2")
-        course.addTopic(new Topic(topicDto))
         topicService.createTopic(courseId, topicDto)
 
         def topics = new ArrayList(tourney.getTourneyTopics())
@@ -252,7 +251,7 @@ class CreateTourneyTest extends Specification{
         given: "a tourney with start date bigger than the end date"
         def userId = userRepository.findAll().get(0).getId()
         tourney.setTourneyNumberOfQuestions(QUESTION_NUMBER)
-        tourney.setTourneyConclusionDate(getAvailableDate().minusDays(1).format(formatter))
+        tourney.setTourneyConclusionDate(DateHandler.toISOString(DateHandler.now().minusDays(1)))
 
         when:
         tourneyService.createTourney(tourney, userId)

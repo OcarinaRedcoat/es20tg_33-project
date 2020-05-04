@@ -3,9 +3,11 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 import pt.ulisboa.tecnico.socialsoftware.tutor.TutorApplication;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Discussion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Message;
@@ -20,10 +22,13 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.DiscussionRepos
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuestionAnswerRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuizAnswerRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
+import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlExport;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
@@ -35,8 +40,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.security.Principal;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -96,19 +101,19 @@ public class AnswerService {
         QuizAnswer quizAnswer = user.getQuizAnswers().stream().filter(qa -> qa.getQuiz().getId().equals(quizId)).findFirst().orElseThrow(() ->
                 new TutorException(QUIZ_NOT_FOUND, quizId));
 
-        if(quizAnswer.getQuiz().getAvailableDate() != null && quizAnswer.getQuiz().getAvailableDate().isAfter(LocalDateTime.now())) {
+        if (quizAnswer.getQuiz().getAvailableDate() != null && quizAnswer.getQuiz().getAvailableDate().isAfter(DateHandler.now())) {
             throw new TutorException(QUIZ_NOT_YET_AVAILABLE);
         }
 
         if (!quizAnswer.isCompleted()) {
-            quizAnswer.setAnswerDate(LocalDateTime.now());
+            quizAnswer.setAnswerDate(DateHandler.now());
             quizAnswer.setCompleted(true);
         }
 
-        // In class quiz When student submits before conclusionDate
-        if (quizAnswer.getQuiz().getConclusionDate() != null &&
+        // In class quiz when student submits before resultsDate
+        if (quizAnswer.getQuiz().getResultsDate() != null &&
             quizAnswer.getQuiz().getType().equals(Quiz.QuizType.IN_CLASS) &&
-            LocalDateTime.now().isBefore(quizAnswer.getQuiz().getConclusionDate())) {
+            DateHandler.now().isBefore(quizAnswer.getQuiz().getResultsDate())) {
 
             return new ArrayList<>();
         }
@@ -138,11 +143,11 @@ public class AnswerService {
             throw new TutorException(QUIZ_USER_MISMATCH, String.valueOf(quizAnswer.getQuiz().getId()), user.getUsername());
         }
 
-        if (quizAnswer.getQuiz().getConclusionDate() != null && quizAnswer.getQuiz().getConclusionDate().isBefore(LocalDateTime.now())) {
+        if (quizAnswer.getQuiz().getConclusionDate() != null && quizAnswer.getQuiz().getConclusionDate().isBefore(DateHandler.now())) {
             throw new TutorException(QUIZ_NO_LONGER_AVAILABLE);
         }
 
-        if (quizAnswer.getQuiz().getAvailableDate() != null && quizAnswer.getQuiz().getAvailableDate().isAfter(LocalDateTime.now())) {
+        if (quizAnswer.getQuiz().getAvailableDate() != null && quizAnswer.getQuiz().getAvailableDate().isAfter(DateHandler.now())) {
             throw new TutorException(QUIZ_NOT_YET_AVAILABLE);
         }
 
@@ -162,11 +167,9 @@ public class AnswerService {
                 }
 
                 questionAnswer.setOption(option);
-                option.addQuestionAnswer(questionAnswer);
                 questionAnswer.setTimeTaken(answer.getTimeTaken());
-                quizAnswer.setAnswerDate(LocalDateTime.now());
+                quizAnswer.setAnswerDate(DateHandler.now());
             }
-
         }
     }
 
@@ -197,35 +200,51 @@ public class AnswerService {
         xmlImporter.importAnswers(answersXml, this, questionRepository, quizRepository, quizAnswerRepository, userRepository);
     }
 
-    @Retryable(
+/*    @Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public DiscussionDto createDiscussion(Integer questionAnswerId, DiscussionDto discussionDto){
         QuestionAnswer questionAnswer= questionAnswerRepository.findById(questionAnswerId).orElseThrow(() -> new TutorException(ErrorMessage.QUESTION_ANSWER_NOT_FOUND));
-        Discussion discussion= new Discussion(questionAnswer,discussionDto);
+        Discussion discussion= new Discussion(questionAnswer,discussionDto, 1);
 
         discussionRepository.save(discussion);
 //        entityManager.persist(discussion);
         return new DiscussionDto(discussion);
+    }*/
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public DiscussionDto submitTeacherMessage(Integer UserId, Integer discussionId, MessageDto messageDto) {
+        User user = userRepository.findById(UserId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, UserId));
+        Discussion discussion = discussionRepository.findById(discussionId).orElseThrow(() -> new TutorException(STUDENT_DID_NOT_ANSWER_QUESTION));
+
+        Message message = new Message(messageDto, user);
+        message.setSentence(messageDto.getSentence());
+        message.checkConsistentMessage(messageDto);
+        saveMessage(message, user, discussion);
+
+        entityManager.persist(discussion);
+
+        return new DiscussionDto(discussion);
+
     }
 
     @Retryable(
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public DiscussionDto submitMessage(Integer UserId, Integer discussionId, MessageDto messageDto) {
+    public DiscussionDto submitStudentMessage(Integer UserId,Integer courseId,Integer questionAnswerId, MessageDto messageDto) {
         User user = userRepository.findById(UserId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, UserId));
-        Discussion discussion = discussionRepository.findById(discussionId).orElseThrow(() -> new TutorException(STUDENT_DID_NOT_ANSWER_QUESTION));
-
-        //Discussion discussion = new Discussion(questionAnswer, discussionDto);
+        QuestionAnswer questionAnswer = questionAnswerRepository.findById(questionAnswerId).orElseThrow(() -> new TutorException(STUDENT_DID_NOT_ANSWER_QUESTION));
+        Discussion discussion = discussionRepository.findById(messageDto.getDiscussionDto().getId()).orElse(createNewDiscussion(questionAnswer,messageDto.getDiscussionDto(), courseId, user));
 
         Message message = new Message(messageDto, user);
-
+        message.setDiscussion(discussion);
         message.setSentence(messageDto.getSentence());
-
         message.checkConsistentMessage(messageDto);
-
         saveMessage(message, user, discussion);
 
         entityManager.persist(discussion);
@@ -243,6 +262,13 @@ public class AnswerService {
             discussion.setTeacherMessage(message);
             discussion.addDiscussionMessage(message);
         }
+    }
+
+    private Discussion createNewDiscussion(QuestionAnswer questionAnswer,DiscussionDto discussionDto, int courseId, User st) {
+        Discussion discussion = new Discussion(questionAnswer,discussionDto, courseId, st);
+        discussionRepository.save(discussion);
+
+        return discussion;
     }
 
 
@@ -273,12 +299,21 @@ public class AnswerService {
         }
         return messagesList;
     }
-    
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<DiscussionDto> teacherVisualizesAllDiscussion(int courseId) {
+        return discussionRepository.findByCourseId(courseId).stream().map(DiscussionDto::new).collect(Collectors.toList());
+    }
     public void deleteQuizAnswer(QuizAnswer quizAnswer) {
-        for (QuestionAnswer questionAnswer : quizAnswer.getQuestionAnswers()) {
+        List<QuestionAnswer> questionAnswers = new ArrayList<>(quizAnswer.getQuestionAnswers());
+        questionAnswers.forEach(questionAnswer ->
+        {
             questionAnswer.remove();
             questionAnswerRepository.delete(questionAnswer);
-        }
+        });
         quizAnswer.remove();
         quizAnswerRepository.delete(quizAnswer);
     }

@@ -5,6 +5,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService
+import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution
@@ -24,8 +25,7 @@ class UpdateTourneyPerformanceTest extends Specification {
 
     static final String TOURNEY_TITLE = "Tourney 1"
     static final Integer TOURNEY_ONE_NUMBER_QUESTIONS = 1
-    static final String TOURNEY_AVAILABLE_DATE = "2020-01-01 21:12"
-    static final String TOURNEY_CONCLUSION_DATE = "2020-01-06 21:12"
+    public static final String COURSE_NAME = "Arquitetura de Software"
 
     static final String NAME = "name"
     static final String USERNAME = "username"
@@ -47,7 +47,7 @@ class UpdateTourneyPerformanceTest extends Specification {
 
     def "performance testing to cancel 10000 tourneys"() {
         given: "one course execution"
-        def course = new Course()
+        def course = new Course(COURSE_NAME, Course.Type.TECNICO)
         courseRepository.save(course)
         def courseExecution = new CourseExecution(course, "AC", "1", Course.Type.TECNICO)
         courseExecutionRepository.save(courseExecution)
@@ -58,9 +58,12 @@ class UpdateTourneyPerformanceTest extends Specification {
         user.addCourse(courseExecution)
         userRepository.save(user)
 
+        def availableDate = DateHandler.toISOString(DateHandler.now())
+        def conclusionDate = DateHandler.toISOString(DateHandler.now().plusDays(1))
+
         and: "a 10000 tourneys"
         1.upto(1, {
-            def tourney = new Tourney(TOURNEY_TITLE, TOURNEY_ONE_NUMBER_QUESTIONS, TOURNEY_AVAILABLE_DATE, TOURNEY_CONCLUSION_DATE, user)
+            def tourney = new Tourney(TOURNEY_TITLE, TOURNEY_ONE_NUMBER_QUESTIONS, availableDate, conclusionDate, user)
             tourney.setCourseExecution(courseExecution)
             tourneyRepository.save(tourney)
         })

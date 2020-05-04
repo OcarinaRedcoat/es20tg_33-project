@@ -81,7 +81,7 @@ class DiscussionQuizAnswerTest extends Specification {
     @Shared def quiz
     @Shared def option1
 
-
+    /*
     def setup() {
 
 

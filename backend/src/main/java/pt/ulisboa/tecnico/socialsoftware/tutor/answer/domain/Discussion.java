@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain;
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.MessageDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.DiscussionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
@@ -36,7 +37,11 @@ public class Discussion {
 
     @OneToOne
     @JoinColumn(name = "questionAnswer_id")
-    private QuestionAnswer questionAnswerId;
+    private QuestionAnswer questionAnswer;
+
+
+    @JoinColumn(name = "course_id")
+    private Integer courseId;
 
     @OneToMany
     private List<Message> discussionListMessages = new ArrayList<>();
@@ -44,11 +49,11 @@ public class Discussion {
     public Discussion(){
     }
 
-    public Discussion(QuestionAnswer questionAnswerId, DiscussionDto discussionDto){
-        checkConsistentDiscussion(discussionDto, questionAnswerId.getId());
-        this.questionAnswerId = questionAnswerId;
-        this.student =  discussionDto.getStudent();
-        this.id = questionAnswerId.getId();
+    public Discussion(QuestionAnswer questionAnswer,DiscussionDto discussionDto, int courseId, User student){
+        checkConsistentDiscussion(discussionDto, questionAnswer.getId());
+        this.questionAnswer = questionAnswer;
+        this.student =  student;
+        this.courseId = courseId;
     }
 
     public Integer getId() {
@@ -58,6 +63,8 @@ public class Discussion {
     public void setId(Integer id) {
         this.id = id;
     }
+
+    public QuestionAnswer getQuestionAnswer() { return questionAnswer; }
 
     public void setStudent(User st) { this.student = st; }
 
@@ -106,14 +113,14 @@ public class Discussion {
     }
 
     public void checkConsistentDiscussion(DiscussionDto discussionDto, int id){
-        for (QuizAnswer qzA : discussionDto.getStudent().getQuizAnswers()) {
+        /*for (QuizAnswer qzA : discussionDto.getStudent().getQuizAnswers()) {
             for (QuestionAnswer qA : qzA.getQuestionAnswers()) {
                 if (qA.getId().equals(id)) {
                     return;
                 }
             }
         }
-        throw new TutorException(STUDENT_DID_NOT_ANSWER_QUESTION);
+        throw new TutorException(STUDENT_DID_NOT_ANSWER_QUESTION);*/
 
     }
 

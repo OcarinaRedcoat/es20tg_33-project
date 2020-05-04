@@ -15,6 +15,8 @@ import StatementAnswer from '@/models/statement/StatementAnswer';
 import { QuizAnswers } from '@/models/management/QuizAnswers';
 import StudentQuestion from '@/models/submissions/StudentQuestion';
 import Tourney from '@/models/tourney/Tourney';
+import Discussion from '@/models/statement/Discussion';
+import Message from '@/models/statement/Message';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 10000;
@@ -512,20 +514,9 @@ export default class RemoteServices {
       });
   }
 
-  static async activateCourse(course: Course): Promise<Course> {
+  static getCourses(): Promise<Course[]> {
     return httpClient
-      .post('/courses', course)
-      .then(response => {
-        return new Course(response.data);
-      })
-      .catch(async error => {
-        throw Error(await this.errorMessage(error));
-      });
-  }
-
-  static async getCourses(): Promise<Course[]> {
-    return httpClient
-      .get('/admin/courses/executions')
+      .get('/courses/executions')
       .then(response => {
         return response.data.map((course: any) => {
           return new Course(course);
@@ -536,9 +527,20 @@ export default class RemoteServices {
       });
   }
 
-  static async createCourse(course: Course): Promise<Course> {
+  static async activateCourse(course: Course): Promise<Course> {
     return httpClient
-      .post('/admin/courses/executions', course)
+      .post('/courses/activate', course)
+      .then(response => {
+        return new Course(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async createExternalCourse(course: Course): Promise<Course> {
+    return httpClient
+      .post('/courses/external', course)
       .then(response => {
         return new Course(response.data);
       })
@@ -549,7 +551,7 @@ export default class RemoteServices {
 
   static async deleteCourse(courseExecutionId: number | undefined) {
     return httpClient
-      .delete('/admin/courses/executions/' + courseExecutionId)
+      .delete(`/executions/${courseExecutionId}`)
       .catch(async error => {
         throw Error(await this.errorMessage(error));
       });
@@ -649,6 +651,21 @@ export default class RemoteServices {
       });
   }
 
+
+  static async submitStudentAnswer(questionAnswerId: number, message: Message) {
+    return httpClient
+      .post(
+        `/courses/${Store.getters.getCurrentCourse.courseExecutionId}/questionAnswer/${questionAnswerId}/discussion/submit`,
+        message
+      )
+      .then(response => {
+        return new Message(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async getPendingQuestions(): Promise<StudentQuestion[]> {
     return httpClient
       .get(
@@ -693,6 +710,33 @@ export default class RemoteServices {
       });
   }
 
+
+  static async getDiscussions() {
+    return httpClient
+      .get(
+        `/visualize/teacher/${Store.getters.getCurrentCourse.courseExecutionId}`
+      )
+      .then(response => {
+        return response.data.map((discussion: any) => {
+          return new Discussion(discussion);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async teacherMessageSub(message: Message) {
+    return httpClient
+      .post('/discussion/teacher/submit', message)
+      .then(response => {
+        return new Discussion(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async enrollInTourney(tourney: Tourney) {
     return httpClient
       .put(`/tourneys/${tourney.tourneyId}/enroll`)
@@ -706,8 +750,7 @@ export default class RemoteServices {
 
   static async cancelTourney(tourney: Tourney) {
     return httpClient
-      .put(`/tourneys/${tourney.tourneyId}/cancel`)
-      .catch(async error => {
+      .put(`/tourneys/${tourney.tourneyId}/cancel`).catch(async error => {
         throw Error(await this.errorMessage(error));
       });
   }
@@ -749,4 +792,5 @@ export default class RemoteServices {
       return 'Unknown Error - Contact admin';
     }
   }
+
 }

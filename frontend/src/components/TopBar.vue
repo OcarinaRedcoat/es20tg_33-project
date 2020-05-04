@@ -101,6 +101,12 @@
                 <v-list-item-title>Students</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
+            <v-list-item to="/management/discussions">
+              <v-list-item-action>
+                <v-icon>fas fa-comment</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>Discussions</v-list-item-content>
+            </v-list-item>
             <v-list-item to="/management/impexp">
               <v-list-item-action>
                 <v-icon>cloud</v-icon>
@@ -160,7 +166,7 @@
 
         <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
           <template v-slot:activator="{ on }">
-            <v-btn v-on="on" text dark>
+            <v-btn v-on="on" text dark  data-cy="top-bar-quizzes">
               Quizzes
               <v-icon>fas fa-file-alt</v-icon>
             </v-btn>
@@ -171,7 +177,7 @@
                 <v-icon>assignment</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title>Available</v-list-item-title>
+                <v-list-item-title data-cy="top-bar-available">Available</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-list-item to="/student/create">
@@ -198,6 +204,12 @@
                 <v-list-item-title>Solved</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
+            <v-list-item to="/student/discussions">
+              <v-list-item-action>
+                <v-icon>fas fa-comment</v-icon>
+              </v-list-item-action>
+              <v-list-item-title>Discussions</v-list-item-title>
+            </v-list-item>
           </v-list>
         </v-menu>
 
@@ -217,7 +229,13 @@
           <v-icon>fa fa-book</v-icon>
         </v-btn>
 
-        <v-btn v-if="isLoggedIn" @click="logout" text dark>
+        <v-btn
+          v-if="isLoggedIn"
+          @click="logout"
+          data-cy="LogoutButton"
+          text
+          dark
+        >
           Logout
           <v-icon>fas fa-sign-out-alt</v-icon>
         </v-btn>
@@ -366,6 +384,14 @@
             </v-list-item-action>
             <v-list-item-content>Stats</v-list-item-content>
           </v-list-item>
+
+          <v-list-item to="/student/discussions">
+            <v-list-item-action>
+              <v-icon>fas fa-comment</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>Discussions</v-list-item-content>
+          </v-list-item>
+
         </v-list-group>
 
         <v-list-item to="/courses" v-if="isLoggedIn && moreThanOneCourse">

@@ -24,21 +24,20 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 /// <reference types="Cypress" />
+
 Cypress.Commands.add('demoAdminLogin', () => {
   cy.visit('/');
-  cy.get('[data-cy="adminButton"]').click();
-  cy.contains('Administration').click();
-  cy.contains('Manage Courses').click();
-});
-
-Cypress.Commands.add('demoStudentLogin', () => {
-  cy.visit('/');
-  cy.get('[data-cy="studentButton"]').click();
+  cy.get('[data-cy="demoAdminLoginButton"]').click();
 });
 
 Cypress.Commands.add('demoTeacherLogin', () => {
   cy.visit('/');
-  cy.get('[data-cy="teacherButton"]').click();
+  cy.get('[data-cy="demoTeacherLoginButton"]').click();
+});
+
+Cypress.Commands.add('demoStudentLogin', () => {
+  cy.visit('/');
+  cy.get('[data-cy="demoStudentLoginButton"]').click();
 });
 
 Cypress.Commands.add('createCourseExecution', (name, acronym, academicTerm) => {
@@ -76,7 +75,9 @@ Cypress.Commands.add(
       .should('have.length', 7)
       .find('[data-cy="createFromCourse"]')
       .click();
-    cy.get('[data-cy="Acronym"]').type(acronym);
+    cy.get('[div="v-date-picker-table--date"]')
+      .contains()
+      .type(acronym);
     cy.get('[data-cy="AcademicTerm"]').type(academicTerm);
     cy.get('[data-cy="saveButton"]').click();
   }
@@ -147,6 +148,11 @@ Cypress.Commands.add('selectDate', (dialog, datePicker, dateTime) => {
 
 // Student commands
 
+Cypress.Commands.add('visitAvailableQuizesPage', () => {
+  cy.get('[data-cy="top-bar-quizzes"]').click();
+  cy.get('[data-cy="top-bar-available"]').click();
+});
+
 Cypress.Commands.add('visitCreateTourneyPage', () => {
   cy.get('[data-cy="top-bar-tourneys"]').click();
   cy.get('[data-cy="top-bar-create-tourney"]').click();
@@ -173,6 +179,30 @@ Cypress.Commands.add('visitApproveRejectPage', () => {
 Cypress.Commands.add('visitQuestionsPage', () => {
   cy.get('[data-cy="top-bar-management"]').click();
   cy.get('[data-cy="top-bar-questions"]').click();
+});
+
+//Discussion commands
+
+Cypress.Commands.add('getQuizAndSolve', quizName => {
+  for (let quizTitle of quizName) {
+    cy.get('[data-cy="quizTitle"]')
+      .contains(quizTitle)
+      .click();
+  }
+  cy.get('[data-cy="endQuiz"]').click();
+});
+
+Cypress.Commands.add('sendDiscussionMessage', sentence => {
+  cy.get('[data-cy="submitDiscussionMessage"]').click();
+  cy.get('[data-cy="message"').type(sentence);
+  cy.get('[data-cy="submitMessage"}').click();
+});
+
+Cypress.Commands.add('teacherResponse', sentence => {
+  cy.get('[data-cy="submitDiscussionMessage"]').click();
+  cy.get('[data-cy="searchDiscussion"').click();
+  cy.get('[data-cy="submitMessage"').type(sentence);
+  cy.get('[data-cy="submitResponse"').click();
 });
 
 // Tourney commands

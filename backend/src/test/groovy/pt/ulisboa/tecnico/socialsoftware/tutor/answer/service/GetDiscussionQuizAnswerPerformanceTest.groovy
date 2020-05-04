@@ -78,7 +78,7 @@ class GetDiscussionQuizAnswerPerformanceTest extends Specification {
     @Shared def quiz
     @Shared def option1
 
-
+    /*
     def setup() {
 
 
@@ -175,6 +175,8 @@ class GetDiscussionQuizAnswerPerformanceTest extends Specification {
         result.size() == 1
         true
     }
+
+     */
 
     @TestConfiguration
     static class AnswerServiceImplTestContextConfiguration{

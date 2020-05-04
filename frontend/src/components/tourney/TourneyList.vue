@@ -48,7 +48,7 @@
 import { Component, Model, Prop, Vue, Watch } from 'vue-property-decorator';
 import Tourney from '../../models/tourney/Tourney';
 import RemoteServices from '../../services/RemoteServices';
-import User from "@/models/user/User";
+import User from '@/models/user/User';
 
 @Component
 export default class TourneyList extends Vue {

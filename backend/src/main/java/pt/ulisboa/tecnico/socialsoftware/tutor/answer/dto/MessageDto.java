@@ -16,6 +16,8 @@ public class MessageDto implements Serializable {
 
     private LocalDateTime messageDate;
 
+    private DiscussionDto discussionDto;
+
     public MessageDto(){
     }
 
@@ -24,6 +26,7 @@ public class MessageDto implements Serializable {
         this.sentence=message.getSentence();
         this.messageDate=message.getMessageDate();
         this.user = message.getUser();
+        this.discussionDto = new DiscussionDto(message.getDiscussion());
     }
 
     public Integer getId() {
@@ -59,6 +62,11 @@ public class MessageDto implements Serializable {
     }
 
     public User.Role getUserRole(){ return user.getRole(); }
+
+
+    public DiscussionDto getDiscussionDto() { return discussionDto; }
+
+    public void setDiscussionDto(DiscussionDto discussionDto) { this.discussionDto = discussionDto; }
 
     @Override
     public String toString() {

@@ -3,10 +3,13 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Message;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Discussion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.StudentDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DiscussionDto implements Serializable {
 
@@ -15,9 +18,11 @@ public class DiscussionDto implements Serializable {
     private MessageDto teacherMessage;
     private List<MessageDto> discussionListMessages= new ArrayList<>();
 
+    private int courseId;
+    private int questionAnswerId;
 
-    private User student;
-    private User teacher;
+    private StudentDto student;
+    private UserDto teacher;
 
 
 
@@ -25,12 +30,22 @@ public class DiscussionDto implements Serializable {
     }
 
     public DiscussionDto(Discussion discussion){
+
         this.discussionId= discussion.getId();
         if (discussion.getStudentMessage() != null) {
             this.studentMessage = new MessageDto(discussion.getStudentMessage());
         }
         if (discussion.getTeacherMessage() != null) {
             this.teacherMessage = new MessageDto(discussion.getTeacherMessage());
+        }
+        if (discussion.getDiscussionListMessages() != null) {
+            this.discussionListMessages = discussion.getDiscussionListMessages().stream().map(MessageDto::new).collect(Collectors.toList());
+        }
+        if (discussion.getStudent() != null) {
+            this.student = new StudentDto(discussion.getStudent());
+        }
+        if (discussion.getTeacher() != null) {
+            this.teacher = new UserDto(discussion.getTeacher());
         }
     }
 
@@ -44,6 +59,22 @@ public class DiscussionDto implements Serializable {
 
     public MessageDto getStudentMessage() {
         return studentMessage;
+    }
+
+    public int getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(int courseId) {
+        this.courseId = courseId;
+    }
+
+    public int getQuestionAnswerId() {
+        return questionAnswerId;
+    }
+
+    public void setQuestionAnswerId(int questionAnswerId) {
+        this.questionAnswerId = questionAnswerId;
     }
 
     public void setStudentMessage(MessageDto studentMessage) {
@@ -70,13 +101,13 @@ public class DiscussionDto implements Serializable {
         this.discussionListMessages.add(messageDto);
     }
 
-    public User getStudent() { return student; }
+    public StudentDto getStudent() { return student; }
 
-    public void setStudent(User student) { this.student = student; }
+    public void setStudent(StudentDto student) { this.student = student; }
 
-    public User getTeacher() { return teacher; }
+    public UserDto getTeacher() { return teacher; }
 
-    public void setTeacher(User teacher) { this.teacher = teacher; }
+    public void setTeacher(UserDto teacher) { this.teacher = teacher; }
 
 
     @Override
