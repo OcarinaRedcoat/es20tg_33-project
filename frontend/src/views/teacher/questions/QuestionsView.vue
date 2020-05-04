@@ -116,6 +116,7 @@
               v-on="on"
               @click="deleteQuestion(item)"
               color="red"
+              data-cy="deleteAvailableQuestionButton"
               >delete</v-icon
             >
           </template>

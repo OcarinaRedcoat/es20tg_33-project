@@ -37,14 +37,9 @@ Cypress.Commands.add('demoStudentLogin', () => {
 });
 
 Cypress.Commands.add('demoTeacherLogin', () => {
-    cy.visit('/')
-    cy.get('[data-cy="teacherButton"]').click()
+  cy.visit('/');
+  cy.get('[data-cy="teacherButton"]').click();
 });
-
-Cypress.Commands.add('demoStudentLogin', () => {
-    cy.visit('/')
-    cy.get('[data-cy="studentButton"]').click()
-})
 
 Cypress.Commands.add('createCourseExecution', (name, acronym, academicTerm) => {
   cy.get('[data-cy="createButton"]').click();
@@ -153,13 +148,13 @@ Cypress.Commands.add('selectDate', (dialog, datePicker, dateTime) => {
 // Student commands
 
 Cypress.Commands.add('visitCreateTourneyPage', () => {
-    cy.get('[data-cy="top-bar-tourneys"]').click();
-    cy.get('[data-cy="top-bar-create-tourney"]').click();
+  cy.get('[data-cy="top-bar-tourneys"]').click();
+  cy.get('[data-cy="top-bar-create-tourney"]').click();
 });
 
 Cypress.Commands.add('visitSubmittedQuestionsPage', () => {
-    cy.get('[data-cy="top-bar-submissions"]').click()
-    cy.get('[data-cy="top-bar-submitted-questions"]').click()
+  cy.get('[data-cy="top-bar-submissions"]').click();
+  cy.get('[data-cy="top-bar-submitted-questions"]').click();
 });
 
 Cypress.Commands.add('visitOpenTourneysPage', () => {
@@ -171,8 +166,13 @@ Cypress.Commands.add('visitOpenTourneysPage', () => {
 // Teacher commands
 
 Cypress.Commands.add('visitApproveRejectPage', () => {
-    cy.get('[data-cy="top-bar-management"]').click()
-    cy.get('[data-cy="top-bar-approve-reject"]').click()
+  cy.get('[data-cy="top-bar-management"]').click();
+  cy.get('[data-cy="top-bar-approve-reject"]').click();
+});
+
+Cypress.Commands.add('visitQuestionsPage', () => {
+  cy.get('[data-cy="top-bar-management"]').click();
+  cy.get('[data-cy="top-bar-questions"]').click();
 });
 
 // Tourney commands
@@ -198,78 +198,80 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add(
-    'getOpenTourney',
-    (name, numberOfQuestions, availableDate, conclusionDate, topics) => {
-        return cy
-            .get('[data-cy="tourneysList"] tbody tr')
-            .last()
-            .should('contain', name)
-            .and('contain', numberOfQuestions)
-            .and('contain', availableDate)
-            .and('contain', conclusionDate);
-    }
+  'getOpenTourney',
+  (name, numberOfQuestions, availableDate, conclusionDate, topics) => {
+    return cy
+      .get('[data-cy="tourneysList"] tbody tr')
+      .last()
+      .should('contain', name)
+      .and('contain', numberOfQuestions)
+      .and('contain', availableDate)
+      .and('contain', conclusionDate);
+  }
 );
 
-Cypress.Commands.add(
-    'enrollInTourney',
-    (name) => {
-      cy.contains(name)
-          .parent()
-          .should('have.length', 1)
-          .children()
-          .should('have.length', 5)
-          .find('[data-cy="enrollInTourney"]')
-          .click();
-    }
-);
+Cypress.Commands.add('enrollInTourney', name => {
+  cy.contains(name)
+    .parent()
+    .should('have.length', 1)
+    .children()
+    .should('have.length', 5)
+    .find('[data-cy="enrollInTourney"]')
+    .click();
+});
 
-Cypress.Commands.add(
-    'cancelTourney',
-    (name) => {
-        cy.contains(name)
-            .parent()
-            .should('have.length', 1)
-            .children()
-            .should('have.length', 5)
-            .find('[data-cy="cancelTourney"]')
-            .click();
-    }
-);
+Cypress.Commands.add('cancelTourney', name => {
+  cy.contains(name)
+    .parent()
+    .should('have.length', 1)
+    .children()
+    .should('have.length', 5)
+    .find('[data-cy="cancelTourney"]')
+    .click();
+});
 
 //Student Question commands
 
 Cypress.Commands.add('submitQuestion', (title, content, optionContent) => {
-    cy.get('[data-cy="createSubmissionButton"]').click()
-    cy.get('[data-cy="Title"]').type(title,{force: true})
-    cy.get('[data-cy="QuestionContent"]').type(content)
-    cy.get('[data-cy="OptionContent"]').eq(0).type(optionContent)
-    cy.get('[data-cy="OptionContent"]').eq(1).type(optionContent)
-    cy.get('[data-cy="OptionContent"]').eq(2).type(optionContent)
-    cy.get('[data-cy="OptionContent"]').eq(3).type(optionContent)
-    cy.get('[data-cy="OptionCorrect"]:first').click({force: true})
-    cy.get('[data-cy="submitButton"]').click()
-})
+  cy.get('[data-cy="createSubmissionButton"]').click();
+  cy.get('[data-cy="Title"]').type(title, { force: true });
+  cy.get('[data-cy="QuestionContent"]').type(content);
+  cy.get('[data-cy="OptionContent"]')
+    .eq(0)
+    .type(optionContent);
+  cy.get('[data-cy="OptionContent"]')
+    .eq(1)
+    .type(optionContent);
+  cy.get('[data-cy="OptionContent"]')
+    .eq(2)
+    .type(optionContent);
+  cy.get('[data-cy="OptionContent"]')
+    .eq(3)
+    .type(optionContent);
+  cy.get('[data-cy="OptionCorrect"]:first').click({ force: true });
+  cy.get('[data-cy="submitButton"]').click();
+});
 
-Cypress.Commands.add('deleteSubmittedQuestion', (title) => {
-    cy.contains(title)
-        .parent()
-        .should('have.length', 1)
-        .children()
-        .should('have.length', 4)
-        .find('[data-cy="deleteSubmittedQuestion"]')
-        .click()
-})
+Cypress.Commands.add('deleteSubmittedQuestion', title => {
+  cy.contains(title)
+    .parent()
+    .should('have.length', 1)
+    .children()
+    .should('have.length', 4)
+    .find('[data-cy="deleteSubmittedQuestion"]')
+    .click();
+});
 
-Cypress.Commands.add('approveQuestionNoJust', (title) => {
+Cypress.Commands.add('approveQuestionNoJust', title => {
   cy.contains(title)
     .parent()
     .should('have.length', 1)
     .children()
     .should('have.length', 5)
     .find('[data-cy="reviewQuestionButton"]')
-    .click()
-  cy.get('[data-cy="approveButton"]').click()
-})
+    .click();
+  cy.get('[data-cy="approveButton"]').click();
+});
 
 Cypress.Commands.add('approveQuestion', (title, justification) => {
   cy.contains(title)
@@ -278,10 +280,10 @@ Cypress.Commands.add('approveQuestion', (title, justification) => {
     .children()
     .should('have.length', 5)
     .find('[data-cy="reviewQuestionButton"]')
-    .click()
-  cy.get('[data-cy="justification"]').type(justification)
-  cy.get('[data-cy="approveButton"]').click()
-})
+    .click();
+  cy.get('[data-cy="justification"]').type(justification);
+  cy.get('[data-cy="approveButton"]').click();
+});
 
 Cypress.Commands.add('rejectQuestion', (title, justification) => {
   cy.contains(title)
@@ -290,15 +292,42 @@ Cypress.Commands.add('rejectQuestion', (title, justification) => {
     .children()
     .should('have.length', 5)
     .find('[data-cy="reviewQuestionButton"]')
-    .click()
-  cy.get('[data-cy="justification"]').type(justification)
-  cy.get('[data-cy="rejectButton"]').click()
-})
+    .click();
+  cy.get('[data-cy="justification"]').type(justification);
+  cy.get('[data-cy="rejectButton"]').click();
+});
 
 Cypress.Commands.add('resubmitQuestion', (title, content, optionContent) => {
-  cy.get('[data-cy="ResubmitQuestion"]').click()
-  cy.get('[data-cy="Title"]').type(title,{force: true})
-  cy.get('[data-cy="QuestionContent"]').type(content)
-  cy.get('[data-cy="OptionContent"]').eq(0).type(optionContent)
-  cy.get('[data-cy="resubmitButton"]').click()
-})
+  cy.get('[data-cy="ResubmitQuestion"]').click();
+  cy.get('[data-cy="Title"]').type(title, { force: true });
+  cy.get('[data-cy="QuestionContent"]').type(content);
+  cy.get('[data-cy="OptionContent"]')
+    .eq(0)
+    .type(optionContent);
+  cy.get('[data-cy="resubmitButton"]').click();
+});
+
+Cypress.Commands.add('makeQuestionAvailable', title => {
+  cy.contains(title)
+    .parent()
+    .should('have.length', 1)
+    .children()
+    .should('have.length', 5)
+    .find('[data-cy="makeQuestionAvailableButton"]')
+    .click();
+});
+
+Cypress.Commands.add('filterQuestionsMostRecent', () => {
+  cy.contains('Creation Date').click();
+  cy.contains('Creation Date').click();
+});
+
+Cypress.Commands.add('deleteAvailableQuestion', title => {
+  cy.contains(title)
+    .parent()
+    .should('have.length', 1)
+    .children()
+    .should('have.length', 11)
+    .find('[data-cy="deleteAvailableQuestionButton"]')
+    .click();
+});

@@ -40,7 +40,7 @@
           </template>
           <span>Show and Review Question</span>
         </v-tooltip>
-        <v-tooltip bottom>
+        <v-tooltip bottom v-if="item.status === 'APPROVED'">
           <template v-slot:activator="{ on }">
             <v-icon
               small

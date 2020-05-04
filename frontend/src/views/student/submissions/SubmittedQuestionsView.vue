@@ -1,102 +1,106 @@
 <template>
-  <v-card class="table">
-    <v-data-table
-      :headers="headers"
-      :custom-filter="customFilter"
-      :items="student_questions"
-      :search="search"
-      multi-sort
-      :mobile-breakpoint="0"
-      :items-per-page="15"
-      :footer-props="{ itemsPerPageOptions: [15, 30, 50, 100] }"
-    >
-      <template v-slot:top>
-        <v-card-title>
-          <v-text-field
-            v-model="search"
-            append-icon="search"
-            label="Search"
-            class="mx-2"
-          />
+  <div class="container">
+    <br />
+    <h2>Submitted Questions</h2>
+    <v-card class="table">
+      <v-data-table
+        :headers="headers"
+        :custom-filter="customFilter"
+        :items="student_questions"
+        :search="search"
+        multi-sort
+        :mobile-breakpoint="0"
+        :items-per-page="15"
+        :footer-props="{ itemsPerPageOptions: [15, 30, 50, 100] }"
+      >
+        <template v-slot:top>
+          <v-card-title>
+            <v-text-field
+              v-model="search"
+              append-icon="search"
+              label="Search"
+              class="mx-2"
+            />
 
-          <v-spacer />
-          <v-btn
-            color="primary"
-            dark
-            @click="submitQuestion"
-            data-cy="createSubmissionButton"
-            >Submit Question</v-btn
-          >
-        </v-card-title>
-      </template>
+            <v-spacer />
+            <v-btn
+              color="primary"
+              dark
+              @click="submitQuestion"
+              data-cy="createSubmissionButton"
+              >Submit Question</v-btn
+            >
+          </v-card-title>
+        </template>
 
-      <template v-slot:item.status="{ item }">
-        <v-chip v-if="item.status" :color="getStatusColor(item.status)" small>
-          <span>{{ item.status }}</span>
-        </v-chip>
-      </template>
+        <template v-slot:item.status="{ item }">
+          <v-chip v-if="item.status" :color="getStatusColor(item.status)" small>
+            <span>{{ item.status }}</span>
+          </v-chip>
+        </template>
 
-      <template v-slot:item.action="{ item }">
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-icon
-              small
-              class="mr-2"
-              v-on="on"
-              @click="showStudentQuestionDialog(item)"
-              >visibility</v-icon
-            >
-          </template>
-          <span>Show Question</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-icon
-              small
-              class="mr-2"
-              v-on="on"
-              @click="deleteSubmittedQuestion(item)"
-              color="red"
-              data-cy="deleteSubmittedQuestion"
-              >delete</v-icon
-            >
-          </template>
-          <span>Delete Question</span>
-        </v-tooltip>
-        <v-tooltip bottom v-if="item.status === 'REJECTED'">
-          <template v-slot:activator="{ on }">
-            <v-icon
-              small
-              class="mr-2"
-              v-on="on"
-              @click="resubmitQuestion(item)"
-              data-cy="ResubmitQuestion"
-              >fas fa-edit</v-icon
-            >
-          </template>
-          <span>Resubmit Question</span>
-        </v-tooltip>
-      </template>
-    </v-data-table>
-    <edit-student-question-dialog
-      v-if="currentQuestion"
-      v-model="editStudentQuestionDialog"
-      :question="currentQuestion"
-      v-on:submit-question="onSubmitQuestion"
-    />
-    <show-student-question-dialog
-      v-if="currentQuestion"
-      v-model="studentQuestionDialog"
-      :question="currentQuestion"
-      v-on:close-show-question-dialog="onCloseShowQuestionDialog"
-    />
-    <resubmit-student-question-dialog
-      v-if="currentQuestion"
-      v-model="resubmitStudentQuestionDialog"
-      :question="currentQuestion"
-      v-on:submit-question="onResubmitQuestion"
-    />
-  </v-card>
+        <template v-slot:item.action="{ item }">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-icon
+                small
+                class="mr-2"
+                v-on="on"
+                @click="showStudentQuestionDialog(item)"
+                >visibility</v-icon
+              >
+            </template>
+            <span>Show Question</span>
+          </v-tooltip>
+          <v-tooltip bottom v-if="item.status !== 'APPROVED'">
+            <template v-slot:activator="{ on }">
+              <v-icon
+                small
+                class="mr-2"
+                v-on="on"
+                @click="deleteSubmittedQuestion(item)"
+                color="red"
+                data-cy="deleteSubmittedQuestion"
+                >delete</v-icon
+              >
+            </template>
+            <span>Delete Question</span>
+          </v-tooltip>
+          <v-tooltip bottom v-if="item.status === 'REJECTED'">
+            <template v-slot:activator="{ on }">
+              <v-icon
+                small
+                class="mr-2"
+                v-on="on"
+                @click="resubmitQuestion(item)"
+                data-cy="ResubmitQuestion"
+                >fas fa-edit</v-icon
+              >
+            </template>
+            <span>Resubmit Question</span>
+          </v-tooltip>
+        </template>
+      </v-data-table>
+      <edit-student-question-dialog
+        v-if="currentQuestion"
+        v-model="editStudentQuestionDialog"
+        :question="currentQuestion"
+        v-on:submit-question="onSubmitQuestion"
+      />
+      <show-student-question-dialog
+        v-if="currentQuestion"
+        v-model="studentQuestionDialog"
+        :question="currentQuestion"
+        v-on:close-show-question-dialog="onCloseShowQuestionDialog"
+      />
+      <resubmit-student-question-dialog
+        v-if="currentQuestion"
+        v-model="resubmitStudentQuestionDialog"
+        :question="currentQuestion"
+        v-on:submit-question="onResubmitQuestion"
+      />
+    </v-card>
+  </div>
 </template>
 
 <script lang="ts">

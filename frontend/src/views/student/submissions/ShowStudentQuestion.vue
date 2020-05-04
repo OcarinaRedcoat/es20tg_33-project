@@ -11,6 +11,9 @@
       </li>
     </ul>
     <br />
+    <span class="font-weight-bold">Justification</span>
+    <br />
+    <span v-html="convertMarkDown(question.justification)" />
   </div>
 </template>
 
@@ -26,6 +29,13 @@ export default class ShowStudentQuestion extends Vue {
 
   convertMarkDown(text: string): string {
     return convertMarkDown(text, null);
+  }
+
+  hasJustification(question: StudentQuestion): boolean {
+    return !(
+      question.justification == null ||
+      question.justification.trim().length == 0
+    );
   }
 }
 </script>
