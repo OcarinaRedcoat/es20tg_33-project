@@ -84,4 +84,16 @@ public class StudentQuestionController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping("studentQuestions/{questionId}/resubmit")
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#questionId, 'STUDENT_QUESTION.ACCESS')")
+    public StudentQuestionDto resubmitQuestion(Principal principal, @PathVariable int questionId, @Valid @RequestBody StudentQuestionDto question) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+        if(user == null){
+            throw new TutorException(AUTHENTICATION_ERROR);
+        }
+
+        question.setStatus(StudentQuestion.Status.PENDING.name());
+        return this.studentQuestionService.resubmitQuestion(questionId, question, user.getUsername());
+    }
+
 }

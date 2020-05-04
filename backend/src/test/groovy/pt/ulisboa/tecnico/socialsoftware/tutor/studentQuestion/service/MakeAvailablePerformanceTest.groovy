@@ -93,11 +93,11 @@ class MakeAvailablePerformanceTest extends Specification {
         question.setStatus(StudentQuestion.Status.APPROVED)
 
         when:
-        1.upto(5000, {
+        1.upto(1, {
             studentQuestionService.makeStudentQuestionAvailable(question.getId())})
 
         then: "all the questions where successfully created"
-        questionRepository.count() == 5000L
+        questionRepository.count() == 1L
     }
 
 

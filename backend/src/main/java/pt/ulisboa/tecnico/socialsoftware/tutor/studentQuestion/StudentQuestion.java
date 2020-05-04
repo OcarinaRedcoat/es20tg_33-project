@@ -4,6 +4,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.persistence.*;
@@ -111,6 +112,10 @@ public class StudentQuestion {
         option.setStudentQuestion(this);
     }
 
+    public void removeOptions() {
+        studentQuestionOptions = new ArrayList<>();
+    }
+
     public void remove() {
         canRemove();
         getCourse().getSubmittedQuestions().remove(this);
@@ -131,6 +136,23 @@ public class StudentQuestion {
                 ", submittingUser=" + submittingUser +
                 ", justification='" + justification + '\'' +
                 '}';
+    }
+
+    public void resubmit(StudentQuestionDto studentQuestionDto) {
+        checkConsistentQuestion(studentQuestionDto);
+
+        setTitle(studentQuestionDto.getTitle());
+        setContent(studentQuestionDto.getContent());
+        setStatus(StudentQuestion.Status.PENDING);
+
+        studentQuestionDto.getOptions().forEach(optionDto -> {
+            Option option = getOptionById(optionDto.getId());
+            if (option == null) {
+                throw new TutorException(OPTION_NOT_FOUND, optionDto.getId());
+            }
+            option.setContent(optionDto.getContent());
+            option.setCorrect(optionDto.getCorrect());
+        });
     }
 
     private void checkConsistentQuestion(StudentQuestionDto questionDto) {
@@ -161,6 +183,10 @@ public class StudentQuestion {
         if (this.status == Status.APPROVED) {
             throw new TutorException(QUESTION_ALREADY_APPROVED);
         }
+    }
+
+    private Option getOptionById(Integer id) {
+        return getOptions().stream().filter(option -> option.getId().equals(id)).findAny().orElse(null);
     }
 
     public void setOptionsSequence() {

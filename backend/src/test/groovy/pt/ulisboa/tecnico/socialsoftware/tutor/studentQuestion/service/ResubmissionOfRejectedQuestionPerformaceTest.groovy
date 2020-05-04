@@ -6,8 +6,6 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
-import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto
@@ -21,7 +19,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import spock.lang.Specification
 
 @DataJpaTest
-class ResubmissionOfRejectedQuestion extends Specification{
+class ResubmissionOfRejectedQuestionPerformaceTest extends Specification {
     public static final String USERNAME = "user"
     public static final String PERSON_NAME = "Name"
     public static final String QUESTION_TITLE = 'question title'
@@ -57,18 +55,11 @@ class ResubmissionOfRejectedQuestion extends Specification{
     def user
     def course
 
-    def setup() {
+    def setup(){
         user = new User(PERSON_NAME, USERNAME, 1, User.Role.STUDENT)
         userRepository.save(user)
         course = new Course(TEST_COURSE, Course.Type.TECNICO)
         courseRepository.save(course)
-
-        question = new StudentQuestion()
-        question.setKey(1)
-        question.setTitle(QUESTION_TITLE)
-        question.setContent(QUESTION_CONTENT)
-        question.setCourse(course)
-        question.setStatus(StudentQuestion.Status.REJECTED)
 
         option = new Option()
         option.setContent(OPTION_CONTENT)
@@ -76,14 +67,12 @@ class ResubmissionOfRejectedQuestion extends Specification{
         option.setStudentQuestion(question)
         option.setSequence(1)
         optionRepository.save(option)
-        question.addOption(option)
 
         optionB = new Option()
         optionB.setContent(OPTION_CONTENT)
         optionB.setCorrect(false)
         optionB.setStudentQuestion(question)
         optionB.setSequence(2)
-        question.addOption(optionB)
         optionRepository.save(optionB)
 
         optionC = new Option()
@@ -91,7 +80,6 @@ class ResubmissionOfRejectedQuestion extends Specification{
         optionC.setCorrect(false)
         optionC.setStudentQuestion(question)
         optionC.setSequence(3)
-        question.addOption(optionC)
         optionRepository.save(optionC)
 
 
@@ -100,16 +88,10 @@ class ResubmissionOfRejectedQuestion extends Specification{
         optionD.setCorrect(false)
         optionD.setStudentQuestion(question)
         optionD.setSequence(4)
-        question.addOption(optionD)
         optionRepository.save(optionD)
-
-        question.setSubmittingUser(user)
-        user.addSubmittedQuestion(question)
-        course.addStudentQuestion(question);
-        studentQuestionRepository.save(question)
     }
 
-    def "Resubmit rejected question"() {
+    def "performance test to resubmit 2500 times a question"() {
         given: "a student question dto"
         def questionDto = new StudentQuestionDto()
         questionDto.setTitle(CHANGED_QUESTION_TITLE)
@@ -144,74 +126,27 @@ class ResubmissionOfRejectedQuestion extends Specification{
         questionDto.setOptions(options)
 
         when:
-        studentQuestionService.resubmitQuestion(question.getId(), questionDto, USERNAME);
+        1.upto(1, {
+            question = new StudentQuestion()
+            question.setId(it)
+            question.setKey(it)
+            question.setTitle(QUESTION_TITLE)
+            question.setContent(QUESTION_CONTENT)
+            question.setStatus(StudentQuestion.Status.REJECTED)
+            question.setSubmittingUser(user)
+            question.addOption(option)
+            question.addOption(optionB)
+            question.addOption(optionC)
+            question.addOption(optionD)
+            question.setCourse(course)
+            option.setStudentQuestion(question)
+            studentQuestionRepository.save(question)
 
-        then: "the question is resubmitted successfully"
-        studentQuestionRepository.count() == 1L
-        def result = studentQuestionRepository.findAll().get(0)
-        result.getId() != null
-        result.getStatus() == StudentQuestion.Status.PENDING
-        result.getTitle() == CHANGED_QUESTION_TITLE
-        result.getContent() == QUESTION_CONTENT
-        result.getOptions().size() == 4
-        result.getSubmittingUser().getUsername() == USERNAME
-        user.getSubmittedQuestions().get(0).getSubmittingUser().getUsername() == USERNAME
+            studentQuestionService.resubmitQuestion(it, questionDto, USERNAME);
+        })
+        then:
+        true
     }
-
-    def "resubmit question not in rejected status"() {
-        given: "a student question dto"
-        def questionDto = new StudentQuestionDto()
-        questionDto.setTitle(CHANGED_QUESTION_TITLE)
-        questionDto.setContent(QUESTION_CONTENT)
-        questionDto.setStatus(StudentQuestion.Status.PENDING.name())
-        and: "four options"
-        def options = new ArrayList<OptionDto>()
-        def optionDto = new OptionDto()
-        optionDto.setContent(CHANGED_OPTION_CONTENT)
-        optionDto.setSequence(1)
-        optionDto.setCorrect(true)
-        optionDto.setId(option.getId())
-        options.add(optionDto)
-        optionDto = new OptionDto()
-        optionDto.setContent(OPTION_CONTENT)
-        optionDto.setSequence(2)
-        optionDto.setCorrect(false)
-        optionDto.setId(optionB.getId())
-        options.add(optionDto)
-        optionDto = new OptionDto()
-        optionDto.setContent(OPTION_CONTENT)
-        optionDto.setSequence(3)
-        optionDto.setCorrect(false)
-        optionDto.setId(optionC.getId())
-        options.add(optionDto)
-        optionDto = new OptionDto()
-        optionDto.setContent(OPTION_CONTENT)
-        optionDto.setSequence(4)
-        optionDto.setCorrect(false)
-        optionDto.setId(optionD.getId())
-        options.add(optionDto)
-        questionDto.setOptions(options)
-        and:
-        question.setStatus(StudentQuestion.Status.PENDING)
-        studentQuestionRepository.save(question)
-
-        when:
-        studentQuestionService.resubmitQuestion(question.getId(), questionDto, USERNAME);
-
-        then: "an exception is thrown"
-        def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.QUESTION_NOT_REJECTED
-        studentQuestionRepository.count() == 1L
-        def result = studentQuestionRepository.findAll().get(0)
-        result.getId() != null
-        result.getStatus() == StudentQuestion.Status.PENDING
-        result.getTitle() == QUESTION_TITLE
-        result.getContent() == QUESTION_CONTENT
-        result.getOptions().size() == 4
-        result.getSubmittingUser().getUsername() == USERNAME
-        user.getSubmittedQuestions().get(0).getSubmittingUser().getUsername() == USERNAME
-    }
-
 
     @TestConfiguration
     static class StudentQuestionServiceImplTestContextConfiguration {
