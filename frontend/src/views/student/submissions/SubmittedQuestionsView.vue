@@ -43,6 +43,18 @@
               small
               class="mr-2"
               v-on="on"
+              @click="showStudentQuestionDialog(item)"
+              >visibility</v-icon
+            >
+          </template>
+          <span>Show Question</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-icon
+              small
+              class="mr-2"
+              v-on="on"
               @click="deleteSubmittedQuestion(item)"
               color="red"
               data-cy="deleteSubmittedQuestion"
@@ -59,6 +71,12 @@
       :question="currentQuestion"
       v-on:submit-question="onSubmitQuestion"
     />
+    <show-student-question-dialog
+      v-if="currentQuestion"
+      v-model="studentQuestionDialog"
+      :question="currentQuestion"
+      v-on:close-show-question-dialog="onCloseShowQuestionDialog"
+    />
   </v-card>
 </template>
 
@@ -68,9 +86,11 @@ import RemoteServices from '@/services/RemoteServices';
 import StudentQuestion from '@/models/submissions/StudentQuestion';
 import EditStudentQuestionDialog from '@/views/student/submissions/EditStudentQuestionDialog.vue';
 import Question from '@/models/management/Question';
+import ShowStudentQuestionDialog from '@/views/student/submissions/ShowStudentQuestionDialog.vue';
 
 @Component({
   components: {
+    'show-student-question-dialog': ShowStudentQuestionDialog,
     'edit-student-question-dialog': EditStudentQuestionDialog
   }
 })
@@ -78,6 +98,7 @@ export default class SubmittedQuestionsView extends Vue {
   student_questions: StudentQuestion[] = [];
   currentQuestion: StudentQuestion | null = null;
   editStudentQuestionDialog: boolean = false;
+  studentQuestionDialog: boolean = false;
   search: string = '';
 
   headers: object = [
@@ -143,6 +164,16 @@ export default class SubmittedQuestionsView extends Vue {
     );
     this.student_questions.unshift(question);
     this.editStudentQuestionDialog = false;
+    this.currentQuestion = null;
+  }
+
+  showStudentQuestionDialog(question: StudentQuestion) {
+    this.currentQuestion = question;
+    this.studentQuestionDialog = true;
+  }
+
+  onCloseShowQuestionDialog() {
+    this.studentQuestionDialog = false;
     this.currentQuestion = null;
   }
 

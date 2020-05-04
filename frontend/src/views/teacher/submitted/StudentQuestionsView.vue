@@ -40,6 +40,19 @@
           </template>
           <span>Show and Review Question</span>
         </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-icon
+              small
+              class="mr-2"
+              v-on="on"
+              @click="makeQuestionAvailable(item)"
+              data-cy="makeQuestionAvailableButton"
+              >create</v-icon
+            >
+          </template>
+          <span>Make Question Available</span>
+        </v-tooltip>
       </template>
     </v-data-table>
     <review-question-dialog
@@ -128,6 +141,19 @@ export default class StudentQuestionsView extends Vue {
     this.questions.unshift(question);
     this.questionDialog = false;
     this.currentQuestion = null;
+  }
+
+  async makeQuestionAvailable(studentQuestion: StudentQuestion) {
+    if (
+      studentQuestion.id &&
+      confirm('Are you sure you want to make this question available?')
+    ) {
+      try {
+        await RemoteServices.makeQuestionAvailable(studentQuestion.id);
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
   }
 }
 </script>

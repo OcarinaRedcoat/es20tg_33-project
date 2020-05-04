@@ -647,6 +647,22 @@ export default class RemoteServices {
       });
   }
 
+  static async makeQuestionAvailable(
+    questionId: number | undefined
+  ): Promise<Question> {
+    return httpClient
+      .post(
+        `/courses/${Store.getters.getCurrentCourse.courseId}/questionsFromStudents`,
+        questionId
+      )
+      .then(response => {
+        return new Question(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async getTourneys() {
     return httpClient
       .get('/tourneys/open')
@@ -662,20 +678,21 @@ export default class RemoteServices {
 
   static async enrollInTourney(tourney: Tourney) {
     return httpClient
-        .put(`/tourneys/${tourney.tourneyId}/enroll`)
-        .then(response => {
-          return new Tourney(response.data);
-        })
-        .catch(async error => {
-          throw Error(await this.errorMessage(error));
-        });
+      .put(`/tourneys/${tourney.tourneyId}/enroll`)
+      .then(response => {
+        return new Tourney(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
   }
 
   static async cancelTourney(tourney: Tourney) {
     return httpClient
-        .put(`/tourneys/${tourney.tourneyId}/cancel`).catch(async error => {
-      throw Error(await this.errorMessage(error));
-    });
+      .put(`/tourneys/${tourney.tourneyId}/cancel`)
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
   }
 
   static async exportAll() {
