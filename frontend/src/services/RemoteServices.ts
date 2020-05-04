@@ -723,6 +723,17 @@ export default class RemoteServices {
       });
   }
 
+  static async getTourneyQuizAnswer(tourney: Tourney) {
+    return httpClient
+        .get(`/tourneys/${tourney.tourneyId}/quiz`)
+        .then(response => {
+          return new StatementQuiz(response.data)
+        })
+        .catch(async error => {
+          throw Error(await this.errorMessage(error));
+        });
+  }
+
   static async exportAll() {
     return httpClient
       .get('/admin/export', {
