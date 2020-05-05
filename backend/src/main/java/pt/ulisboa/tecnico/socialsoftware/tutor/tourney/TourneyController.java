@@ -6,6 +6,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.AUTHENTICATION_ERROR;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
+import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementQuizDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import java.security.Principal;
@@ -46,6 +47,13 @@ public class TourneyController {
     @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#tourneyId, 'TOURNEY.CREATOR')")
     public TourneyDto cancelTourney(@PathVariable Integer tourneyId) {
         return tourneyService.cancelTournament(tourneyId);
+    }
+
+    @GetMapping("/tourneys/{tourneyId}/quiz")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public StatementQuizDto getTourneyQuizAnswer(@PathVariable Integer tourneyId, Principal principal) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+        return tourneyService.getTourneyQuizAnswer(tourneyId, user.getId());
     }
 
 }

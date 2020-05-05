@@ -9,6 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuizAnswerRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
@@ -22,6 +24,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.QuizService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.dto.QuizDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementQuizDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
 
@@ -34,12 +37,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.Comparator.comparingInt;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.COURSE_EXECUTION_NOT_FOUND;
+import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.USER_NOT_FOUND;
 
 @Service
 public class TourneyService {
@@ -61,6 +66,10 @@ public class TourneyService {
 
     @Autowired
     private CourseExecutionRepository courseExecutionRepository;
+
+    @Autowired
+    private QuizAnswerRepository quizAnswerRepository;
+
 
     @PersistenceContext
     EntityManager entityManager;
@@ -229,6 +238,36 @@ public class TourneyService {
         }
 
         return tourneyStatsList;
+    }
+    
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public StatementQuizDto getTourneyQuizAnswer(Integer tourneyId, Integer userId) {
+        Tourney tourney = tourneyRepository.findById(tourneyId).orElseThrow(() -> new TutorException(ErrorMessage.TOURNEY_NOT_FOUND));
+        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
+        Quiz quiz = tourney.getQuiz();
+        LocalDateTime now = DateHandler.now();
+
+        Integer executionId = tourney.getCourseExecution().getId();
+
+        Set<Integer> studentQuizIds =  user.getQuizAnswers().stream()
+                .filter(quizAnswer -> quizAnswer.getQuiz().getCourseExecution().getId() == executionId)
+                .map(QuizAnswer::getQuiz)
+                .map(Quiz::getId)
+                .collect(Collectors.toSet());
+
+        QuizAnswer quizAnswer;
+
+        // create QuizAnswer for quizzes
+        if (!studentQuizIds.contains(quiz.getId()) && (quiz.getConclusionDate() == null || quiz.getConclusionDate().isAfter(now))) {
+            quizAnswer = new QuizAnswer(user, quiz);
+            quizAnswerRepository.save(quizAnswer);
+            return new StatementQuizDto(quizAnswer);
+        }
+
+        return new StatementQuizDto();
     }
 
 }

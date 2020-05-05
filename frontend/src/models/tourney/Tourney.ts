@@ -1,6 +1,7 @@
 import User from '../user/User';
 import Course from '../user/Course';
 import Topic from '../management/Topic';
+import StatementQuiz from "@/models/statement/StatementQuiz";
 
 export default class Tourney {
   tourneyId: number | undefined;
@@ -12,6 +13,7 @@ export default class Tourney {
   tourneyTopics: Topic[] | undefined;
   tourneyCreator: User | undefined;
   tourneyCourseExecution: Course | undefined;
+  quizStatement: StatementQuiz | undefined;
 
   constructor(jsonObj?: Tourney) {
     if (jsonObj) {
@@ -24,6 +26,7 @@ export default class Tourney {
       this.tourneyTopics = jsonObj.tourneyTopics;
       this.tourneyCreator = jsonObj.tourneyCreator;
       this.tourneyCourseExecution = jsonObj.tourneyCourseExecution;
+      this.quizStatement = jsonObj.quizStatement;
     }
   }
 }
