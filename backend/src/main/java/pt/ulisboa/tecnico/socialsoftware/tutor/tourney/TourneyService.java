@@ -6,6 +6,7 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
@@ -77,7 +78,6 @@ public class TourneyService {
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public TourneyDto createTourney(TourneyDto tourneyDto, Integer userId) {
-        SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, userId));
         Tourney tourney = new Tourney(tourneyDto, user);
 
@@ -85,8 +85,8 @@ public class TourneyService {
         if(tourney.getAvailableDate() == null)  throw new TutorException(ErrorMessage.TOURNEY_NOT_CONSISTENT,"availableDate");
         if(tourney.getConclusionDate() == null)  throw new TutorException(ErrorMessage.TOURNEY_NOT_CONSISTENT, "conclusionDate");
         try{
-            if(date.parse(tourney.getConclusionDate()).before(date.parse(tourney.getAvailableDate())))  throw new TutorException(ErrorMessage.TOURNEY_AVAILABLEDATE_BIGGER_THAN_CONCLUSIONDATE);
-        }catch (ParseException e) {throw new TutorException(ErrorMessage.TOURNEY_DATE_WRONG_FORMAT);}
+            if(DateHandler.toLocalDateTime(tourney.getConclusionDate()).isBefore(DateHandler.toLocalDateTime(tourney.getAvailableDate())))  throw new TutorException(ErrorMessage.TOURNEY_AVAILABLEDATE_BIGGER_THAN_CONCLUSIONDATE);
+        }catch (NullPointerException e) {throw new TutorException(ErrorMessage.TOURNEY_DATE_WRONG_FORMAT);}
         if(tourney.getNumberOfQuestions() == null || tourney.getNumberOfQuestions() <= 0) throw new TutorException(ErrorMessage.TOURNEY_NOT_CONSISTENT, "numberOfQuestions");
 
         CourseDto courseExecutionDto = tourneyDto.getTourneyCourseExecution();
@@ -157,7 +157,7 @@ public class TourneyService {
         String availableDate = tourney.getAvailableDate();
         String conclusionDate = tourney.getConclusionDate();
         quizDto.setTitle(tourney.getTitle() + " - Quiz");
-        quizDto.setType(Quiz.QuizType.TOURNEY);
+        quizDto.setType(Quiz.QuizType.TOURNEY.name());
         quizDto.setScramble(true);
         quizDto.setOneWay(true);
         quizDto.setQrCodeOnly(true);

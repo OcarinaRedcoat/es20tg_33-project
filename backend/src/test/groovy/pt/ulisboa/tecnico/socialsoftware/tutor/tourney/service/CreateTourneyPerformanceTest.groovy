@@ -5,6 +5,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService
+import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto
@@ -28,8 +29,7 @@ import spock.lang.Specification
 class CreateTourneyPerformanceTest extends Specification{
     public static final String TOURNEY_TITLE = "Tourney 1"
     public static final Integer TOURNEY_ONE_NUMBER_QUESTIONS = 1
-    public static final String TOURNEY_AVAILABLE_DATE = "2020-01-01 21:12"
-    public static final String TOURNEY_CONCLUSION_DATE = "2020-01-06 21:12"
+    public static final String COURSE_NAME = "Arquitetura de Software"
 
     public static final String NAME = "name"
     public static final String USERNAME = "username"
@@ -54,7 +54,7 @@ class CreateTourneyPerformanceTest extends Specification{
 
     def "performance testing to create 10000 tourneys"(){
         given: "one course execution"
-        def course = new Course()
+        def course = new Course(COURSE_NAME, Course.Type.TECNICO)
         courseRepository.save(course)
         def courseId = courseRepository.findAll().get(0).getId()
         def courseExecution = new CourseExecution(course, "AC", "1", Course.Type.TECNICO)
@@ -67,18 +67,19 @@ class CreateTourneyPerformanceTest extends Specification{
         def userId = userRepository.findAll().get(0).getId()
 
         and: "one tourney"
+        def availableDate = DateHandler.toISOString(DateHandler.now())
+        def conclusionDate = DateHandler.toISOString(DateHandler.now().plusDays(1))
         def tourney = new TourneyDto()
         tourney.setTourneyTitle(TOURNEY_TITLE)
         tourney.setTourneyNumberOfQuestions(TOURNEY_ONE_NUMBER_QUESTIONS)
         tourney.setTourneyStatus(Tourney.Status.CLOSED)
-        tourney.setTourneyAvailableDate(TOURNEY_AVAILABLE_DATE)
-        tourney.setTourneyConclusionDate(TOURNEY_CONCLUSION_DATE)
+        tourney.setTourneyAvailableDate(availableDate)
+        tourney.setTourneyConclusionDate(conclusionDate)
         tourney.setTourneyCourseExecution(new CourseDto(courseExecution))
 
         and: "one topic"
         def topicDto = new TopicDto()
         topicDto.setName("topic")
-        course.addTopic(new Topic(topicDto))
         topicService.createTopic(courseId, topicDto)
         def topics = new ArrayList()
         topics.add(topicDto)
