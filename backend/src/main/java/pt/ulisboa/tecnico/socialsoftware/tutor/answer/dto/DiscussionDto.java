@@ -25,10 +25,9 @@ public class DiscussionDto implements Serializable {
 
     private String title;
 
-    private Discussion.Status status;
+    private Discussion.PublicStatus status;
 
-    public DiscussionDto(){
-    }
+    public DiscussionDto(){}
 
     public DiscussionDto(Discussion discussion){
         this.id = discussion.getId();
@@ -90,4 +89,11 @@ public class DiscussionDto implements Serializable {
         this.creatorStudent = creatorStudent;
     }
 
+    public Discussion.PublicStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(Discussion.PublicStatus status) {
+        this.status = status;
+    }
 }

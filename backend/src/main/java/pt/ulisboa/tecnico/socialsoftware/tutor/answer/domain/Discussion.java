@@ -16,7 +16,7 @@ import java.util.List;
 @Table(name= "discussion")
 public class Discussion {
 
-    public enum Status {PUBLIC, PRIVATE}
+    public enum PublicStatus {PUBLIC, PRIVATE}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,7 +37,7 @@ public class Discussion {
     @OneToMany
     private List<Message> discussionListMessages = new ArrayList<>();
 
-    private Status status;
+    private PublicStatus status;
 
     public Discussion(){
     }
@@ -46,7 +46,7 @@ public class Discussion {
         this.creatorStudent = creatorStudent;
         this.course = course;
         this.quizAnswer = quizAnswer;
-        this.status = Status.PRIVATE;
+        this.status = PublicStatus.PRIVATE;
         this.creatorStudent.addDiscussion(this);
         this.course.addDiscussion(this);
         this.quizAnswer.addDiscussion(this);
@@ -96,19 +96,19 @@ public class Discussion {
         this.discussionListMessages = discussionListMessages;
     }
 
-    public Status getStatus() {
+    public PublicStatus getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(PublicStatus status) {
         this.status = status;
     }
 
     public void changeStatus(){
-        if (status == Status.PRIVATE){
-            status = Status.PUBLIC;
+        if (status == PublicStatus.PRIVATE){
+            status = PublicStatus.PUBLIC;
         } else{
-            status = Status.PRIVATE;
+            status = PublicStatus.PRIVATE;
         }
     }
 
