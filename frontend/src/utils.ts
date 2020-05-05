@@ -1,6 +1,13 @@
 // Deprecated
-export function formatUTCDate(dateString: string) {
-  const date = dateString.split("T")[0];
-  const time = dateString.split("T")[1].split(":").slice(0, 2).join(":");
-  return `${date} ${time}`;
+export function formatISODate(dateString: string) {
+  const date = new Date(dateString);
+  const options = {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: false
+  };
+  return new Intl.DateTimeFormat('pt-PT', options).format(date);
 }

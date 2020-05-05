@@ -142,6 +142,14 @@
                 <v-list-item-title data-cy="top-bar-open-tourneys">Open Tourneys List</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
+            <v-list-item to="/student/tourneys/dashboard">
+              <v-list-item-action>
+                <v-icon>list</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title data-cy="top-bar-open-tourneys">Tourneys Dashboard</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
           </v-list>
         </v-menu>
 

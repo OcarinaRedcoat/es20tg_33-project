@@ -56,4 +56,12 @@ public class TourneyController {
         return tourneyService.getTourneyQuizAnswer(tourneyId, user.getId());
     }
 
+    @GetMapping("/tourneys/dashboard")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public List<TourneyStatsDto> getTourneysDashboard(Principal principal) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+        return tourneyService.getTourneyDashboard(user.getId());
+    }
+
+
 }

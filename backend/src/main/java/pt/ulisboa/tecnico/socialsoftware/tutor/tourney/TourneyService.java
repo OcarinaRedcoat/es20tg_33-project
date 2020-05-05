@@ -260,13 +260,15 @@ public class TourneyService {
         List<TourneyStatsDto> tourneyStatsList = new ArrayList<>();
         for (QuizAnswer quizAnswer : tourneyAnswers) {
             TourneyStatsDto tourneyStats = new TourneyStatsDto();
+            tourneyStats.setId(quizAnswer.getId());
             tourneyStats.setTitle(quizAnswer.getQuiz().getTourney().getTitle());
-            int score = (int) quizAnswer.getQuestionAnswers().stream().collect(collectingAndThen(
+            tourneyStats.setCompletionDate(DateHandler.toISOString(quizAnswer.getAnswerDate()));
+            int correct = (int) quizAnswer.getQuestionAnswers().stream().collect(collectingAndThen(
                     toCollection(() -> new TreeSet<>(
                             comparingInt(questionAnswer -> questionAnswer.getQuizQuestion().getQuestion().getId()))),
                     ArrayList::new)).stream().map(QuestionAnswer::getOption).filter(Objects::nonNull)
                     .filter(Option::getCorrect).count();
-            tourneyStats.setScore(score);
+            tourneyStats.setScore(correct + "/" + quizAnswer.getQuestionAnswers().size());
             tourneyStatsList.add(tourneyStats);
         }
 
