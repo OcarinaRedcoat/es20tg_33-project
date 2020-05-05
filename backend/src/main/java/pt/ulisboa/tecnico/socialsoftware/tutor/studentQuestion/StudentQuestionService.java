@@ -174,13 +174,22 @@ public class StudentQuestionService {
             value = { SQLException.class },
             backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public StudentQuestionDto resubmitQuestion(int questionId, StudentQuestionDto questionDto, String username) {
+    public StudentQuestionDto resubmitQuestion(int questionId, StudentQuestionDto questionDto) {
         StudentQuestion question = studentQuestionRepository.findById(questionId).orElseThrow(() -> new TutorException(STUDENT_QUESTION_NOT_FOUND, questionId));
-        User user = userRepository.findByUsername(username);
-        if (user == null)
-            throw new TutorException(USERNAME_NOT_FOUND);
         checkIfRejected(question);
-        question.resubmit(questionDto);
+        question.editStudentQuestion(questionDto);
+        question.setStatus(StudentQuestion.Status.PENDING);
+        return new StudentQuestionDto(question);
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public StudentQuestionDto editApprovedQuestion(int questionId, StudentQuestionDto questionDto) {
+        StudentQuestion question = studentQuestionRepository.findById(questionId).orElseThrow(() -> new TutorException(STUDENT_QUESTION_NOT_FOUND, questionId));
+        checkIfApproved(question);
+        question.editStudentQuestion(questionDto);
         return new StudentQuestionDto(question);
     }
 

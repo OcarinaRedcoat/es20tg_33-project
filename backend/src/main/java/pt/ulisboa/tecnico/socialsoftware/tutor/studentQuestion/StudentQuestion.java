@@ -138,12 +138,11 @@ public class StudentQuestion {
                 '}';
     }
 
-    public void resubmit(StudentQuestionDto studentQuestionDto) {
+    public void editStudentQuestion(StudentQuestionDto studentQuestionDto) {
         checkConsistentQuestion(studentQuestionDto);
 
         setTitle(studentQuestionDto.getTitle());
         setContent(studentQuestionDto.getContent());
-        setStatus(StudentQuestion.Status.PENDING);
 
         studentQuestionDto.getOptions().forEach(optionDto -> {
             Option option = getOptionById(optionDto.getId());

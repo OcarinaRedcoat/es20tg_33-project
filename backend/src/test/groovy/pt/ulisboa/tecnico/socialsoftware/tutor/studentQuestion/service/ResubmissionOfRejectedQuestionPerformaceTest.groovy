@@ -138,7 +138,7 @@ class ResubmissionOfRejectedQuestionPerformaceTest extends Specification {
             option.setStudentQuestion(question)
             studentQuestionRepository.save(question)
 
-            studentQuestionService.resubmitQuestion(it, questionDto, USERNAME);
+            studentQuestionService.resubmitQuestion(it, questionDto);
         })
         then:
         true
