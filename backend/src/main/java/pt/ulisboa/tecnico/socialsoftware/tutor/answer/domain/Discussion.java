@@ -6,6 +6,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.MessageDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.DiscussionDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -15,123 +16,100 @@ import java.util.List;
 @Table(name= "discussion")
 public class Discussion {
 
+    public enum Status {PUBLIC, PRIVATE}
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @OneToOne
-    @JoinColumn(name = "student_str")
-    private Message studentMessage;
-
-    @OneToOne
-    @JoinColumn(name = "teacher_str")
-    private Message teacherMessage;
-
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "student_id")
-    private User student;
+    private User creatorStudent;
 
-    @OneToOne
-    @JoinColumn(name = "teacher_id")
-    private User teacher;
+    @ManyToOne
+    @JoinColumn(name = "quiz_answer_id")
+    private QuizAnswer quizAnswer;
 
-    @OneToOne
-    @JoinColumn(name = "questionAnswer_id")
-    private QuestionAnswer questionAnswer;
-
-
+    @ManyToOne
     @JoinColumn(name = "course_id")
-    private Integer courseId;
+    private Course course;
 
     @OneToMany
     private List<Message> discussionListMessages = new ArrayList<>();
 
+    private Status status;
+
     public Discussion(){
     }
 
-    public Discussion(QuestionAnswer questionAnswer,DiscussionDto discussionDto, int courseId, User student){
-        checkConsistentDiscussion(discussionDto, questionAnswer.getId());
-        this.questionAnswer = questionAnswer;
-        this.student =  student;
-        this.courseId = courseId;
+    public Discussion(Course course, QuizAnswer quizAnswer, User creatorStudent){
+        this.creatorStudent = creatorStudent;
+        this.course = course;
+        this.quizAnswer = quizAnswer;
+        this.status = Status.PRIVATE;
+        this.creatorStudent.addDiscussion(this);
+        this.course.addDiscussion(this);
+        this.quizAnswer.addDiscussion(this);
+    }
+
+    public void addDiscussionMessages(Message message){
+        this.discussionListMessages.add(message);
     }
 
     public Integer getId() {
         return id;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public User getCreatorStudent() {
+        return creatorStudent;
     }
 
-    public QuestionAnswer getQuestionAnswer() { return questionAnswer; }
-
-    public void setStudent(User st) { this.student = st; }
-
-    public void setTeacher(User th) { this.teacher = th;}
-
-    public User getStudent() { return this.student; }
-
-    public User getTeacher() { return this.teacher; }
-
-    public Message getStudentMessage() {
-        return studentMessage;
+    public QuizAnswer getQuizAnswer() {
+        return quizAnswer;
     }
 
-    public void setStudentMessage(Message studentMessage) {
-        this.studentMessage = studentMessage;
-    }
-
-    public Message getTeacherMessage() {
-        return teacherMessage;
-    }
-
-    public void setTeacherMessage(Message teacherMessage) {
-        this.teacherMessage = teacherMessage;
+    public Course getCourse() {
+        return course;
     }
 
     public List<Message> getDiscussionListMessages() {
         return discussionListMessages;
     }
 
-    public void setDiscussionListMessages(List<Message> threadListMessages) {
-        this.discussionListMessages = threadListMessages;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public void addDiscussionMessage(Message message) {this.discussionListMessages.add(message);}
-    public void saveStudentMessage(){
-        this.discussionListMessages.add(this.studentMessage);
+    public void setCreatorStudent(User creatorStudent) {
+        this.creatorStudent = creatorStudent;
     }
 
-    public void saveTeacherMessage(){
-        this.discussionListMessages.add(this.teacherMessage);
+    public void setQuizAnswer(QuizAnswer quizAnswer) {
+        this.quizAnswer = quizAnswer;
     }
 
-    public String displayThread(){
-        return discussionListMessages.get(0).displayMessage() + "\n" +
-                discussionListMessages.get(1).displayMessage();
+    public void setCourse(Course course) {
+        this.course = course;
     }
 
-    public void checkConsistentDiscussion(DiscussionDto discussionDto, int id){
-        /*for (QuizAnswer qzA : discussionDto.getStudent().getQuizAnswers()) {
-            for (QuestionAnswer qA : qzA.getQuestionAnswers()) {
-                if (qA.getId().equals(id)) {
-                    return;
-                }
-            }
+    public void setDiscussionListMessages(List<Message> discussionListMessages) {
+        this.discussionListMessages = discussionListMessages;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public void changeStatus(){
+        if (status == Status.PRIVATE){
+            status = Status.PUBLIC;
+        } else{
+            status = Status.PRIVATE;
         }
-        throw new TutorException(STUDENT_DID_NOT_ANSWER_QUESTION);*/
-
-    }
-
-    @Override
-    public String toString() {
-        return "Thread{" +
-                "id=" + id +
-                ", studentMessage=" + studentMessage +
-                ", teacherMessage=" + teacherMessage +
-                ", threadListMessages=" + discussionListMessages +
-                '}';
     }
 
 }

@@ -13,52 +13,57 @@ import java.util.stream.Collectors;
 
 public class DiscussionDto implements Serializable {
 
-    private Integer discussionId;
-    private MessageDto  studentMessage;
-    private MessageDto teacherMessage;
+    private Integer id;
+
     private List<MessageDto> discussionListMessages= new ArrayList<>();
 
     private int courseId;
-    private int questionAnswerId;
 
-    private StudentDto student;
-    private UserDto teacher;
+    private int quizAnswerId;
 
+    private StudentDto creatorStudent;
 
+    private String title;
+
+    private Discussion.Status status;
 
     public DiscussionDto(){
     }
 
     public DiscussionDto(Discussion discussion){
+        this.id = discussion.getId();
+        this.courseId = discussion.getCourse().getId();
+        this.quizAnswerId = discussion.getQuizAnswer().getId();
+        this.title = discussion.getQuizAnswer().getQuiz().getTitle();
 
-        this.discussionId= discussion.getId();
-        if (discussion.getStudentMessage() != null) {
-            this.studentMessage = new MessageDto(discussion.getStudentMessage());
-        }
-        if (discussion.getTeacherMessage() != null) {
-            this.teacherMessage = new MessageDto(discussion.getTeacherMessage());
-        }
-        if (discussion.getDiscussionListMessages() != null) {
-            this.discussionListMessages = discussion.getDiscussionListMessages().stream().map(MessageDto::new).collect(Collectors.toList());
-        }
-        if (discussion.getStudent() != null) {
-            this.student = new StudentDto(discussion.getStudent());
-        }
-        if (discussion.getTeacher() != null) {
-            this.teacher = new UserDto(discussion.getTeacher());
-        }
+        this.status = discussion.getStatus();
+
+        this.creatorStudent = new StudentDto(discussion.getCreatorStudent());
+        this.discussionListMessages = discussion.getDiscussionListMessages().stream().map(MessageDto::new).collect(Collectors.toList());
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public Integer getId() {
-        return discussionId;
+        return id;
     }
 
     public void setId(Integer id) {
-        this.discussionId = id;
+        this.id = id;
     }
 
-    public MessageDto getStudentMessage() {
-        return studentMessage;
+    public List<MessageDto> getDiscussionListMessages() {
+        return discussionListMessages;
+    }
+
+    public void setDiscussionListMessages(List<MessageDto> discussionListMessages) {
+        this.discussionListMessages = discussionListMessages;
     }
 
     public int getCourseId() {
@@ -69,54 +74,20 @@ public class DiscussionDto implements Serializable {
         this.courseId = courseId;
     }
 
-    public int getQuestionAnswerId() {
-        return questionAnswerId;
+    public int getQuizAnswerId() {
+        return quizAnswerId;
     }
 
-    public void setQuestionAnswerId(int questionAnswerId) {
-        this.questionAnswerId = questionAnswerId;
+    public void setQuizAnswerId(int quizAnswerId) {
+        this.quizAnswerId = quizAnswerId;
     }
 
-    public void setStudentMessage(MessageDto studentMessage) {
-        this.studentMessage = studentMessage;
+    public StudentDto getCreatorStudent() {
+        return creatorStudent;
     }
 
-    public MessageDto getTeacherMessage() {
-        return teacherMessage;
+    public void setCreatorStudent(StudentDto creatorStudent) {
+        this.creatorStudent = creatorStudent;
     }
 
-    public void setTeacherMessage(MessageDto teacherMessage) {
-        this.teacherMessage = teacherMessage;
-    }
-
-    public List<MessageDto> getDiscussionListMessages() {
-        return discussionListMessages;
-    }
-
-    public void setDiscussionListMessages(List<MessageDto> threadListMessages) {
-        this.discussionListMessages = threadListMessages;
-    }
-
-    public void addDiscussionMessage(MessageDto messageDto){
-        this.discussionListMessages.add(messageDto);
-    }
-
-    public StudentDto getStudent() { return student; }
-
-    public void setStudent(StudentDto student) { this.student = student; }
-
-    public UserDto getTeacher() { return teacher; }
-
-    public void setTeacher(UserDto teacher) { this.teacher = teacher; }
-
-
-    @Override
-    public String toString() {
-        return "DiscussionDto{" +
-                "discussionId=" + discussionId +
-                ", studentMessage=" + studentMessage +
-                ", teacherMessage=" + teacherMessage +
-                ", threadListMessages=" + discussionListMessages +
-                '}';
-    }
 }

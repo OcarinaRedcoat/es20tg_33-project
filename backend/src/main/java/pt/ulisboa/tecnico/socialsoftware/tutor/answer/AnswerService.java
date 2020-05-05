@@ -19,10 +19,14 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.MessageDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.QuizAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.MessageDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.DiscussionRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.MessageRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuestionAnswerRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuizAnswerRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorExceptionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlExport;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.AnswersXmlImport;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
@@ -74,6 +78,12 @@ public class AnswerService {
 
     @Autowired
     private DiscussionRepository discussionRepository;
+
+    @Autowired
+    private CourseRepository courseRepository;
+
+    @Autowired
+    private MessageRepository messageRepository;
 
     @PersistenceContext
     EntityManager entityManager;
@@ -202,113 +212,7 @@ public class AnswerService {
         xmlImporter.importAnswers(answersXml, this, questionRepository, quizRepository, quizAnswerRepository, userRepository);
     }
 
-/*    @Retryable(
-            value = { SQLException.class },
-            backoff = @Backoff(delay = 5000))
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public DiscussionDto createDiscussion(Integer questionAnswerId, DiscussionDto discussionDto){
-        QuestionAnswer questionAnswer= questionAnswerRepository.findById(questionAnswerId).orElseThrow(() -> new TutorException(ErrorMessage.QUESTION_ANSWER_NOT_FOUND));
-        Discussion discussion= new Discussion(questionAnswer,discussionDto, 1);
 
-        discussionRepository.save(discussion);
-//        entityManager.persist(discussion);
-        return new DiscussionDto(discussion);
-    }*/
-
-    @Retryable(
-            value = { SQLException.class },
-            backoff = @Backoff(delay = 5000))
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public DiscussionDto submitTeacherMessage(Integer UserId, Integer discussionId, MessageDto messageDto) {
-        User user = userRepository.findById(UserId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, UserId));
-        Discussion discussion = discussionRepository.findById(discussionId).orElseThrow(() -> new TutorException(STUDENT_DID_NOT_ANSWER_QUESTION));
-
-        Message message = new Message(messageDto, user);
-        message.setSentence(messageDto.getSentence());
-        message.checkConsistentMessage(messageDto);
-        saveMessage(message, user, discussion);
-
-        entityManager.persist(discussion);
-
-        return new DiscussionDto(discussion);
-
-    }
-
-    @Retryable(
-            value = { SQLException.class },
-            backoff = @Backoff(delay = 5000))
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public DiscussionDto submitStudentMessage(Integer UserId,Integer courseId,Integer questionAnswerId, MessageDto messageDto) {
-        User user = userRepository.findById(UserId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, UserId));
-        QuestionAnswer questionAnswer = questionAnswerRepository.findById(questionAnswerId).orElseThrow(() -> new TutorException(STUDENT_DID_NOT_ANSWER_QUESTION));
-        Discussion discussion = discussionRepository.findById(messageDto.getDiscussionDto().getId()).orElse(createNewDiscussion(questionAnswer,messageDto.getDiscussionDto(), courseId, user));
-
-        Message message = new Message(messageDto, user);
-        message.setDiscussion(discussion);
-        message.setSentence(messageDto.getSentence());
-        message.checkConsistentMessage(messageDto);
-        saveMessage(message, user, discussion);
-
-        entityManager.persist(discussion);
-
-        return new DiscussionDto(discussion);
-
-    }
-
-    private void saveMessage(Message message, User user, Discussion discussion) {
-        if (user.getRole().equals(User.Role.STUDENT)) {
-            discussion.setStudentMessage(message);
-            discussion.addDiscussionMessage(message);
-
-        } else {
-            discussion.setTeacherMessage(message);
-            discussion.addDiscussionMessage(message);
-        }
-    }
-
-    private Discussion createNewDiscussion(QuestionAnswer questionAnswer,DiscussionDto discussionDto, int courseId, User st) {
-        Discussion discussion = new Discussion(questionAnswer,discussionDto, courseId, st);
-        discussionRepository.save(discussion);
-
-        return discussion;
-    }
-
-
-    @Retryable(
-            value = { SQLException.class },
-            backoff = @Backoff(delay = 5000))
-    public List<MessageDto> displayDiscussion(Integer UserId, Integer discussionDtoId){
-        User user = userRepository.findById(UserId).orElseThrow(() -> new TutorException(ErrorMessage.USER_NOT_FOUND, UserId));
-        Discussion discussion = discussionRepository.findById(discussionDtoId).orElseThrow(() -> new TutorException(STUDENT_DOESNT_HAVE_PERMISSION));
-
-        List<MessageDto> messagesList = getTeacherClarification(discussion);
-
-        if (messagesList.isEmpty()){
-            throw new TutorException(TEACHER_DID_NOT_CLARIFIED);
-        }
-
-         return messagesList;
-    }
-
-    private List<MessageDto> getTeacherClarification(Discussion discussion) {
-        List<MessageDto> messagesList = new ArrayList<>();
-        for (Message message: discussion.getDiscussionListMessages()){
-           if (message.getUser().getRole().equals(User.Role.TEACHER)){
-               MessageDto messageDto = new MessageDto(message);
-               messageDto.setUser(message.getUser());
-               messagesList.add(messageDto);
-           }
-        }
-        return messagesList;
-    }
-
-    @Retryable(
-            value = { SQLException.class },
-            backoff = @Backoff(delay = 5000))
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public List<DiscussionDto> teacherVisualizesAllDiscussion(int courseId) {
-        return discussionRepository.findByCourseId(courseId).stream().map(DiscussionDto::new).collect(Collectors.toList());
-    }
     public void deleteQuizAnswer(QuizAnswer quizAnswer) {
         for (QuestionAnswer questionAnswer : quizAnswer.getQuestionAnswers()) {
             questionAnswer.remove();
@@ -317,4 +221,92 @@ public class AnswerService {
         quizAnswer.remove();
         quizAnswerRepository.delete(quizAnswer);
     }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<DiscussionDto> findDiscussionById(int courseId){
+        return discussionRepository.findByCourseId(courseId).stream().map(DiscussionDto::new).collect(Collectors.toList());
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<DiscussionDto> findByCourseIdandStudent(int courseId, String userName){
+        User user = userRepository.findByUsername(userName);
+        if (user == null){
+            throw new TutorException(USER_NOT_FOUND , userName);
+        }
+        return discussionRepository.findByCourseIdandStudent(courseId, user).stream().map(DiscussionDto::new).collect(Collectors.toList());
+    }
+
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public DiscussionDto createDiscussion(int courseId, int quizAnswerId, String userName){
+        User user = userRepository.findByUsername(userName);
+        if (user == null){
+            throw new TutorException(USER_NOT_FOUND , userName);
+        }
+        QuizAnswer quizAnswer = quizAnswerRepository.findById(quizAnswerId).orElseThrow(() -> new TutorException(QUIZ_NOT_FOUND , quizAnswerId));
+        Course course = courseRepository.findById(courseId).orElseThrow(() -> new TutorException(COURSE_NOT_FOUND , courseId));
+        Discussion discussion = new Discussion(course, quizAnswer, user);
+        discussionRepository.save(discussion);
+        return new DiscussionDto(discussion);
+    }
+
+
+
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public MessageDto submitMessage(MessageDto messageDto, int discussionId, String userName) {
+        Discussion discussion = discussionRepository.findById(discussionId).orElseThrow(() -> new TutorException(ErrorMessage.DISCUSSION_NOT_FOUND));
+
+        User user = userRepository.findByUsername(userName);
+        if (user == null){
+            throw new TutorException(USER_NOT_FOUND , userName);
+        }
+
+        messageDto.setName(user.getName());
+        messageDto.setUserName(user.getUsername());
+        messageDto.setDiscussionId(discussionId);
+
+        Message message  = new Message(discussion, messageDto);
+
+        messageRepository.save(message);
+        return new MessageDto(message);
+    }
+
+
+
+
+
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<MessageDto> seeMessages(int discussionId){
+        Discussion discussion = discussionRepository.findById(discussionId).orElseThrow(() -> new TutorException(DISCUSSION_NOT_FOUND));
+        return discussion.getDiscussionListMessages().stream().map(MessageDto::new).collect(Collectors.toList());
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public DiscussionDto makePublicDiscussion(int discussionId){
+        Discussion discussion = discussionRepository.findById(discussionId).orElseThrow(() -> new TutorException(DISCUSSION_NOT_FOUND));
+        discussion.changeStatus();
+        return new DiscussionDto(discussion);
+    }
+
+
 }

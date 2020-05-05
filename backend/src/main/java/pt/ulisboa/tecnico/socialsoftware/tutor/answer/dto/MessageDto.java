@@ -5,28 +5,37 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class MessageDto implements Serializable {
 
     private Integer id;
 
-    private User user;
+    private Integer discussionId;
+
+    private String userName;
+
+    private String name;
 
     private String sentence;
 
-    private LocalDateTime messageDate;
+    private String messageDate;
 
-    private DiscussionDto discussionDto;
 
-    public MessageDto(){
-    }
+
+    public MessageDto(){}
 
     public MessageDto(Message message){
         this.id=message.getId();
+        this.discussionId = message.getDiscussion().getId();
+        this.userName = message.getUserName();
+        this.name = message.getName();
         this.sentence=message.getSentence();
-        this.messageDate=message.getMessageDate();
-        this.user = message.getUser();
-        this.discussionDto = new DiscussionDto(message.getDiscussion());
+
+        if (message.getMessageDate() != null){
+            this.messageDate = message.getMessageDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        }
+
     }
 
     public Integer getId() {
@@ -37,12 +46,28 @@ public class MessageDto implements Serializable {
         this.id = id;
     }
 
-    public User getUser() {
-        return user;
+    public Integer getDiscussionId() {
+        return discussionId;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setDiscussionId(Integer discussionId) {
+        this.discussionId = discussionId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getSentence() {
@@ -53,28 +78,11 @@ public class MessageDto implements Serializable {
         this.sentence = sentence;
     }
 
-    public LocalDateTime getMessageDate() {
+    public String getMessageDate() {
         return messageDate;
     }
 
-    public void setMessageDate(LocalDateTime messageDate) {
+    public void setMessageDate(String messageDate) {
         this.messageDate = messageDate;
-    }
-
-    public User.Role getUserRole(){ return user.getRole(); }
-
-
-    public DiscussionDto getDiscussionDto() { return discussionDto; }
-
-    public void setDiscussionDto(DiscussionDto discussionDto) { this.discussionDto = discussionDto; }
-
-    @Override
-    public String toString() {
-        return "MessageDto{" +
-                "id=" + id +
-                ", user=" + user +
-                ", sentence='" + sentence + '\'' +
-                ", messageDate=" + messageDate +
-                '}';
     }
 }

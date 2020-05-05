@@ -40,6 +40,9 @@ public class QuizAnswer implements DomainEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "quizAnswer", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<QuestionAnswer> questionAnswers = new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "quizAnswer", fetch = FetchType.LAZY, orphanRemoval=true)
+    private Set<Discussion> createdDiscussions = new HashSet<>();
+
     public QuizAnswer() {
     }
 
@@ -172,6 +175,10 @@ public class QuizAnswer implements DomainEntity {
 
             this.usedInStatistics = true;
         }
+    }
+
+    public void addDiscussion(Discussion discussion){
+        createdDiscussions.add(discussion);
     }
 
 }

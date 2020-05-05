@@ -4,6 +4,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Discussion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
@@ -72,6 +73,9 @@ public class User implements UserDetails, DomainEntity {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "creator", fetch = FetchType.LAZY, orphanRemoval=true)
     private Set<Tourney> createdTourneys = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "creatorStudent", fetch = FetchType.LAZY, orphanRemoval=true)
+    private Set<Discussion> createdDiscussions = new HashSet<>();
 
     public User() {
     }
@@ -511,5 +515,9 @@ public class User implements UserDetails, DomainEntity {
         }
 
         return result;
+    }
+
+    public void addDiscussion(Discussion discussion){
+        createdDiscussions.add(discussion);
     }
 }

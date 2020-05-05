@@ -4,6 +4,7 @@ public enum ErrorMessage {
     MESSAGE_NULL("Cannot send a null message"),
     MESSAGE_EMPTY("Cannot send a empty message"),
     MESSAGE_DATE_NULL("Cannot send a message with a null date"),
+    DISCUSSION_NOT_FOUND("Discussion not found"),
     STUDENT_DID_NOT_ANSWER_QUESTION("Student did not answered this question"),
     STUDENT_DOESNT_HAVE_PERMISSION("Student does not have permission to see a discussion clarification without " +
             "answering the corresponding question"),
