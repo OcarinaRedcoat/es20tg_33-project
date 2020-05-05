@@ -1,6 +1,6 @@
 <template>
   <v-card class="table">
-    <v-form ref="form" v-model="valid" lazy-validation data-cy="form">
+    <v-form ref="form">
       <v-card-title>Responses</v-card-title>
       <v-data-table
         :headers="headers"
@@ -24,57 +24,99 @@
             />
             <v-spacer />
             <v-spacer />
-            <v-btn
-              color="primary"
-              @click="teacherResponse"
-              data-cy="teacherResponse"
-              >Submit Teacher Response</v-btn
-            >
           </v-card-title>
         </template>
+        <template v-slot:item.action="{ item }">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-icon
+                small
+                class="mr-2"
+                v-on="on"
+                @click="createNewMessage(item)"
+                data-cy="createFromCourse"
+                >fas fa-envelope-square</v-icon
+              >
+            </template>
+            <span>Create new Message</span>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-icon small class="mr-2" v-on="on" @click="seeMessages(item)"
+                >far fa-eye</v-icon
+              >
+            </template>
+            <span>See Messages</span>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-icon
+                small
+                class="mr-2"
+                v-on="on"
+                @click="changePublicStatus(item)"
+                >cached</v-icon
+              >
+            </template>
+            <span>Change Public Status</span>
+          </v-tooltip>
+        </template>
       </v-data-table>
-      <add-Response
-        v-if="currentMessage"
-        v-model="addResponse"
-        :teacherResponse="currentMessage"
-        v-on:new-teacher-response="teacherResponse"
-        v-on:close-dialog="onCloseDialog"
-      />
     </v-form>
+    <add-response
+      v-if="currentDiscussion"
+      v-model="editDiscussionDialog"
+      :discussion="currentDiscussion"
+      v-on:close-dialog="onCloseDialog"
+    />
+    <show-messages-dialog
+      v-if="currentDiscussion"
+      v-model="seeMessagesDialog"
+      :discussion="currentDiscussion"
+      v-on:close-dialog="onCloseDialog"
+    />
   </v-card>
 </template>
+
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import Discussion from '@/models/statement/Discussion';
-import Message from '@/models/statement/Message';
 import AddResponse from '@/views/teacher/AddResponse.vue';
-import Course from '@/models/user/Course';
+import ShowMessagesDialog from '@/views/teacher/ShowMessagesDialog.vue';
 @Component({
   components: {
-    'add-Response': AddResponse
+    'show-messages-dialog': ShowMessagesDialog,
+    'add-response': AddResponse
   }
 })
-export default class AllDiscussionView extends Vue {
+export default class TeacherDiscussionView extends Vue {
   discussions: Discussion[] = [];
   search: string = '';
-  currentMessage: Message | null = null;
-  addResponse: boolean = false;
+  currentDiscussion: Discussion | null = null;
+  editDiscussionDialog: boolean = false;
+  seeMessagesDialog: boolean = false;
   headers: object = [
     {
       text: 'Discussion',
-      value: 'discussionId',
+      value: 'title',
       align: 'left',
-      width: '45%'
+      width: '30%'
     },
     {
-      text: 'Student Message',
-      value: 'studentMessage.message',
+      text: 'Student',
+      value: 'creatorStudent.name',
       align: 'center',
-      width: '45%'
+      width: '30%'
     },
     {
-      text: 'Actions',
+      text: 'Discussion Status',
+      value: 'status',
+      align: 'center',
+      width: '30%'
+    },
+    {
+      text: 'Create/See Messages and Status',
       value: 'action',
       align: 'center',
       width: '10%',
@@ -93,25 +135,28 @@ export default class AllDiscussionView extends Vue {
     await this.$store.dispatch('clearLoading');
   }
 
-  async onCreateTeacherResponse(message: Message) {
-    await this.$store.dispatch('loading');
+  createNewMessage(discussion: Discussion) {
+    this.currentDiscussion = new Discussion(discussion);
+    this.editDiscussionDialog = true;
+  }
+
+  seeMessages(discussion: Discussion) {
+    this.currentDiscussion = new Discussion(discussion);
+    this.seeMessagesDialog = true;
+  }
+
+  async changePublicStatus(discussion: Discussion) {
     try {
-      await RemoteServices.teacherMessageSub(message);
-      console.log(this.discussions);
+      await RemoteServices.makeDiscussionPublic(discussion.id);
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
-    await this.$store.dispatch('clearLoading');
-  }
-
-  teacherResponse() {
-    this.addResponse = false;
-    this.currentMessage = null;
   }
 
   onCloseDialog() {
-    this.addResponse = false;
-    this.currentMessage = null;
+    this.seeMessagesDialog = false;
+    this.editDiscussionDialog = false;
+    this.currentDiscussion = null;
   }
 }
 </script>

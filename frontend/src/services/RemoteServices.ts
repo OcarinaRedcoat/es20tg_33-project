@@ -634,11 +634,13 @@ export default class RemoteServices {
       });
   }
 
-
-  static async submitStudentAnswer(questionAnswerId: number, message: Message) {
+  static async submitMessage(
+    discussionId: number | undefined,
+    message: Message
+  ) {
     return httpClient
       .post(
-        `/courses/${Store.getters.getCurrentCourse.courseExecutionId}/questionAnswer/${questionAnswerId}/discussion/submit`,
+        `/quizAnswer/${discussionId}/${Store.getters.getUser.username}`,
         message
       )
       .then(response => {
@@ -649,6 +651,22 @@ export default class RemoteServices {
       });
   }
 
+  static async createDiscussion(quizAnswerId: number | undefined) {
+    console.log(quizAnswerId);
+    console.log(Store.getters.getCurrentCourse.courseId);
+    console.log(Store.getters.getUser.username);
+    return httpClient
+      .post(
+        `/quizAnswer/createDisscussion/${Store.getters.getCurrentCourse.courseId}/${Store.getters.getUser.username}/` +
+          quizAnswerId
+      )
+      .then(response => {
+        return new Discussion(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
   static async getPendingQuestions(): Promise<StudentQuestion[]> {
     return httpClient
       .get(
@@ -664,7 +682,6 @@ export default class RemoteServices {
       });
   }
 
-
   static async getTourneys() {
     return httpClient
       .get('/tourneys/open')
@@ -678,11 +695,23 @@ export default class RemoteServices {
       });
   }
 
-
   static async getDiscussions() {
     return httpClient
+      .get(`/discussion/${Store.getters.getCurrentCourse.courseId}`)
+      .then(response => {
+        return response.data.map((discussion: any) => {
+          return new Discussion(discussion);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getDiscussionsStudent() {
+    return httpClient
       .get(
-        `/visualize/teacher/${Store.getters.getCurrentCourse.courseExecutionId}`
+        `/discussion/${Store.getters.getCurrentCourse.courseId}/${Store.getters.getUser.username}`
       )
       .then(response => {
         return response.data.map((discussion: any) => {
@@ -694,9 +723,26 @@ export default class RemoteServices {
       });
   }
 
-  static async teacherMessageSub(message: Message) {
+  static async seeMessagesDiscussion(discussionId: number | undefined) {
     return httpClient
-      .post('/discussion/teacher/submit', message)
+      .get(
+        `/quizAnswer/${discussionId}`
+      )
+      .then(response => {
+        return response.data.map((message: any) => {
+          return new Message(message);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async makeDiscussionPublic(discussionId: number | undefined) {
+    return httpClient
+      .get(
+        `/discussion/${discussionId}`
+      )
       .then(response => {
         return new Discussion(response.data);
       })
@@ -718,7 +764,8 @@ export default class RemoteServices {
 
   static async cancelTourney(tourney: Tourney) {
     return httpClient
-      .put(`/tourneys/${tourney.tourneyId}/cancel`).catch(async error => {
+      .put(`/tourneys/${tourney.tourneyId}/cancel`)
+      .catch(async error => {
         throw Error(await this.errorMessage(error));
       });
   }
@@ -760,5 +807,4 @@ export default class RemoteServices {
       return 'Unknown Error - Contact admin';
     }
   }
-
 }

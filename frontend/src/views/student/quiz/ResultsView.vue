@@ -47,6 +47,11 @@
       @increase-order="increaseOrder"
       @decrease-order="decreaseOrder"
     />
+    <div class="discussion-buttons">
+      <v-btn @click="createDiscussion" depre data-cy="submitDiscussionMessage">
+        Create Discussion
+      </v-btn>
+    </div>
   </div>
 </template>
 
@@ -54,6 +59,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import StatementManager from '@/models/statement/StatementManager';
 import ResultComponent from '@/views/student/quiz/ResultComponent.vue';
+import RemoteServices from '@/services/RemoteServices';
 
 @Component({
   components: {
@@ -97,6 +103,16 @@ export default class ResultsView extends Vue {
       this.questionOrder = n;
     }
   }
+
+  async createDiscussion() {
+    try {
+      await RemoteServices.createDiscussion(
+        this.statementManager.statementQuiz?.quizAnswerId
+      );
+    } catch (e) {
+      await this.$store.dispatch('error', e);
+    }
+  }
 }
 </script>
 
@@ -108,5 +124,14 @@ export default class ResultsView extends Vue {
 .incorrect-current {
   background-color: #cf2323 !important;
   color: #fff !important;
+}
+
+.discussion-buttons {
+  margin-top: 40px;
+  padding-bottom: 30px;
+
+  button {
+    margin: 10px;
+  }
 }
 </style>

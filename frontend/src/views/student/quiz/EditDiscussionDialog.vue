@@ -56,7 +56,6 @@ export default class EditCourseDialog extends Vue {
   editMessage!: Message;
   editDiscussion!: Discussion;
   isCreateCourse: boolean = false;
-  //discussionId: number = this.discussion.discussionId;
 
   created() {
     console.log(this.discussion.id);
@@ -65,6 +64,7 @@ export default class EditCourseDialog extends Vue {
   }
 
   async saveMessage() {
+
     if (!this.editMessage.sentence) {
       await this.$store.dispatch('error', 'Message must have a sentence!');
       return;
