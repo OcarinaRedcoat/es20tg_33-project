@@ -17,12 +17,16 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.QuizService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.dto.QuizDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizQuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementQuizDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
@@ -70,6 +74,8 @@ public class TourneyService {
     @Autowired
     private QuizAnswerRepository quizAnswerRepository;
 
+    @Autowired
+    private QuizQuestionRepository quizQuestionRepository;
 
     @PersistenceContext
     EntityManager entityManager;
@@ -114,10 +120,17 @@ public class TourneyService {
         tourney.setCourseExecution(courseExecutionRepository.findById(courseExecutionDto.getCourseExecutionId())
                 .orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND,
                         courseExecutionDto.getCourseExecutionId())));
+
         tourney.setTopics(tourneyDto
                 .getTourneyTopics().stream().map(topicDto -> topicRepository
                         .findTopicByName(tourney.getCourseExecution().getCourse().getId(), topicDto.getName()))
                 .collect(Collectors.toList()));
+
+        for (TopicDto topicDto : tourneyDto.getTourneyTopics()) {
+            Topic topic = topicRepository.findTopicByName(tourney.getCourseExecution().getCourse().getId(),
+                    topicDto.getName());
+            topic.addTourney(tourney);
+        }
 
         if (tourney.getTopics().size() == 0)
             throw new TutorException(ErrorMessage.TOURNEY_NOT_CONSISTENT, "topics");
@@ -161,8 +174,9 @@ public class TourneyService {
             throw new TutorException(ErrorMessage.STUDENT_ALREADY_ENROLLED);
         }
 
-        if (tourney.getEnrolledStudents().size() == 1)
+        if (tourney.getEnrolledStudents().size() == 1) {
             this.createTourneyQuiz(tourney);
+        }
 
         tourney.enrollStudent(user);
         user.addEnrolledTourneys(tourney);
@@ -174,9 +188,8 @@ public class TourneyService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public TourneyDto createTourneyQuiz(Tourney tourney) {
         TourneyDto tourneyDto = new TourneyDto(tourney);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         QuizDto quizDto = new QuizDto();
-        LocalDateTime creationDate = LocalDateTime.now();
+        String creationDate = DateHandler.toISOString(DateHandler.now());
         String availableDate = tourney.getAvailableDate();
         String conclusionDate = tourney.getConclusionDate();
         quizDto.setTitle(tourney.getTitle() + " - Quiz");
@@ -184,20 +197,40 @@ public class TourneyService {
         quizDto.setScramble(true);
         quizDto.setOneWay(true);
         quizDto.setQrCodeOnly(true);
-        quizDto.setCreationDate(creationDate.format(formatter));
+        quizDto.setCreationDate(creationDate);
         quizDto.setAvailableDate(availableDate);
         quizDto.setConclusionDate(conclusionDate);
 
-        List<QuestionDto> questions = new ArrayList<>();
-        for (Topic topic : tourney.getTopics()) {
-            questions.addAll(topic.getQuestions().stream().map(QuestionDto::new).collect(Collectors.toList()));
+        List<Question> questions = new ArrayList<>();
+        List<Integer> selectedQuestions = new ArrayList<>();
+        int numberOfQuestions = tourney.getNumberOfQuestions();
+        List<Topic> topics = tourney.getTopics();
+        for (Topic topic : topics) {
+            questions.addAll(topic.getQuestions());
         }
-        quizDto.setQuestions(questions);
+        int i = 0;
+        int maxQuestions = numberOfQuestions < questions.size() ? numberOfQuestions : questions.size();
+        int nQuestions = questions.size();
+        while (i < maxQuestions) {
+            int index = (int) (Math.random() * nQuestions);
+            if (!selectedQuestions.contains(index)) {
+                selectedQuestions.add(index);
+                i++;
+            }
+        }
+
         quizDto.setTourney(tourneyDto);
 
         quizDto = quizService.createQuiz(tourney.getCourseExecution().getId(), quizDto);
         Quiz quiz = quizRepository.findByKey(quizDto.getKey())
                 .orElseThrow(() -> new TutorException(ErrorMessage.QUIZ_NOT_FOUND));
+
+        for (int j = 0; j < selectedQuestions.size(); j++) {
+            Question question = questions.get(selectedQuestions.get(j));
+            QuizQuestion quizQuestion = new QuizQuestion(quiz, question, j);
+            quizQuestionRepository.save(quizQuestion);
+        }
+
         tourney.setQuiz(quiz);
 
         return new TourneyDto(tourney);
@@ -239,29 +272,26 @@ public class TourneyService {
 
         return tourneyStatsList;
     }
-    
-    @Retryable(
-            value = { SQLException.class },
-            backoff = @Backoff(delay = 5000))
+
+    @Retryable(value = { SQLException.class }, backoff = @Backoff(delay = 5000))
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public StatementQuizDto getTourneyQuizAnswer(Integer tourneyId, Integer userId) {
-        Tourney tourney = tourneyRepository.findById(tourneyId).orElseThrow(() -> new TutorException(ErrorMessage.TOURNEY_NOT_FOUND));
+        Tourney tourney = tourneyRepository.findById(tourneyId)
+                .orElseThrow(() -> new TutorException(ErrorMessage.TOURNEY_NOT_FOUND));
         User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
         Quiz quiz = tourney.getQuiz();
         LocalDateTime now = DateHandler.now();
 
         Integer executionId = tourney.getCourseExecution().getId();
 
-        Set<Integer> studentQuizIds =  user.getQuizAnswers().stream()
+        Set<Integer> studentQuizIds = user.getQuizAnswers().stream()
                 .filter(quizAnswer -> quizAnswer.getQuiz().getCourseExecution().getId() == executionId)
-                .map(QuizAnswer::getQuiz)
-                .map(Quiz::getId)
-                .collect(Collectors.toSet());
+                .map(QuizAnswer::getQuiz).map(Quiz::getId).collect(Collectors.toSet());
 
         QuizAnswer quizAnswer;
 
         // create QuizAnswer for quizzes
-        if (!studentQuizIds.contains(quiz.getId()) && (quiz.getConclusionDate() == null || quiz.getConclusionDate().isAfter(now))) {
+        if (quiz != null && !studentQuizIds.contains(quiz.getId()) && quiz.getConclusionDate().isAfter(now)) {
             quizAnswer = new QuizAnswer(user, quiz);
             quizAnswerRepository.save(quizAnswer);
             return new StatementQuizDto(quizAnswer);

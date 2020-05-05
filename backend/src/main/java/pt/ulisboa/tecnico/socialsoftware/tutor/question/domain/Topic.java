@@ -32,8 +32,8 @@ public class Topic implements DomainEntity {
     @ManyToMany(cascade = CascadeType.ALL, fetch=FetchType.EAGER)
     private final List<TopicConjunction> topicConjunctions = new ArrayList<>();
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch=FetchType.EAGER)
-    private Set<Tourney> topicTourneys = new HashSet<>();
+    @ManyToMany(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
+    private Set<Tourney> tourneys = new HashSet<>();
 
     @ManyToOne
     @JoinColumn(name = "course_id")
@@ -93,11 +93,11 @@ public class Topic implements DomainEntity {
     }
 
     public Set<Tourney> getTourneys() {
-        return topicTourneys;
+        return tourneys;
     }
 
     public void addTourney(Tourney tourney) {
-        this.topicTourneys.add(tourney);
+        this.tourneys.add(tourney);
     }
 
     @Override
