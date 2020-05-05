@@ -17,7 +17,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 @Table(name = "student_questions")
 public class StudentQuestion {
 
-    public enum Status {PENDING, REJECTED, APPROVED}
+    public enum Status {PENDING, REJECTED, APPROVED, AVAILABLE}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -165,6 +165,7 @@ public class StudentQuestionService {
         StudentQuestion studentQuestion = studentQuestionRepository.findById(questionId).orElseThrow(() -> new TutorException(QUESTION_NOT_FOUND, questionId));
         checkIfApproved(studentQuestion);
         QuestionDto questionDto = setupQuestionDto(studentQuestion);
+        studentQuestion.setStatus(StudentQuestion.Status.AVAILABLE);
 
         return questionService.createQuestion(studentQuestion.getCourse().getId(), questionDto);
     }
@@ -223,6 +224,7 @@ public class StudentQuestionService {
         questionDto.setKey(null);
         questionDto.setStatus(Question.Status.AVAILABLE.name());
         List<OptionDto> options = studentQuestion.getOptions().stream().map(OptionDto::new).collect(Collectors.toList());
+        options.forEach(optionDto -> optionDto.setStudentQuestionOption(true));
         questionDto.setOptions(options);
         return questionDto;
     }

@@ -52,7 +52,7 @@
             </template>
             <span>Show Question</span>
           </v-tooltip>
-          <v-tooltip bottom v-if="item.status !== 'APPROVED'">
+          <v-tooltip bottom v-if="item.status !== ('APPROVED' || 'AVAILABLE')">
             <template v-slot:activator="{ on }">
               <v-icon
                 small
