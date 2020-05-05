@@ -212,10 +212,12 @@ public class AnswerService {
 
 
     public void deleteQuizAnswer(QuizAnswer quizAnswer) {
-        for (QuestionAnswer questionAnswer : quizAnswer.getQuestionAnswers()) {
+        List<QuestionAnswer> questionAnswers = new ArrayList<>(quizAnswer.getQuestionAnswers());
+        questionAnswers.forEach(questionAnswer ->
+        {
             questionAnswer.remove();
             questionAnswerRepository.delete(questionAnswer);
-        }
+        });
         quizAnswer.remove();
         quizAnswerRepository.delete(quizAnswer);
     }
