@@ -18,12 +18,7 @@ export default class Discussion {
       this.creatorStudent = jsonObj.creatorStudent;
       this.discussionListMessages = jsonObj.discussionListMessages;
       this.title = jsonObj.title;
-      if (jsonObj.status == 'PUBLIC'){
-        this.status = 'PUBLIC';
-      }else {
-        this.status = 'PRIVATE';
-      }
-      //this.status = jsonObj.status;
+      this.status = jsonObj.status;
     }
   }
 }

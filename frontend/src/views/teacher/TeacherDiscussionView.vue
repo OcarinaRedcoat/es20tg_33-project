@@ -34,7 +34,6 @@
                 class="mr-2"
                 v-on="on"
                 @click="createNewMessage(item)"
-                data-cy="createFromCourse"
                 >fas fa-envelope-square</v-icon
               >
             </template>
@@ -84,6 +83,7 @@ import RemoteServices from '@/services/RemoteServices';
 import Discussion from '@/models/statement/Discussion';
 import AddResponse from '@/views/teacher/AddResponse.vue';
 import ShowMessagesDialog from '@/views/teacher/ShowMessagesDialog.vue';
+import Course from '@/models/user/Course';
 @Component({
   components: {
     'show-messages-dialog': ShowMessagesDialog,
@@ -128,7 +128,6 @@ export default class TeacherDiscussionView extends Vue {
     await this.$store.dispatch('loading');
     try {
       this.discussions = await RemoteServices.getDiscussions();
-      console.log(this.discussions);
     } catch (error) {
       await this.$store.dispatch('error', error);
     }
@@ -145,11 +144,22 @@ export default class TeacherDiscussionView extends Vue {
     this.seeMessagesDialog = true;
   }
 
-  async changePublicStatus(discussion: Discussion) {
-    try {
-      await RemoteServices.makeDiscussionPublic(discussion.id);
-    } catch (error) {
-      await this.$store.dispatch('error', error);
+  async changePublicStatus(discussionChange: Discussion) {
+    if (
+      confirm('Are you sure you want to change the status of this discussion?')
+    ) {
+      try {
+        const result = await RemoteServices.makeDiscussionPublic(
+          discussionChange.id
+        );
+        this.discussions.forEach(function(value) {
+          if (value.id == result.id) {
+            value.status = result.status;
+          }
+        });
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
     }
   }
 

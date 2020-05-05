@@ -739,8 +739,9 @@ export default class RemoteServices {
   }
 
   static async makeDiscussionPublic(discussionId: number | undefined) {
+    console.log(discussionId);
     return httpClient
-      .get(
+      .post(
         `/discussion/${discussionId}`
       )
       .then(response => {
