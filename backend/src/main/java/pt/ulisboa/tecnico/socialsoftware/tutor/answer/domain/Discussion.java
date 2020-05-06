@@ -37,6 +37,8 @@ public class Discussion {
     @OneToMany
     private List<Message> discussionListMessages = new ArrayList<>();
 
+    //@Enumerated(EnumType.STRING)
+    @Column(name = "status_id")
     private PublicStatus status;
 
     public Discussion(){

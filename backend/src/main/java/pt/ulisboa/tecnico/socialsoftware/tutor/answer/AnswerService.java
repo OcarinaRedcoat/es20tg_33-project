@@ -303,4 +303,20 @@ public class AnswerService {
         return new DiscussionDto(discussion);
     }
 
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<DiscussionDto> findPublicDiscussions(int courseId){
+        return discussionRepository.findPublicDiscussions(courseId, Discussion.PublicStatus.PUBLIC.ordinal()).stream().map(DiscussionDto::new).collect(Collectors.toList());
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public List<DiscussionDto> findQuizAnswerPublicDiscussions(int courseId, int quizAnswerId){
+        return discussionRepository.findQuizAnswerPublicDiscussions(courseId, quizAnswerId, Discussion.PublicStatus.PUBLIC.ordinal()).stream().map(DiscussionDto::new).collect(Collectors.toList());
+    }
+
 }

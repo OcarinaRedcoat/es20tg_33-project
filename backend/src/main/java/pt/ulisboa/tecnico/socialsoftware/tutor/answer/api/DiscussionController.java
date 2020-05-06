@@ -62,5 +62,17 @@ public class DiscussionController {
         return answerService.makePublicDiscussion(discussionId);
     }
 
+    @GetMapping("/discussion/public/{courseId}/{quizAnswerId}")
+    @PreAuthorize("hasRole('ROLE_STUDENT') or hasRole('ROLE_DEMO_STUDENT')")
+    public List<DiscussionDto> getQuizAnswerPublicDiscussions(@PathVariable Integer courseId, @PathVariable Integer quizAnswerId){
+        return answerService.findQuizAnswerPublicDiscussions(courseId, quizAnswerId);
+    }
+
+    @GetMapping("/discussion/public/{courseId}")
+    @PreAuthorize("hasRole('ROLE_STUDENT') or hasRole('ROLE_DEMO_STUDENT')")
+    public List<DiscussionDto> getPublicDiscussions(@PathVariable Integer courseId){
+        return answerService.findPublicDiscussions(courseId);
+    }
+
 }
 
