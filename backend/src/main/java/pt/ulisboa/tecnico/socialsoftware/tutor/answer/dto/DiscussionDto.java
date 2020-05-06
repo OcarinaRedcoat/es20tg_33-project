@@ -27,6 +27,8 @@ public class DiscussionDto implements Serializable {
 
     private Discussion.PublicStatus status;
 
+    private Discussion.SolvedStatus solvedStatus;
+
     public DiscussionDto(){}
 
     public DiscussionDto(Discussion discussion){
@@ -36,6 +38,7 @@ public class DiscussionDto implements Serializable {
         this.title = discussion.getQuizAnswer().getQuiz().getTitle();
 
         this.status = discussion.getStatus();
+        this.solvedStatus = discussion.getSolved();
 
         this.creatorStudent = new StudentDto(discussion.getCreatorStudent());
         this.discussionListMessages = discussion.getDiscussionListMessages().stream().map(MessageDto::new).collect(Collectors.toList());
@@ -95,5 +98,13 @@ public class DiscussionDto implements Serializable {
 
     public void setStatus(Discussion.PublicStatus status) {
         this.status = status;
+    }
+
+    public Discussion.SolvedStatus getSolvedStatus() {
+        return solvedStatus;
+    }
+
+    public void setSolvedStatus(Discussion.SolvedStatus solvedStatus) {
+        this.solvedStatus = solvedStatus;
     }
 }

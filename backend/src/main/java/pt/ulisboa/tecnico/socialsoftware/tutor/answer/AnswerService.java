@@ -274,6 +274,12 @@ public class AnswerService {
             throw new TutorException(USER_NOT_FOUND , userName);
         }
 
+        if (user.getRole().equals(User.Role.TEACHER)){
+            discussion.changeSolved();
+        } else if (user.getRole().equals(User.Role.STUDENT)){
+            discussion.changeSolved();
+        }
+
         messageDto.setName(user.getName());
         messageDto.setUserName(user.getUsername());
         messageDto.setDiscussionId(discussionId);

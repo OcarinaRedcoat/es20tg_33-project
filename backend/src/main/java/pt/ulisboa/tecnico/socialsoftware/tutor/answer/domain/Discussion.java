@@ -1,12 +1,6 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain;
 
-import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
-
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.MessageDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
-import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.DiscussionDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -17,6 +11,7 @@ import java.util.List;
 public class Discussion {
 
     public enum PublicStatus {PUBLIC, PRIVATE}
+    public enum SolvedStatus {SOLVED, UNSOLVED}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,10 +32,12 @@ public class Discussion {
     @OneToMany
     private List<Message> discussionListMessages = new ArrayList<>();
 
-    //@Enumerated(EnumType.STRING)
     @Column(name = "status_id")
     private PublicStatus status;
 
+    @Column(name = "solved_id")
+    private SolvedStatus solved;
+    
     public Discussion(){
     }
 
@@ -49,6 +46,7 @@ public class Discussion {
         this.course = course;
         this.quizAnswer = quizAnswer;
         this.status = PublicStatus.PRIVATE;
+        this.solved = SolvedStatus.UNSOLVED;
         this.creatorStudent.addDiscussion(this);
         this.course.addDiscussion(this);
         this.quizAnswer.addDiscussion(this);
@@ -114,4 +112,15 @@ public class Discussion {
         }
     }
 
+    public void changeSolved(){
+        if (solved == SolvedStatus.SOLVED){
+            solved = SolvedStatus.UNSOLVED;
+        } else{
+            solved = SolvedStatus.SOLVED;
+        }
+    }
+
+    public SolvedStatus getSolved() {
+        return solved;
+    }
 }
