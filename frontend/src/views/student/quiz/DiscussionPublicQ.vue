@@ -93,7 +93,7 @@ export default class DiscussionPublicQ extends Vue {
       width: '30%'
     },
     {
-      text: 'Create/See Messages',
+      text: 'See Messages',
       value: 'action',
       align: 'center',
       width: '10%',

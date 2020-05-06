@@ -17,6 +17,7 @@ import StudentQuestion from '@/models/submissions/StudentQuestion';
 import Tourney from '@/models/tourney/Tourney';
 import Discussion from '@/models/statement/Discussion';
 import Message from '@/models/statement/Message';
+import DiscussionStats from '@/models/statement/DiscussionStats';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 10000;
@@ -667,6 +668,20 @@ export default class RemoteServices {
         throw Error(await this.errorMessage(error));
       });
   }
+
+  static async getDiscussionStats() {
+    return httpClient
+      .get(
+        `/discussion/${Store.getters.getCurrentCourse.courseId}/${Store.getters.getUser.username}/dashboard`
+      )
+      .then(response => {
+        return new DiscussionStats(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async getPendingQuestions(): Promise<StudentQuestion[]> {
     return httpClient
       .get(
@@ -738,12 +753,9 @@ export default class RemoteServices {
       });
   }
 
-
   static async seeMessagesDiscussion(discussionId: number | undefined) {
     return httpClient
-      .get(
-        `/quizAnswer/${discussionId}`
-      )
+      .get(`/quizAnswer/${discussionId}`)
       .then(response => {
         return response.data.map((message: any) => {
           return new Message(message);
@@ -757,9 +769,7 @@ export default class RemoteServices {
   static async makeDiscussionPublic(discussionId: number | undefined) {
     console.log(discussionId);
     return httpClient
-      .post(
-        `/discussion/${discussionId}`
-      )
+      .post(`/discussion/${discussionId}`)
       .then(response => {
         return new Discussion(response.data);
       })

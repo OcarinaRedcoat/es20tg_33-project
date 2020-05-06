@@ -153,6 +153,29 @@
 
         <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
           <template v-slot:activator="{ on }">
+            <v-btn v-on="on" text dark data-cy="top-bar-discussion">
+              Discussion
+              <v-icon>fab fa-telegram-plane</v-icon>
+            </v-btn>
+          </template>
+          <v-list dense>
+            <v-list-item to="/student/discussions">
+              <v-list-item-action>
+                <v-icon>fas fa-comment</v-icon>
+              </v-list-item-action>
+              <v-list-item-title>Discussions</v-list-item-title>
+            </v-list-item>
+            <v-list-item to="/student/discussions/stats">
+              <v-list-item-action>
+                <v-icon>fas fa-percentage</v-icon>
+              </v-list-item-action>
+              <v-list-item-title>Stats</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+
+        <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
+          <template v-slot:activator="{ on }">
             <v-btn v-on="on" text dark data-cy="top-bar-submissions">
               Submissions
               <v-icon>fas fa-arrow-alt-circle-up</v-icon>
@@ -213,12 +236,6 @@
               <v-list-item-content>
                 <v-list-item-title>Solved</v-list-item-title>
               </v-list-item-content>
-            </v-list-item>
-            <v-list-item to="/student/discussions">
-              <v-list-item-action>
-                <v-icon>fas fa-comment</v-icon>
-              </v-list-item-action>
-              <v-list-item-title>Discussions</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>

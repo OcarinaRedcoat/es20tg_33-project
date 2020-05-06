@@ -51,7 +51,11 @@
       <v-btn @click="createDiscussion" depre data-cy="submitDiscussionMessage">
         Create Discussion
       </v-btn>
-      <v-btn to="/student/publicQuizDiscussions" value="statementManager" data-cy="seePublicDiscussions">
+      <v-btn
+        to="/student/publicQuizDiscussions"
+        value="statementManager"
+        data-cy="seePublicDiscussions"
+      >
         See Public Discussions
       </v-btn>
     </div>
@@ -63,7 +67,6 @@ import { Component, Vue } from 'vue-property-decorator';
 import StatementManager from '@/models/statement/StatementManager';
 import ResultComponent from '@/views/student/quiz/ResultComponent.vue';
 import RemoteServices from '@/services/RemoteServices';
-
 @Component({
   components: {
     'result-component': ResultComponent
@@ -72,7 +75,6 @@ import RemoteServices from '@/services/RemoteServices';
 export default class ResultsView extends Vue {
   statementManager: StatementManager = StatementManager.getInstance;
   questionOrder: number = 0;
-
   async created() {
     if (this.statementManager.isEmpty()) {
       await this.$router.push({ name: 'create-quiz' });
@@ -81,11 +83,9 @@ export default class ResultsView extends Vue {
       setTimeout(() => {
         this.statementManager.concludeQuiz();
       }, 2000);
-
       await this.$store.dispatch('clearLoading');
     }
   }
-
   increaseOrder(): void {
     if (
       this.questionOrder + 1 <
@@ -94,19 +94,16 @@ export default class ResultsView extends Vue {
       this.questionOrder += 1;
     }
   }
-
   decreaseOrder(): void {
     if (this.questionOrder > 0) {
       this.questionOrder -= 1;
     }
   }
-
   changeOrder(n: number): void {
     if (n >= 0 && n < +this.statementManager.statementQuiz!.questions.length) {
       this.questionOrder = n;
     }
   }
-
   async createDiscussion() {
     try {
       await RemoteServices.createDiscussion(
@@ -123,16 +120,13 @@ export default class ResultsView extends Vue {
 .incorrect {
   color: #cf2323 !important;
 }
-
 .incorrect-current {
   background-color: #cf2323 !important;
   color: #fff !important;
 }
-
 .discussion-buttons {
   margin-top: 40px;
   padding-bottom: 30px;
-
   button {
     margin: 10px;
   }
