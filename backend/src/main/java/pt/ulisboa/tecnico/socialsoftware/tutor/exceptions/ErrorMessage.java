@@ -92,7 +92,7 @@ public enum ErrorMessage {
     QUESTION_NOT_REJECTED("Question status not rejected"),
     USER_WITHOUT_SUBMITTED_QUESTIONS("This user doesn't have any submitted questions"),
     QUESTION_ALREADY_APPROVED("You can't delete an approved question"),
-    QUESTION_NOT_APPROVED("This question hasn't been approved"),
+    QUESTION_NOT_APPROVED("This question is not approved"),
     QUESTION_MISSING_OPTIONS("You need to fill all the option fields"),
   
     ACCESS_DENIED("You do not have permission to view this resource"),

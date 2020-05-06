@@ -91,4 +91,11 @@ public class StudentQuestionController {
         return this.studentQuestionService.resubmitQuestion(questionId, question);
     }
 
+    @PutMapping("studentQuestions/{questionId}/editApprovedQuestion")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'STUDENT_QUESTION.ACCESS')")
+    public StudentQuestionDto editApprovedQuestion(@PathVariable int questionId, @Valid @RequestBody StudentQuestionDto questionChanges) {
+
+        return this.studentQuestionService.editApprovedQuestion(questionId, questionChanges);
+    }
+
 }

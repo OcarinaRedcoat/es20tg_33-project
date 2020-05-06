@@ -144,14 +144,17 @@ public class StudentQuestion {
         setTitle(studentQuestionDto.getTitle());
         setContent(studentQuestionDto.getContent());
 
-        studentQuestionDto.getOptions().forEach(optionDto -> {
-            Option option = getOptionById(optionDto.getId());
-            if (option == null) {
-                throw new TutorException(OPTION_NOT_FOUND, optionDto.getId());
+        List<Option> options = getOptions();
+        List<OptionDto> changedOptions = studentQuestionDto.getOptions();
+
+        for (Option option : options) {
+            for (OptionDto optionDto : changedOptions) {
+                if (option.getSequence().equals(optionDto.getSequence())) {
+                    option.setContent(optionDto.getContent());
+                    option.setCorrect(optionDto.getCorrect());
+                }
             }
-            option.setContent(optionDto.getContent());
-            option.setCorrect(optionDto.getCorrect());
-        });
+        }
     }
 
     private void checkConsistentQuestion(StudentQuestionDto questionDto) {
@@ -181,17 +184,6 @@ public class StudentQuestion {
     private void canRemove() {
         if (this.status == Status.APPROVED) {
             throw new TutorException(QUESTION_ALREADY_APPROVED);
-        }
-    }
-
-    private Option getOptionById(Integer id) {
-        return getOptions().stream().filter(option -> option.getId().equals(id)).findAny().orElse(null);
-    }
-
-    public void setOptionsSequence() {
-        int index = 0;
-        for (Option option: getOptions()) {
-            option.setSequence(index++);
         }
     }
 }

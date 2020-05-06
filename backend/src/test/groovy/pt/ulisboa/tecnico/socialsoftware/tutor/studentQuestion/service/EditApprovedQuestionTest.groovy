@@ -132,7 +132,7 @@ class EditApprovedQuestionTest extends Specification{
         studentQuestionRepository.count() == 1L
         def result = studentQuestionRepository.findAll().get(0)
         result.getId() != null
-        result.getStatus() == StudentQuestion.Status.PENDING
+        result.getStatus() == StudentQuestion.Status.APPROVED
         result.getTitle() == CHANGED_QUESTION_TITLE
         result.getContent() == QUESTION_CONTENT
         result.getOptions().size() == 4
