@@ -9,6 +9,7 @@ export default class Discussion {
   discussionListMessages: Message[] = [];
   title: string | undefined;
   status: string | undefined;
+  solvedStatus: string | undefined;
 
   constructor(jsonObj?: Discussion) {
     if (jsonObj) {
@@ -19,6 +20,7 @@ export default class Discussion {
       this.discussionListMessages = jsonObj.discussionListMessages;
       this.title = jsonObj.title;
       this.status = jsonObj.status;
+      this.solvedStatus = jsonObj.solvedStatus;
     }
   }
 }

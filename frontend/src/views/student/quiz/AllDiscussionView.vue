@@ -89,13 +89,19 @@ export default class TeacherDiscussionView extends Vue {
       text: 'Discussion',
       value: 'title',
       align: 'left',
-      width: '45%'
+      width: '30%'
     },
     {
       text: 'Student',
       value: 'creatorStudent.name',
       align: 'center',
-      width: '45%'
+      width: '30%'
+    },
+    {
+      text: 'Solved Status',
+      value: 'solvedStatus',
+      align: 'center',
+      width: '30%'
     },
     {
       text: 'Create/See Messages',
