@@ -53,6 +53,7 @@ public class User implements UserDetails, DomainEntity {
     private Integer numberOfApprovedQuestions;
     private Integer numberOfRejectedQuestions;
 
+
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
 
@@ -513,4 +514,13 @@ public class User implements UserDetails, DomainEntity {
     public void addDiscussion(Discussion discussion){
         createdDiscussions.add(discussion);
     }
+
+    public Set<Discussion> getCreatedDiscussions() {
+        return createdDiscussions;
+    }
+
+    public void setCreatedDiscussions(Set<Discussion> createdDiscussions) {
+        this.createdDiscussions = createdDiscussions;
+    }
+
 }

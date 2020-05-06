@@ -9,19 +9,10 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import pt.ulisboa.tecnico.socialsoftware.tutor.TutorApplication;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Discussion;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Message;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.CorrectAnswerDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.DiscussionDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.*;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.*;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.MessageDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.QuizAnswerDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.MessageDto;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.DiscussionRepository;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.MessageRepository;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuestionAnswerRepository;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuizAnswerRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.*;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
@@ -323,6 +314,34 @@ public class AnswerService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public List<DiscussionDto> findQuizAnswerPublicDiscussions(int courseId, int quizAnswerId){
         return discussionRepository.findQuizAnswerPublicDiscussions(courseId, quizAnswerId, Discussion.PublicStatus.PUBLIC.ordinal()).stream().map(DiscussionDto::new).collect(Collectors.toList());
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public DiscussionDashboardDto getStudentDashboard(String userName, int courseId){
+        User user = userRepository.findByUsername(userName);
+        if (user == null){
+            throw new TutorException(USER_NOT_FOUND , userName);
+        }
+        DiscussionDashboardDto discussionDashboardDto = new DiscussionDashboardDto();
+        List<Discussion> discussions = discussionRepository.findByCourseIdandStudent(courseId, user);
+        int solvedDiscussions = 0;
+        int numberDiscussions = 0;
+        for (Discussion d: discussions){
+            if (d.getSolved().equals(Discussion.SolvedStatus.SOLVED)){
+                solvedDiscussions++;
+            }
+            numberDiscussions++;
+        }
+        discussionDashboardDto.setNumberOfDiscussions(numberDiscussions);
+        discussionDashboardDto.setNumberOfSolvedDiscussions(solvedDiscussions);
+        discussionDashboardDto.setName(user.getName());
+        discussionDashboardDto.setUsername(user.getUsername());
+        double percentage = (double)solvedDiscussions/(double)numberDiscussions * 100;
+        discussionDashboardDto.setPercentage(percentage);
+        return discussionDashboardDto;
     }
 
 }

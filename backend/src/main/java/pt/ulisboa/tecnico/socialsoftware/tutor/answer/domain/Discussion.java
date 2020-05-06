@@ -37,7 +37,7 @@ public class Discussion {
 
     @Column(name = "solved_id")
     private SolvedStatus solved;
-    
+
     public Discussion(){
     }
 

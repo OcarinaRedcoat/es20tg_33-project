@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.AnswerService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Discussion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Message;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.DiscussionDashboardDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.DiscussionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.MessageDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
@@ -72,6 +73,12 @@ public class DiscussionController {
     @PreAuthorize("hasRole('ROLE_STUDENT') or hasRole('ROLE_DEMO_STUDENT')")
     public List<DiscussionDto> getPublicDiscussions(@PathVariable Integer courseId){
         return answerService.findPublicDiscussions(courseId);
+    }
+
+    @GetMapping("/discussion/{courseId}/{userName}/dashboard")
+    @PreAuthorize("hasRole('ROLE_STUDENT') or hasRole('ROLE_DEMO_STUDENT')")
+    public DiscussionDashboardDto getStudentDashboards(@PathVariable String userName, @PathVariable Integer courseId){
+        return answerService.getStudentDashboard(userName, courseId);
     }
 
 }
