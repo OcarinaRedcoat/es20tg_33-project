@@ -88,17 +88,17 @@
 
         <v-divider />
 
-          <v-card-actions>
-            <v-spacer />
-            <v-btn color="secondary" text @click="confirmationDialog = false">
-              Cancel
-            </v-btn>
-            <v-btn color="primary" data-cy="endQuiz" text @click="endQuiz">
-              I'm sure
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn color="secondary" text @click="confirmationDialog = false">
+            Cancel
+          </v-btn>
+          <v-btn color="primary" data-cy="endQuiz" text @click="concludeQuiz">
+            I'm sure
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
     <v-dialog v-model="nextConfirmationDialog" width="50%">
       <v-card>

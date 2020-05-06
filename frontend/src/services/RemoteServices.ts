@@ -723,6 +723,22 @@ export default class RemoteServices {
       });
   }
 
+  static async getPublicDiscussionsQuizz(quizAnswerId: number | undefined) {
+    return httpClient
+      .get(
+        `/discussion/public/${Store.getters.getCurrentCourse.courseId}/${quizAnswerId}`
+      )
+      .then(response => {
+        return response.data.map((discussion: any) => {
+          return new Discussion(discussion);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+
   static async seeMessagesDiscussion(discussionId: number | undefined) {
     return httpClient
       .get(

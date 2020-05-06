@@ -51,6 +51,9 @@
       <v-btn @click="createDiscussion" depre data-cy="submitDiscussionMessage">
         Create Discussion
       </v-btn>
+      <v-btn to="/student/publicQuizDiscussions" value="statementManager" data-cy="seePublicDiscussions">
+        See Public Discussions
+      </v-btn>
     </div>
   </div>
 </template>

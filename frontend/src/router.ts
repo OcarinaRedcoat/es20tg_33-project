@@ -22,6 +22,7 @@ import SubmittedQuestionsView from './views/student/submissions/SubmittedQuestio
 import CreateTourney from './views/student/tourney/CreateTourney.vue';
 import OpenTourneys from './views/student/tourney/OpenTourneys.vue';
 import AllDiscussionView from './views/student/quiz/AllDiscussionView.vue';
+import DiscussionPublicQ from './views/student/quiz/DiscussionPublicQ.vue';
 import TeacherDiscussionView from './views/teacher/TeacherDiscussionView.vue';
 
 import AdminManagementView from '@/views/admin/AdminManagementView.vue';
@@ -215,6 +216,15 @@ let router = new Router({
           component: AllDiscussionView,
           meta: {
             title: process.env.VUE_APP_NAME + ' - Discussions',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+          path: 'publicQuizDiscussions',
+          name: 'public-discussions',
+          component: DiscussionPublicQ,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Public Discussions',
             requiredAuth: 'Student'
           }
         },
