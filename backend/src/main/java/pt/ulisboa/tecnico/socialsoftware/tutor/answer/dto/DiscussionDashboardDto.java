@@ -14,6 +14,8 @@ public class DiscussionDashboardDto implements Serializable {
 
     private Double percentage;
 
+    private String privacy;
+
     public DiscussionDashboardDto(){}
 
 
@@ -55,5 +57,13 @@ public class DiscussionDashboardDto implements Serializable {
 
     public void setPercentage(Double percentage) {
         this.percentage = percentage;
+    }
+
+    public String getPrivacy() {
+        return privacy;
+    }
+
+    public void setPrivacy(String privacy) {
+        this.privacy = privacy;
     }
 }

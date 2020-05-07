@@ -14,6 +14,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.MessageDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.DiscussionRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.StudentDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
 import java.security.Principal;
 import java.util.List;
@@ -79,6 +81,18 @@ public class DiscussionController {
     @PreAuthorize("hasRole('ROLE_STUDENT') or hasRole('ROLE_DEMO_STUDENT')")
     public DiscussionDashboardDto getStudentDashboards(@PathVariable String userName, @PathVariable Integer courseId){
         return answerService.getStudentDashboard(userName, courseId);
+    }
+
+    @PostMapping("/discussion/{userName}/dashboard")
+    @PreAuthorize("hasRole('ROLE_STUDENT') or hasRole('ROLE_DEMO_STUDENT')")
+    public Boolean makeDdpDashboardPublic(@PathVariable String userName){
+        return answerService.makeDdpDashboardPublic(userName);
+    }
+
+    @GetMapping("/discussion/dashboard/{userName}")
+    @PreAuthorize("hasRole('ROLE_STUDENT') or hasRole('ROLE_DEMO_STUDENT')")
+    public Boolean getDdpDashboardPublic(@PathVariable String userName){
+        return answerService.getDdpDashboardPublic(userName);
     }
 
 }

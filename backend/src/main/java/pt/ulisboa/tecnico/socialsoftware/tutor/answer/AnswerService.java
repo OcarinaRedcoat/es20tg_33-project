@@ -32,6 +32,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.statement.dto.StatementAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.StudentDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.dto.UserDto;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -266,9 +268,9 @@ public class AnswerService {
         }
 
         if (user.getRole().equals(User.Role.TEACHER)){
-            discussion.changeSolved();
+            discussion.setSolved(Discussion.SolvedStatus.SOLVED);
         } else if (user.getRole().equals(User.Role.STUDENT)){
-            discussion.changeSolved();
+            discussion.setSolved(Discussion.SolvedStatus.UNSOLVED);
         }
 
         messageDto.setName(user.getName());
@@ -339,9 +341,44 @@ public class AnswerService {
         discussionDashboardDto.setNumberOfSolvedDiscussions(solvedDiscussions);
         discussionDashboardDto.setName(user.getName());
         discussionDashboardDto.setUsername(user.getUsername());
+        if (user.getDiscussionPrivacy()){
+            discussionDashboardDto.setPrivacy("PRIVATE");
+        } else {
+            discussionDashboardDto.setPrivacy("PUBLIC");
+        }
         double percentage = (double)solvedDiscussions/(double)numberDiscussions * 100;
         discussionDashboardDto.setPercentage(percentage);
         return discussionDashboardDto;
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public Boolean makeDdpDashboardPublic(String userName){
+        User user = userRepository.findByUsername(userName);
+        if (user == null){
+            throw new TutorException(USER_NOT_FOUND , userName);
+        }
+        if (user.getDiscussionPrivacy()){
+            user.setDiscussionPrivacy(false);
+        }else{
+            user.setDiscussionPrivacy(true);
+        }
+
+        return user.getDiscussionPrivacy();
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public Boolean getDdpDashboardPublic(String userName){
+        User user = userRepository.findByUsername(userName);
+        if (user == null){
+            throw new TutorException(USER_NOT_FOUND , userName);
+        }
+        return user.getDiscussionPrivacy();
     }
 
 }

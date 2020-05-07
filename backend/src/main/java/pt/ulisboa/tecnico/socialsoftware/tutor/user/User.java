@@ -78,6 +78,9 @@ public class User implements UserDetails, DomainEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "creatorStudent", fetch = FetchType.LAZY, orphanRemoval=true)
     private Set<Discussion> createdDiscussions = new HashSet<>();
 
+    @Column(columnDefinition = "boolean default true", nullable = false)
+    private Boolean discussionPrivacy = true;
+
     public User() {
     }
 
@@ -523,4 +526,11 @@ public class User implements UserDetails, DomainEntity {
         this.createdDiscussions = createdDiscussions;
     }
 
+    public Boolean getDiscussionPrivacy() {
+        return discussionPrivacy;
+    }
+
+    public void setDiscussionPrivacy(Boolean discussionPrivacy) {
+        this.discussionPrivacy = discussionPrivacy;
+    }
 }
