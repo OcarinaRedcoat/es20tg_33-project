@@ -133,11 +133,11 @@ public class AuthService {
     public AuthDto demoStudentAuth() {
         User user;
         // Needed for some tests
-            if (activeProfile.equals("dev")) {
-                user = this.userService.createDemoStudent();
-            } else {
+        //    if (activeProfile.equals("dev")) {
+        //        user = this.userService.createDemoStudent();
+        //    } else {
             user = this.userService.getDemoStudent();
-        }
+        //}
 
         return new AuthDto(JwtTokenProvider.generateToken(user), new AuthUserDto(user));
     }
