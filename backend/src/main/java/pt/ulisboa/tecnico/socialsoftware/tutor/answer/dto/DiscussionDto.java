@@ -96,6 +96,10 @@ public class DiscussionDto implements Serializable {
         return status;
     }
 
+    public int getStatusOrdinal() {
+        return status.ordinal();
+    }
+
     public void setStatus(Discussion.PublicStatus status) {
         this.status = status;
     }
