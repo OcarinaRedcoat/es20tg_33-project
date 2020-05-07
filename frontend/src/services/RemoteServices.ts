@@ -593,10 +593,7 @@ export default class RemoteServices {
     studentQuestion: StudentQuestion
   ): Promise<StudentQuestion> {
     return httpClient
-      .put(
-          `/studentQuestions/${questionId}/resubmit`,
-        studentQuestion
-      )
+      .put(`/studentQuestions/${questionId}/resubmit`, studentQuestion)
       .then(response => {
         return new StudentQuestion(response.data);
       })
@@ -651,7 +648,6 @@ export default class RemoteServices {
       });
   }
 
-
   static async submitStudentAnswer(questionAnswerId: number, message: Message) {
     return httpClient
       .post(
@@ -697,6 +693,22 @@ export default class RemoteServices {
       });
   }
 
+  static async saveApprovedQuestionChanges(
+    studentQuestion: StudentQuestion
+  ): Promise<StudentQuestion> {
+    return httpClient
+      .put(
+        `/studentQuestions/${studentQuestion.id}/editApprovedQuestion`,
+        studentQuestion
+      )
+      .then(response => {
+        return new StudentQuestion(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async getTourneys() {
     return httpClient
       .get('/tourneys/open')
@@ -709,7 +721,6 @@ export default class RemoteServices {
         throw Error(await this.errorMessage(error));
       });
   }
-
 
   static async getDiscussions() {
     return httpClient
@@ -750,7 +761,8 @@ export default class RemoteServices {
 
   static async cancelTourney(tourney: Tourney) {
     return httpClient
-      .put(`/tourneys/${tourney.tourneyId}/cancel`).catch(async error => {
+      .put(`/tourneys/${tourney.tourneyId}/cancel`)
+      .catch(async error => {
         throw Error(await this.errorMessage(error));
       });
   }
@@ -792,5 +804,4 @@ export default class RemoteServices {
       return 'Unknown Error - Contact admin';
     }
   }
-
 }

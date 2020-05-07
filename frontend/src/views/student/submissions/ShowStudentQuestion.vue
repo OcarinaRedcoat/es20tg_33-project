@@ -3,17 +3,18 @@
     <span v-html="convertMarkDown(question.content)" />
     <ul>
       <li v-for="option in question.options" :key="option.number">
-        <span v-if="option.correct" v-html="convertMarkDown('**[★]** ')" />
         <span
-          v-html="convertMarkDown(option.content)"
+          v-if="option.correct"
+          v-html="convertMarkDown('**[★]** ' + option.content)"
           v-bind:class="[option.correct ? 'font-weight-bold' : '']"
         />
+        <span v-else v-html="convertMarkDown(option.content)" />
       </li>
     </ul>
     <br />
-    <span class="font-weight-bold">Justification</span>
+    <span class="font-weight-bold" v-if="hasJustification(question)">Justification</span>
     <br />
-    <span v-html="convertMarkDown(question.justification)" />
+    <span v-if="hasJustification(question)" v-html="convertMarkDown(question.justification)" />
   </div>
 </template>
 

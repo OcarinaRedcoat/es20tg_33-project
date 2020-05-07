@@ -1,5 +1,10 @@
 <template>
-  <v-dialog v-model="dialog" @keydown.esc="closeQuestionDialog" max-width="75%">
+  <v-dialog
+    v-model="dialog"
+    @input="$emit('review-question', false)"
+    @keydown.esc="$emit('review-question', false)"
+    max-width="75%"
+  >
     <v-card>
       <v-card-title>
         <span class="headline">{{ question.title }}</span>
@@ -42,8 +47,7 @@
         <v-btn
           dark
           color="blue darken-1"
-          @click="closeQuestionDialog"
-          data-cy="closeQuestionButton"
+          @click="$emit('review-question')"
           >close</v-btn
         >
       </v-card-actions>
@@ -52,20 +56,20 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
-import ShowQuestion from '@/views/teacher/submitted/ShowStudentQuestion.vue';
+import { Component, Vue, Prop, Model } from 'vue-property-decorator';
+import ShowStudentQuestion from '@/views/teacher/submitted/ShowStudentQuestion.vue';
 import StudentQuestion from '@/models/submissions/StudentQuestion';
 import RemoteServices from '@/services/RemoteServices';
 
 @Component({
   components: {
-    'show-question': ShowQuestion
+    'show-question': ShowStudentQuestion
   }
 })
 export default class ReviewQuestionDialog extends Vue {
+  @Model('review-question', Boolean) dialog!: boolean;
   @Prop({ type: StudentQuestion, required: true })
   readonly question!: StudentQuestion;
-  @Prop({ type: Boolean, required: true }) readonly dialog!: boolean;
 
   editQuestion!: StudentQuestion;
 
@@ -101,12 +105,15 @@ export default class ReviewQuestionDialog extends Vue {
   }
 
   async rejectQuestion() {
-    if (this.editQuestion.justification == null || this.editQuestion.justification == '') {
+    if (
+      this.editQuestion.justification == null ||
+      this.editQuestion.justification == ''
+    ) {
       await this.$store.dispatch(
         'error',
         'Error: Rejection must have a justification'
-       );
-    return;
+      );
+      return;
     } else {
       try {
         const result = await RemoteServices.rejectQuestion(
@@ -118,10 +125,6 @@ export default class ReviewQuestionDialog extends Vue {
         await this.$store.dispatch('error', error);
       }
     }
-  }
-
-  closeQuestionDialog() {
-    this.$emit('review-question');
   }
 }
 </script>

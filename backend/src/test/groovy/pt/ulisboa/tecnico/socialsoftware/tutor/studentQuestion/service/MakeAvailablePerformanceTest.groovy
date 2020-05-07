@@ -92,13 +92,15 @@ class MakeAvailablePerformanceTest extends Specification {
         user.addSubmittedQuestion(question)
     }
 
-    def "performance test to make 5000 available questions out of an approved question"() {
+    def "performance test to make 2000 available questions"() {
         given: "an approved student question"
         question.setStatus(StudentQuestion.Status.APPROVED)
 
         when:
         1.upto(1, {
-            studentQuestionService.makeStudentQuestionAvailable(question.getId())})
+            studentQuestionService.makeStudentQuestionAvailable(question.getId())
+            question.setStatus(StudentQuestion.Status.APPROVED)
+        })
 
         then: "all the questions where successfully created"
         questionRepository.count() == 1L

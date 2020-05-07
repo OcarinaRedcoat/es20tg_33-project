@@ -43,7 +43,7 @@
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
               <v-icon
-                small
+                medium
                 class="mr-2"
                 v-on="on"
                 @click="showStudentQuestionDialog(item)"
@@ -55,7 +55,7 @@
           <v-tooltip bottom v-if="item.status !== ('APPROVED' || 'AVAILABLE')">
             <template v-slot:activator="{ on }">
               <v-icon
-                small
+                medium
                 class="mr-2"
                 v-on="on"
                 @click="deleteSubmittedQuestion(item)"
@@ -69,7 +69,7 @@
           <v-tooltip bottom v-if="item.status === 'REJECTED'">
             <template v-slot:activator="{ on }">
               <v-icon
-                small
+                medium
                 class="mr-2"
                 v-on="on"
                 @click="resubmitQuestion(item)"
@@ -145,13 +145,6 @@ export default class SubmittedQuestionsView extends Vue {
       this.currentQuestion = null;
     }
   }
-  /*
-  @Watch('resubmitStudentQuestionDialog')
-  closeError() {
-    if (!this.resubmitStudentQuestionDialog) {
-      this.currentQuestion = null;
-    }
-  }*/
 
   async created() {
     await this.$store.dispatch('loading');
