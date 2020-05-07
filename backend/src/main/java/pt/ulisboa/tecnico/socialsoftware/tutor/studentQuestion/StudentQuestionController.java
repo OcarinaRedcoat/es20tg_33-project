@@ -98,4 +98,11 @@ public class StudentQuestionController {
         return this.studentQuestionService.editApprovedQuestion(questionId, questionChanges);
     }
 
+    @GetMapping("/studentQuestions/dashboard")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public StudentQuestionStatsDto getStudentQuestionsDashboard(Principal principal) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+        return this.studentQuestionService.getStudentQuestionStats(user.getUsername());
+    }
+
 }
