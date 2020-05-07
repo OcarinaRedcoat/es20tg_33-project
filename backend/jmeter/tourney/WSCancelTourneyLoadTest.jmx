@@ -447,7 +447,9 @@ ${__setProperty(tourneyId, ${__property(${counter})})}</stringProp>
         <hashTree/>
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
           <stringProp name="dataSource">sampleReq</stringProp>
-          <stringProp name="query">DELETE FROM tourneys;</stringProp>
+          <stringProp name="query">DELETE FROM users_enrolled_tourneys;
+DELETE FROM topics_tourneys;
+DELETE FROM tourneys;</stringProp>
           <stringProp name="queryArguments"></stringProp>
           <stringProp name="queryArgumentsTypes"></stringProp>
           <stringProp name="queryTimeout"></stringProp>
