@@ -17,6 +17,7 @@ import StudentQuestion from '@/models/submissions/StudentQuestion';
 import Tourney from '@/models/tourney/Tourney';
 import Discussion from '@/models/statement/Discussion';
 import Message from '@/models/statement/Message';
+import StudentQuestionStats from '@/models/submissions/StudentQuestionStats';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 10000;
@@ -637,6 +638,18 @@ export default class RemoteServices {
         throw Error(await this.errorMessage(error));
       });
   }
+
+  static async getStudentQuestionDashboard(): Promise<StudentQuestionStats> {
+    return httpClient
+      .get('/studentQuestions/dashboard')
+      .then(response => {
+          return new StudentQuestionStats(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async createTourney(tourney: Tourney) {
     return httpClient
       .post('/tourneys', tourney)

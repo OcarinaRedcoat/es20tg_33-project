@@ -161,6 +161,14 @@
                 <v-list-item-title data-cy="top-bar-submitted-questions">Submitted Questions</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
+            <v-list-item to="/student/studentQuestionsDashboard">
+              <v-list-item-action>
+                <v-icon>fas fa-columns</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title data-cy="top-bar-submitted-dashboard">Submitted Dashboard</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
           </v-list>
         </v-menu>
 

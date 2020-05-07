@@ -202,11 +202,15 @@ public class User implements UserDetails, DomainEntity {
 
     public void setNumberOfSubmittedQuestions(Integer numberOfSubmittedQuestions) { this.numberOfSubmittedQuestions = numberOfSubmittedQuestions; }
 
+    public void addNumberOfSubmittedQuestions() {this.numberOfSubmittedQuestions =  getNumberOfSubmittedQuestions() + 1;}
+
     public Integer getNumberOfApprovedQuestions() {
         return numberOfApprovedQuestions;
     }
 
     public void setNumberOfApprovedQuestions(Integer numberOfApprovedQuestions) { this.numberOfApprovedQuestions = numberOfApprovedQuestions; }
+
+    public void addNumberOfApprovedQuestions() {this.numberOfApprovedQuestions = getNumberOfApprovedQuestions() + 1;}
 
     public Integer getNumberOfRejectedQuestions() {
         return numberOfRejectedQuestions;

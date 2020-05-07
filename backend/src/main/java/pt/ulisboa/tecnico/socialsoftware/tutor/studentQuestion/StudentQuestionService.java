@@ -83,6 +83,7 @@ public class StudentQuestionService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public StudentQuestionDto approveQuestion(int questionId, String justification) {
         StudentQuestion question = studentQuestionRepository.findById(questionId).orElseThrow(() -> new TutorException(STUDENT_QUESTION_NOT_FOUND, questionId));
+        User user = question.getSubmittingUser();
         if(question.getStatus() == StudentQuestion.Status.PENDING) {
             question.setStatus(StudentQuestion.Status.APPROVED);
             question.setJustification(justification);
@@ -191,6 +192,28 @@ public class StudentQuestionService {
         checkIfApproved(question);
         question.editStudentQuestion(questionDto);
         return new StudentQuestionDto(question);
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public StudentQuestionStatsDto getStudentQuestionStats(String username) {
+        int approved = 0;
+        int submitted = 0;
+        User user = userRepository.findByUsername(username);
+        checkUserFound(user);
+        List<StudentQuestion> questions = user.getSubmittedQuestions();
+        for(StudentQuestion question : questions){
+            if (question.getStatus() == StudentQuestion.Status.APPROVED) {
+                approved += 1;
+            }
+            submitted += 1;
+        }
+        StudentQuestionStatsDto stats = new StudentQuestionStatsDto();
+        stats.setSubmitted(submitted);
+        stats.setApproved(approved);
+        return stats;
     }
 
     private void checkSubmittedQuestions(User user) {
