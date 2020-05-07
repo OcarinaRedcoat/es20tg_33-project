@@ -48,7 +48,7 @@
               v-on="on"
               @click="makeQuestionAvailable(item)"
               data-cy="makeQuestionAvailableButton"
-              >create</v-icon
+              >done</v-icon
             >
           </template>
           <span>Make Question Available</span>
