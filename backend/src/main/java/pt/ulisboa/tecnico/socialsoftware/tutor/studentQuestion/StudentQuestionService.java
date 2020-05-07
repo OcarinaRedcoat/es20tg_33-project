@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
@@ -214,6 +215,22 @@ public class StudentQuestionService {
         stats.setSubmitted(submitted);
         stats.setApproved(approved);
         return stats;
+    }
+
+    @Retryable(
+            value = { SQLException.class },
+            backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public boolean toggleStudentQuestionPrivacy(String studentQuestionPrivacy, Integer userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
+
+        if(!studentQuestionPrivacy.equals("private") && !studentQuestionPrivacy.equals("public")){
+            throw new TutorException(ErrorMessage.PRIVACY_NOT_DEFINED, userId);
+        }
+
+        user.setStudentQuestionPrivacy(studentQuestionPrivacy.equals("private"));
+
+        return user.getStudentQuestionPrivacy();
     }
 
     private void checkSubmittedQuestions(User user) {

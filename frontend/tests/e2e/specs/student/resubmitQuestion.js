@@ -1,4 +1,4 @@
-describe('Question Submission walkthrough', () => {
+describe('Question Resubmission walkthrough', () => {
   beforeEach(() => {
     cy.demoStudentLogin();
     cy.visitSubmittedQuestionsPage();

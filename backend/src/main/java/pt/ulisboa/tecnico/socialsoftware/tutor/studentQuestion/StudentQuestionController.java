@@ -105,4 +105,12 @@ public class StudentQuestionController {
         return this.studentQuestionService.getStudentQuestionStats(user.getUsername());
     }
 
+    @PutMapping("/student/studentQuestions/{privacy}")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public boolean toggleStudentQuestionPrivacy(@PathVariable String privacy, Principal principal) {
+        logger.debug("privacy: {}: ", privacy);
+
+        User user = (User) ((Authentication) principal).getPrincipal();
+        return this.studentQuestionService.toggleStudentQuestionPrivacy(privacy, user.getId());
+    }
 }

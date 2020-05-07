@@ -2,6 +2,8 @@
     <div class="container">
         <h2>Statistics</h2>
         <div v-if="stats != null" class="stats-container">
+            <v-switch v-model="private" class="mx-2" @click="toggleStudentQuestionPrivacy" data-cy="dashboardPrivacy"></v-switch>
+            <p>{{privacy}}</p>
             <div class="items">
                 <div class="icon-wrapper" ref="totalQuizzes">
                     <animated-number :number="stats.submitted" />
@@ -33,15 +35,25 @@
   })
   export default class SubmittedDashboard extends Vue {
     stats: StudentQuestionStats | null = null;
+    private: boolean = true;
 
     async created() {
-      await this.$store.dispatch('loading');
-      try {
         this.stats = await RemoteServices.getStudentQuestionDashboard();
-      } catch (error) {
-        await this.$store.dispatch('error', error);
+        this.private = await RemoteServices.toggleStudentQuestionPrivacy(this.privacy);
+    }
+
+    get privacy(){
+      return !this.private?"private":"public";
+    }
+
+    async toggleStudentQuestionPrivacy() {
+      if (confirm("Are you sure you want to change this dashboard's privacy settings?")) {
+        try {
+          this.private = await RemoteServices.toggleStudentQuestionPrivacy(this.privacy);
+        } catch (error) {
+          await this.$store.dispatch('error', error);
+        }
       }
-      await this.$store.dispatch('clearLoading');
     }
   }
 </script>

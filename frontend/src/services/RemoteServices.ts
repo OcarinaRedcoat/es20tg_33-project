@@ -650,6 +650,17 @@ export default class RemoteServices {
       });
   }
 
+  static async toggleStudentQuestionPrivacy(
+    privacy: String
+  ) : Promise<boolean> {
+    return httpClient
+      .put(`/student/studentQuestions/${privacy}`)
+      .then(response => response.data)
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async createTourney(tourney: Tourney) {
     return httpClient
       .post('/tourneys', tourney)

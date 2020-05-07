@@ -104,6 +104,8 @@ public enum ErrorMessage {
     TOURNEY_CLOSED("Tourney closed"),
     STUDENT_ALREADY_ENROLLED("Student already enroled at tourney"),
 
+    PRIVACY_NOT_DEFINED("Not able to define the privacy for this dashboard"),
+
     USER_NOT_STUDENT("The user is not a student"),
     STUDENT_CANT_ACCESS_COURSE_EXECUTION("Student is not enrolled in the course execution: %s"),
 

@@ -163,6 +163,11 @@ Cypress.Commands.add('visitSubmittedQuestionsPage', () => {
   cy.get('[data-cy="top-bar-submitted-questions"]').click();
 });
 
+Cypress.Commands.add('visitSubmittedQuestionsDashboardPage', () => {
+  cy.get('[data-cy="top-bar-submissions"]').click();
+  cy.get('[data-cy="top-bar-submitted-dashboard"]').click();
+});
+
 Cypress.Commands.add('visitOpenTourneysPage', () => {
   cy.get('[data-cy="top-bar-tourneys"]').click();
   cy.get('[data-cy="top-bar-open-tourneys"]').click();
