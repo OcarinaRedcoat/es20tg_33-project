@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuizAnswerRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseDto;
@@ -19,7 +18,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
-import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.TopicDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.TopicRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.QuizService;
@@ -36,7 +34,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -126,12 +123,6 @@ public class TourneyService {
                         .findTopicByName(tourney.getCourseExecution().getCourse().getId(), topicDto.getName()))
                 .collect(Collectors.toList()));
 
-        for (TopicDto topicDto : tourneyDto.getTourneyTopics()) {
-            Topic topic = topicRepository.findTopicByName(tourney.getCourseExecution().getCourse().getId(),
-                    topicDto.getName());
-            topic.addTourney(tourney);
-        }
-
         if (tourney.getTopics().size() == 0)
             throw new TutorException(ErrorMessage.TOURNEY_NOT_CONSISTENT, "topics");
         if (!user.getCourseExecutions().stream()
@@ -142,6 +133,12 @@ public class TourneyService {
 
         if (tourney.getTopics().stream().map(Objects::isNull).reduce(false, (acc, elem) -> acc || elem))
             throw new TutorException(ErrorMessage.TOPICS_NOT_FROM_SAME_COURSE);
+
+        for (TopicDto topicDto : tourneyDto.getTourneyTopics()) {
+            Topic topic = topicRepository.findTopicByName(tourney.getCourseExecution().getCourse().getId(),
+                    topicDto.getName());
+            topic.addTourney(tourney);
+        }
 
         user.addCreatedTourneys(tourney);
         entityManager.persist(tourney);
