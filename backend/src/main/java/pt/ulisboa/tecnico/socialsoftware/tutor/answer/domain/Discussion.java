@@ -96,6 +96,10 @@ public class Discussion {
         this.discussionListMessages = discussionListMessages;
     }
 
+    public void setSolved(SolvedStatus solved) {
+        this.solved = solved;
+    }
+
     public PublicStatus getStatus() {
         return status;
     }
