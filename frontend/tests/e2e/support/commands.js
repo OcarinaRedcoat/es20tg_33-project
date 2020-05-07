@@ -347,17 +347,23 @@ Cypress.Commands.add('makeQuestionAvailable', title => {
     .click();
 });
 
-Cypress.Commands.add('filterQuestionsMostRecent', () => {
-  cy.contains('Creation Date').click();
-  cy.contains('Creation Date').click();
-});
-
 Cypress.Commands.add('deleteAvailableQuestion', title => {
   cy.contains(title)
-    .parent()
-    .should('have.length', 1)
-    .children()
-    .should('have.length', 11)
-    .find('[data-cy="deleteAvailableQuestionButton"]')
+    .get('[data-cy="deleteAvailableQuestionButton"]')
     .click();
 });
+
+Cypress.Commands.add(
+  'editApprovedQuestion',
+  (title, changedTitle, changedContent, changedOptionContent) => {
+    cy.contains(title)
+      .get('[data-cy="editApprovedQuestionButton"]')
+      .click();
+    cy.get('[data-cy="editApprovedQuestionTitle"]').type(changedTitle, { force: true });
+    cy.get('[data-cy="editApprovedQuestionContent"]').type(changedContent);
+    cy.get('[data-cy="editApprovedQuestionOptionContent"]')
+      .eq(0)
+      .type(changedOptionContent);
+    cy.get('[data-cy="saveApprovedQuestionChangesButton"]').click();
+  }
+);

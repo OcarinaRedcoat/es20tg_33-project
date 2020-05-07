@@ -1,5 +1,5 @@
-describe('Walkthrough on making approved questions available', () => {
-  it('login approves and makes a question available', () => {
+describe('Walkthrough on editing approved questions', () => {
+  it('login approves and edits an approved question', () => {
     cy.demoStudentLogin();
     cy.visitSubmittedQuestionsPage();
     cy.submitQuestion(
@@ -12,11 +12,14 @@ describe('Walkthrough on making approved questions available', () => {
     cy.demoTeacherLogin();
     cy.visitApproveRejectPage();
     cy.approveQuestion('FE Test Question Title', 'justification');
-    cy.makeQuestionAvailable('FE Test Question Title');
 
+    cy.editApprovedQuestion(
+      'FE Test Question Title',
+      'Changed Title',
+      'Changed Content',
+      'Changed Option'
+    );
     cy.wait(1000);
-    cy.visitQuestionsPage();
-    cy.deleteAvailableQuestion('FE Test Question Title');
     cy.contains('Logout').click();
   });
 });

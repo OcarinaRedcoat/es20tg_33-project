@@ -44,10 +44,7 @@
           data-cy="rejectButton"
           >reject</v-btn
         >
-        <v-btn
-          dark
-          color="blue darken-1"
-          @click="$emit('review-question')"
+        <v-btn dark color="blue darken-1" @click="$emit('review-question')"
           >close</v-btn
         >
       </v-card-actions>
