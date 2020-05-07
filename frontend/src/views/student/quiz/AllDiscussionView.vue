@@ -34,7 +34,7 @@
                 class="mr-2"
                 v-on="on"
                 @click="createNewMessage(item)"
-                data-cy="createFromCourse"
+                data-cy="createNewMessage"
                 >fas fa-envelope-square</v-icon
               >
             </template>
@@ -42,7 +42,7 @@
           </v-tooltip>
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
-              <v-icon small class="mr-2" v-on="on" @click="seeMessages(item)"
+              <v-icon data-cy="seeMessage" small class="mr-2" v-on="on" @click="seeMessages(item)"
                 >far fa-eye</v-icon
               >
             </template>

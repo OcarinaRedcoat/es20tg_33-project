@@ -107,7 +107,7 @@
               <v-list-item-action>
                 <v-icon>fas fa-comment</v-icon>
               </v-list-item-action>
-              <v-list-item-content>Discussions</v-list-item-content>
+              <v-list-item-title data-cy="top-bar-discussions">Discussions</v-list-item-title>
             </v-list-item>
             <v-list-item to="/management/impexp">
               <v-list-item-action>
@@ -163,7 +163,7 @@
               <v-list-item-action>
                 <v-icon>fas fa-comment</v-icon>
               </v-list-item-action>
-              <v-list-item-title>Discussions</v-list-item-title>
+              <v-list-item-title data-cy="top-bar-discussions">Discussions</v-list-item-title>
             </v-list-item>
             <v-list-item to="/student/discussions/stats">
               <v-list-item-action>
@@ -234,8 +234,14 @@
                 <v-icon>done</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title>Solved</v-list-item-title>
+                <v-list-item-title data-cy="top-bar-solved">Solved</v-list-item-title>
               </v-list-item-content>
+            </v-list-item>
+            <v-list-item to="/student/discussions">
+              <v-list-item-action>
+                <v-icon>fas fa-comment</v-icon>
+              </v-list-item-action>
+              <v-list-item-title data-cy="top-bar-discussions">Discussions</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>

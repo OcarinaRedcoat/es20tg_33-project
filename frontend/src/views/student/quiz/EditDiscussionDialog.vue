@@ -19,7 +19,7 @@
             <v-text-field
               v-model="editMessage.sentence"
               label="Sentence"
-              data-cy="Sentence"
+              data-cy="sentence"
             />
           </v-flex>
         </v-container>

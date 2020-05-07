@@ -53,6 +53,7 @@
                 small
                 class="mr-2"
                 v-on="on"
+                data-cy="changePublicStatus"
                 @click="changePublicStatus(item)"
                 >cached</v-icon
               >
