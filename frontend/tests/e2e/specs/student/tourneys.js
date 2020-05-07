@@ -42,5 +42,11 @@ describe('Student create a Tourney', () => {
     cy.cancelTourney(
         TITLE
     );
+    cy.contains('Logout').click();
+    cy.demoStudentLogin();
+    // TODO Completes Quiz
+    cy.visitTourneysDashboard();
+    cy.checkDashboard(TITLE);
+
   });
 });

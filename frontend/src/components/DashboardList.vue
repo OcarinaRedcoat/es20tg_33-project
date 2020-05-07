@@ -1,5 +1,5 @@
 <template>
-  <ul >
+  <ul data-cy="dashboardList">
     <li class="list-header" >
       <div class="col" v-for="column in headersProp" :key="column.name">{{ column.name }}</div>
     </li>

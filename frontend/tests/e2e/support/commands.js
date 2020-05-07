@@ -263,6 +263,13 @@ Cypress.Commands.add('cancelTourney', name => {
     .click();
 });
 
+Cypress.Commands.add('checkDashboard', name => {
+  cy.get('[data-cy="dashboardList"] .list-row')
+    .children()
+    .contains(name)
+    .click();
+});
+
 //Student Question commands
 
 Cypress.Commands.add('submitQuestion', (title, content, optionContent) => {
