@@ -1,5 +1,6 @@
 // Deprecated
-export function formatISODate(dateString: string) {
+export function formatISODate(dateString: string | undefined) {
+  if (dateString == undefined) return "";
   const date = new Date(dateString);
   const options = {
     year: 'numeric',

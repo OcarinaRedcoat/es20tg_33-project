@@ -1,3 +1,5 @@
+import { formatISODate } from '../../utils';
+
 export default class Tourney {
 	id: number | undefined;
   title: string | undefined;
@@ -9,7 +11,7 @@ export default class Tourney {
     if (jsonObj) {
 			this.id = jsonObj.id;
       this.title = jsonObj.title;
-      this.completionDate = jsonObj.completionDate;
+      this.completionDate = formatISODate(jsonObj.completionDate);
       this.score = jsonObj.score;
     }
   }

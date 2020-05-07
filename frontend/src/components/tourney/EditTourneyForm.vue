@@ -81,7 +81,6 @@
 
 <script lang="ts">
 import { Component, Model, Prop, Vue, Watch } from 'vue-property-decorator';
-import { formatUTCDate } from '../../utils';
 import RemoteServices from '../../services/RemoteServices';
 import Tourney from '../../models/tourney/Tourney';
 import Course from '../../models/user/Course';

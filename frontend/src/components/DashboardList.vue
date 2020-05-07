@@ -1,41 +1,32 @@
 <template>
-  <ul>
-    <li class="list-header">
-      <div class="col">Title</div>
-      <div class="col">Solved Date</div>
-      <div class="col">Score</div>
-      <div class="col last-col"></div>
+  <ul >
+    <li class="list-header" >
+      <div class="col" v-for="column in headersProp" :key="column.name">{{ column.name }}</div>
     </li>
-    <li
-      class="list-row"
-      v-for="tourney in tourneysStats"
-      :key="tourney.id"
-    >
-      <div class="col">{{ tourney.title }}</div>
-      <div class="col">{{ formatDate(tourney.completionDate) }}</div>
-      <div class="col">{{ tourney.score }}</div>
+    <li class="list-row" v-for="elem in elementsProp" :key="elem.id">
+      <div class="col" v-for="column in headersProp" :key="column.name">{{ elem[column.value] }}</div>
     </li>
   </ul>
 </template>
 
 <script lang="ts">
 import { Component, Model, Prop, Vue, Watch } from 'vue-property-decorator';
-import TourneyStats from '../../models/tourney/TourneyStats';
-import RemoteServices from '../../services/RemoteServices';
-import { formatISODate } from '../../utils';
 
 @Component
-export default class EditTourneyForm extends Vue {
-  tourneysStats: TourneyStats[] = [];
+export default class DashboardList extends Vue {
+  @Prop({required: true})
+  headers: object[] | undefined;
+  @Prop({required: true})
+  elements: object[] | undefined;
 
-  async created() {
-    this.tourneysStats = await RemoteServices.getTourneysDashboard();
-	}
+  get headersProp() {
+      return this.headers;
+  };
 
-	formatDate(dateString: string) {
-		return formatISODate(dateString);
-	}
-	
+  get elementsProp() {
+      return this.elements;
+  };
+
 }
 </script>
 
