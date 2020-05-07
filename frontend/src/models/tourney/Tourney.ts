@@ -1,6 +1,8 @@
 import User from '../user/User';
 import Course from '../user/Course';
 import Topic from '../management/Topic';
+import StatementQuiz from "@/models/statement/StatementQuiz";
+import { formatISODate } from '../../utils';
 
 export default class Tourney {
   tourneyId: number | undefined;
@@ -12,6 +14,7 @@ export default class Tourney {
   tourneyTopics: Topic[] | undefined;
   tourneyCreator: User | undefined;
   tourneyCourseExecution: Course | undefined;
+  quizStatement: StatementQuiz | undefined;
 
   constructor(jsonObj?: Tourney) {
     if (jsonObj) {
@@ -19,11 +22,12 @@ export default class Tourney {
       this.tourneyStatus = jsonObj.tourneyStatus;
       this.tourneyTitle = jsonObj.tourneyTitle;
       this.tourneyNumberOfQuestions = jsonObj.tourneyNumberOfQuestions;
-      this.tourneyAvailableDate = jsonObj.tourneyAvailableDate;
-      this.tourneyConclusionDate = jsonObj.tourneyConclusionDate;
+      this.tourneyAvailableDate = formatISODate(jsonObj.tourneyAvailableDate);
+      this.tourneyConclusionDate = formatISODate(jsonObj.tourneyConclusionDate);
       this.tourneyTopics = jsonObj.tourneyTopics;
       this.tourneyCreator = jsonObj.tourneyCreator;
       this.tourneyCourseExecution = jsonObj.tourneyCourseExecution;
+      this.quizStatement = jsonObj.quizStatement;
     }
   }
 }

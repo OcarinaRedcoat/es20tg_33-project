@@ -96,8 +96,8 @@
                   <stringProp name="Argument.value">{&#xd;
 	&quot;tourneyTitle&quot;: &quot;Demo Tourney&quot;,&#xd;
 	&quot;tourneyNumberOfQuestions&quot;: &quot;5&quot;,&#xd;
-	&quot;tourneyAvailableDate&quot;: &quot;2020-03-16 20:30&quot;,&#xd;
-	&quot;tourneyConclusionDate&quot;: &quot;2020-03-16 22:30&quot;,&#xd;
+	&quot;tourneyAvailableDate&quot;: &quot;2020-03-16T20:30Z&quot;,&#xd;
+	&quot;tourneyConclusionDate&quot;: &quot;2021-03-16T22:30Z&quot;,&#xd;
 	&quot;tourneyCourseExecution&quot;: {&quot;courseId&quot;: &quot;2&quot;, &quot;courseExecutionId&quot;: &quot;11&quot;, &quot;academic_term&quot;: &quot;1st Semester&quot;, &quot;acronym&quot;: &quot;DemoCourse&quot;, &quot;status&quot;:&quot;ACTIVE&quot;, &quot;courseType&quot;: &quot;TECNICO&quot;},&#xd;
 	&quot;tourneyTopics&quot;: [{&quot;id&quot;: &quot;82&quot;, &quot;name&quot;: &quot;Software Architecture&quot;, &quot;numberOfQuestions&quot;: 2}]&#xd;
 }&#xd;
@@ -242,7 +242,7 @@
             <hashTree/>
             <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert tourneyAvailableDate" enabled="true">
               <stringProp name="JSON_PATH">$[0].tourneyAvailableDate</stringProp>
-              <stringProp name="EXPECTED_VALUE">2020-03-16 20:30</stringProp>
+              <stringProp name="EXPECTED_VALUE">2020-03-16T20:30Z</stringProp>
               <boolProp name="JSONVALIDATION">true</boolProp>
               <boolProp name="EXPECT_NULL">false</boolProp>
               <boolProp name="INVERT">false</boolProp>
@@ -251,7 +251,7 @@
             <hashTree/>
             <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="Assert tourneyConclusionDate" enabled="true">
               <stringProp name="JSON_PATH">$[0].tourneyConclusionDate</stringProp>
-              <stringProp name="EXPECTED_VALUE">2020-03-16 22:30</stringProp>
+              <stringProp name="EXPECTED_VALUE">2021-03-16T22:30Z</stringProp>
               <boolProp name="JSONVALIDATION">true</boolProp>
               <boolProp name="EXPECT_NULL">false</boolProp>
               <boolProp name="INVERT">false</boolProp>
@@ -370,7 +370,9 @@
         <hashTree/>
         <JDBCSampler guiclass="TestBeanGUI" testclass="JDBCSampler" testname="JDBC Request" enabled="true">
           <stringProp name="dataSource">sampleReq</stringProp>
-          <stringProp name="query">DELETE FROM tourneys</stringProp>
+          <stringProp name="query">DELETE FROM users_enrolled_tourneys;
+DELETE FROM topics_tourneys;
+DELETE FROM tourneys;</stringProp>
           <stringProp name="queryArguments"></stringProp>
           <stringProp name="queryArgumentsTypes"></stringProp>
           <stringProp name="queryTimeout"></stringProp>

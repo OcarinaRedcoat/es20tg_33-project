@@ -1,8 +1,10 @@
 describe('Student create a Tourney', () => {
   const TITLE = 'Demo Tourney';
   const NUMBER_OF_QUESTIONS = 2;
-  const AVAILABLE_DATE = '10-04-2020 00:00';
-  const CONCLUSION_DATE = '11-04-2020 00:00';
+  const AVAILABLE_DATE = '2020-04-10 00:00';
+  const CONCLUSION_DATE = '2021-04-10 00:00';
+  const AVAILABLE_DATE_FORMATED = '10/04/2020, 12:00';
+  const CONCLUSION_DATE_FORMATED = '10/04/2021, 12:00';
   const TOPICS = ['Availability', 'GitHub'];
 
   beforeEach(() => {
@@ -28,8 +30,8 @@ describe('Student create a Tourney', () => {
     cy.getOpenTourney(
       TITLE,
       NUMBER_OF_QUESTIONS,
-      AVAILABLE_DATE,
-      CONCLUSION_DATE,
+      AVAILABLE_DATE_FORMATED,
+      CONCLUSION_DATE_FORMATED,
       TOPICS
     );
 
@@ -40,5 +42,11 @@ describe('Student create a Tourney', () => {
     cy.cancelTourney(
         TITLE
     );
+    cy.contains('Logout').click();
+    cy.demoStudentLogin();
+    // TODO Completes Quiz
+    cy.visitTourneysDashboard();
+    cy.checkDashboard(TITLE);
+
   });
 });

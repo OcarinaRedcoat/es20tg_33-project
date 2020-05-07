@@ -21,6 +21,7 @@ import ScanView from './views/student/ScanView.vue';
 import SubmittedQuestionsView from './views/student/submissions/SubmittedQuestionsView.vue';
 import CreateTourney from './views/student/tourney/CreateTourney.vue';
 import OpenTourneys from './views/student/tourney/OpenTourneys.vue';
+import TourneysDashboard from './views/student/tourney/TourneysDashboard.vue';
 import DiscussionAnswerView from './views/student/quiz/DiscussionAnswerView.vue';
 import AllDiscussionView from './views/student/quiz/AllDiscussionView.vue';
 import TeacherDiscussionView from './views/teacher/TeacherDiscussionView.vue';
@@ -252,6 +253,15 @@ let router = new Router({
           component: OpenTourneys,
           meta: {
             title: process.env.VUE_APP_NAME + ' - Open Tourneys',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+          path: 'tourneys/dashboard',
+          name: 'tourneys-dashboard',
+          component: TourneysDashboard,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Tourneys Dashboard',
             requiredAuth: 'Student'
           }
         }

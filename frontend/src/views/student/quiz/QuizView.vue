@@ -93,7 +93,7 @@
             <v-btn color="secondary" text @click="confirmationDialog = false">
               Cancel
             </v-btn>
-            <v-btn color="primary" data-cy="endQuiz" text @click="endQuiz">
+            <v-btn color="primary" data-cy="endQuiz" text @click="concludeQuiz">
               I'm sure
             </v-btn>
           </v-card-actions>

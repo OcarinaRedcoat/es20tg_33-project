@@ -15,6 +15,7 @@ import StatementAnswer from '@/models/statement/StatementAnswer';
 import { QuizAnswers } from '@/models/management/QuizAnswers';
 import StudentQuestion from '@/models/submissions/StudentQuestion';
 import Tourney from '@/models/tourney/Tourney';
+import TourneyStats from '@/models/tourney/TourneyStats';
 import Discussion from '@/models/statement/Discussion';
 import Message from '@/models/statement/Message';
 
@@ -634,6 +635,20 @@ export default class RemoteServices {
       });
   }
 
+  static async getTourneysDashboard(): Promise<TourneyStats[]> {
+    return httpClient
+      .get(
+        `/tourneys/dashboard`
+      )
+      .then(response => {
+        return response.data.map((tourneyStats: any) => {
+          return new TourneyStats(tourneyStats);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
 
   static async submitStudentAnswer(questionAnswerId: number, message: Message) {
     return httpClient
@@ -721,6 +736,17 @@ export default class RemoteServices {
       .put(`/tourneys/${tourney.tourneyId}/cancel`).catch(async error => {
         throw Error(await this.errorMessage(error));
       });
+  }
+
+  static async getTourneyQuizAnswer(tourney: Tourney) {
+    return httpClient
+        .get(`/tourneys/${tourney.tourneyId}/quiz`)
+        .then(response => {
+          return new StatementQuiz(response.data)
+        })
+        .catch(async error => {
+          throw Error(await this.errorMessage(error));
+        });
   }
 
   static async exportAll() {
