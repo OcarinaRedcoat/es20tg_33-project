@@ -182,7 +182,7 @@ class DiscussionDashboardTest extends  Specification{
         then:
         def result = answerService.getStudentDashboard("rcosta1944", 1)
         result.numberOfDiscussions == 1
-        result.numberOfSolvedDiscussions == 1
+        result.numberOfSolvedDiscussions == 0
 
     }
 
