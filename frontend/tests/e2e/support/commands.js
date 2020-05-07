@@ -151,6 +151,35 @@ Cypress.Commands.add('visitAvailableQuizesPage', () => {
   cy.get('[data-cy="top-bar-available"]').click();
 });
 
+Cypress.Commands.add('visitSolvedQuizesPage', () => {
+  cy.get('[data-cy="top-bar-quizzes"]').click();
+  cy.get('[data-cy="top-bar-solved"]').click();
+});
+
+Cypress.Commands.add('visitDiscussionQuizesPage', () => {
+  cy.get('[data-cy="top-bar-quizzes"]').click();
+  cy.get('[data-cy="top-bar-discussions"]').click();
+  cy.get('[data-cy="createNewMessage"]').click();
+  cy.get('[data-cy="sentence"]').type('ola maria');
+  cy.get('[data-cy="saveButton"]').click();
+  cy.get('[data-cy="cancelButton"]').click();
+  cy.get('[data-cy="seeMessage"]').click();
+  cy.get('[data-cy="cancelButton"]').click();
+});
+
+Cypress.Commands.add('visitDiscussionQuizesPageTeacher', () => {
+  cy.get('[data-cy="top-bar-management"]').click();
+  cy.get('[data-cy="top-bar-discussions"]').click();
+  cy.get('[data-cy="changePublicStatus"]').click();
+});
+
+Cypress.Commands.add('visitAllDiscussionsPage', () => {
+  cy.get('[data-cy="top-bar-discussion"]').click();
+  cy.get('[data-cy="top-bar-discussions"]').click();
+  cy.get('[data-cy="seeMessage"]').click();
+  cy.get('[data-cy="cancelButton"]').click();
+});
+
 Cypress.Commands.add('visitCreateTourneyPage', () => {
   cy.get('[data-cy="top-bar-tourneys"]').click();
   cy.get('[data-cy="top-bar-create-tourney"]').click();
