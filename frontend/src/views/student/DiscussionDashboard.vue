@@ -27,6 +27,44 @@
         </div>
       </div>
     </div>
+    <v-card class="table">
+      <v-form ref="form">
+        <v-card-title>Public Dashboards</v-card-title>
+        <v-data-table
+          :headers="headers"
+          :items="dashboards"
+          :search="search"
+          disable-pagination
+          :hide-default-footer="true"
+          :mobile-breakpoint="0"
+          multi-sort
+          :items-per-page="5"
+          :footer-props="{ itemsPerPageOptions: [5, 10, 15, 50, 100] }"
+        >
+          <template v-slot:top>
+            <v-card-title>
+              <v-text-field
+                v-model="search"
+                append-icon="search"
+                label="Search"
+                class="mx-2"
+                data-cy="searchDiscussion"
+              />
+              <v-spacer />
+              <v-spacer />
+              <v-btn
+                color="primary"
+                dark
+                @click="changePrivacy"
+                data-cy="createButton"
+                >Change Dashboard Privacy</v-btn
+              >
+            </v-card-title>
+            <v-spacer />
+          </template>
+        </v-data-table>
+      </v-form>
+    </v-card>
   </div>
 </template>
 
@@ -41,6 +79,35 @@ import DiscussionStats from '@/models/statement/DiscussionStats';
 })
 export default class DiscussionDashboard extends Vue {
   stats: DiscussionStats | null = null;
+  dashboards: DiscussionStats[] = [];
+  search: string = '';
+
+  headers: object = [
+    {
+      text: 'Student',
+      value: 'name',
+      align: 'left',
+      width: '25%'
+    },
+    {
+      text: 'Number Of Discussions Created',
+      value: 'numberOfDiscussions',
+      align: 'center',
+      width: '25%'
+    },
+    {
+      text: 'Number Of Discussions Solved',
+      value: 'numberOfSolvedDiscussions',
+      align: 'center',
+      width: '25%'
+    },
+    {
+      text: 'Percentage',
+      value: 'percentage',
+      align: 'center',
+      width: '25%'
+    }
+  ];
 
   async created() {
     await this.$store.dispatch('loading');
@@ -50,6 +117,23 @@ export default class DiscussionDashboard extends Vue {
       await this.$store.dispatch('error', error);
     }
     await this.$store.dispatch('clearLoading');
+  }
+
+  async changePrivacy() {
+    if (
+      confirm(
+        'Are you sure you want to change the privacy of your dashboard? Current Privacy Mode: ' +
+          this.stats?.privacy
+      )
+    ) {
+      await this.$store.dispatch('loading');
+      try {
+        this.stats = await RemoteServices.changeDiscussionDashboardPrivacy();
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+      await this.$store.dispatch('clearLoading');
+    }
   }
 }
 </script>

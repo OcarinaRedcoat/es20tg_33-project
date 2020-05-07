@@ -55,7 +55,6 @@ export default class EditCourseDialog extends Vue {
 
   editMessage!: Message;
   editDiscussion!: Discussion;
-  isCreateCourse: boolean = false;
 
   created() {
     console.log(this.discussion.id);

@@ -653,9 +653,6 @@ export default class RemoteServices {
   }
 
   static async createDiscussion(quizAnswerId: number | undefined) {
-    console.log(quizAnswerId);
-    console.log(Store.getters.getCurrentCourse.courseId);
-    console.log(Store.getters.getUser.username);
     return httpClient
       .post(
         `/quizAnswer/createDisscussion/${Store.getters.getCurrentCourse.courseId}/${Store.getters.getUser.username}/` +
@@ -663,6 +660,32 @@ export default class RemoteServices {
       )
       .then(response => {
         return new Discussion(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async changeDiscussionDashboardPrivacy() {
+    return httpClient
+      .post(
+        `/discussion/${Store.getters.getUser.username}/dashboard`
+      )
+      .then(response => {
+        return response.data;
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getDiscussionDashboardPrivacy() {
+    return httpClient
+      .get(
+        `/discussion/dashboard/${Store.getters.getUser.username}`
+      )
+      .then(response => {
+        return response.data;
       })
       .catch(async error => {
         throw Error(await this.errorMessage(error));

@@ -19,7 +19,8 @@
         :hide-default-footer="true"
         :mobile-breakpoint="0"
         multi-sort
-        :items-per-page="5"
+        :items-per-page="50"
+        :footer-props="{ itemsPerPageOptions: [15, 30, 50, 100] }"
       >
       </v-data-table>
       <v-card-actions>
