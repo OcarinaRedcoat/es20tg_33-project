@@ -52,6 +52,9 @@ public class User implements UserDetails, DomainEntity {
     private Integer numberOfApprovedQuestions;
     private Integer numberOfRejectedQuestions;
 
+    @Column(columnDefinition = "boolean default true", nullable = false)
+    private Boolean tourneyPrivacy = true;
+
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
 
@@ -359,6 +362,14 @@ public class User implements UserDetails, DomainEntity {
         this.numberOfCorrectStudentAnswers = numberOfCorrectStudentAnswers;
     }
 
+    public boolean getTourneyPrivacy() {
+        return tourneyPrivacy;
+    }
+
+    public void setTourneyPrivacy(boolean tourneyPrivacy) {
+        this.tourneyPrivacy = tourneyPrivacy;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -379,6 +390,7 @@ public class User implements UserDetails, DomainEntity {
                 ", numberOfCorrectStudentAnswers=" + numberOfCorrectStudentAnswers +
                 ", creationDate=" + creationDate +
                 ", lastAccess=" + lastAccess +
+                ", tourneyPrivacy=" + tourneyPrivacy +
                 ", StudentQuestionPrivacy=" + studentQuestionPrivacy +
                 '}';
     }

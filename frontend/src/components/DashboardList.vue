@@ -49,8 +49,7 @@ export default class DashboardList extends Vue {
 
   ul {
     overflow: hidden;
-    padding: 0 5px;
-
+    padding: 0;
     li {
       border-radius: 3px;
       padding: 15px 10px;

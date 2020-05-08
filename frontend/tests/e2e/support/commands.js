@@ -280,6 +280,31 @@ Cypress.Commands.add('checkDashboard', name => {
     .click();
 });
 
+Cypress.Commands.add('doesQuiz', name => {
+    cy.get('[data-cy="tourneysList"] tbody tr')
+        .last()
+        .children()
+        .contains(name)
+        .parent()
+        .should('have.length', 1)
+        .children()
+        .should('have.length', 5)
+        .find('[data-cy="startTourney"]')
+        .click();
+    cy.get('.question-container .option-list p')
+        .last()
+        .click();
+    cy.get('[data-cy="endQuiz"]')
+        .click();
+    cy.get('[data-cy="concludeQuiz"]')
+        .click();
+});
+
+Cypress.Commands.add('toggleTourneyPrivacy', () => {
+    cy.get('[data-cy="toggleTourneyPrivacy"]')
+        .click({force: true});
+});
+
 //Student Question commands
 
 Cypress.Commands.add('submitQuestion', (title, content, optionContent) => {
