@@ -9,9 +9,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table(name = "quiz_answers")
@@ -41,6 +39,9 @@ public class QuizAnswer implements DomainEntity {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "quizAnswer", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<QuestionAnswer> questionAnswers = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "quizAnswer", fetch = FetchType.LAZY, orphanRemoval=true)
+    private Set<Discussion> createdDiscussions = new HashSet<>();
 
     public QuizAnswer() {
     }
@@ -174,6 +175,10 @@ public class QuizAnswer implements DomainEntity {
         }
     }
 
+    public void addDiscussion(Discussion discussion){
+        createdDiscussions.add(discussion);
+    }
+
     public void remove() {
         user.getQuizAnswers().remove(this);
         user = null;
@@ -183,4 +188,5 @@ public class QuizAnswer implements DomainEntity {
 
         questionAnswers.clear();
     }
+
 }

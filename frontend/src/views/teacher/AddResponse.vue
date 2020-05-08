@@ -9,17 +9,19 @@
     <v-card>
       <v-card-title>
         <span class="headline">
-          New Response
+          New Message
         </span>
       </v-card-title>
 
-      <v-card-text class="text-left" v-if="submitMessage">
+      <v-card-text class="text-left" v-if="editMessage">
         <v-container grid-list-md fluid>
-          <v-layout column wrap>
-            <v-flex xs24 sm12 md8>
-              <v-text-field label="Response" data-cy="Response" />
-            </v-flex>
-          </v-layout>
+          <v-flex xs24 sm12 md8>
+            <v-text-field
+              v-model="editMessage.sentence"
+              label="Sentence"
+              data-cy="Sentence"
+            />
+          </v-flex>
         </v-container>
       </v-card-text>
 
@@ -31,7 +33,9 @@
           data-cy="cancelButton"
           >Cancel</v-btn
         >
-        <v-btn color="blue darken-1" data-cy="saveResponse">Save</v-btn>
+        <v-btn color="blue darken-1" @click="saveMessage" data-cy="saveButton"
+          >Save</v-btn
+        >
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -41,13 +45,42 @@
 import { Component, Model, Prop, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import Course from '@/models/user/Course';
+import Discussion from '@/models/statement/Discussion';
 import Message from '@/models/statement/Message';
 
 @Component
 export default class EditCourseDialog extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
-  @Prop({ type: Message, required: true }) message!: Message;
+  @Prop({ type: Discussion, required: true }) readonly discussion!: Discussion;
 
-  submitMessage!: Message;
+  editMessage!: Message;
+  editDiscussion!: Discussion;
+  isCreateCourse: boolean = false;
+  //discussionId: number = this.discussion.discussionId;
+
+  created() {
+    console.log(this.discussion.id);
+    this.editDiscussion = new Discussion(this.discussion);
+    this.editMessage = new Message();
+  }
+
+  async saveMessage() {
+    if (!this.editMessage.sentence) {
+      await this.$store.dispatch('error', 'Message must have a sentence!');
+      return;
+    }
+
+    if (this.editMessage) {
+      try {
+        const result = await RemoteServices.submitMessage(
+          this.editDiscussion.id,
+          this.editMessage
+        );
+        this.$emit('new-course', result);
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
+  }
 }
 </script>

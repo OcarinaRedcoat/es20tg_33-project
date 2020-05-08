@@ -18,7 +18,11 @@ import Tourney from '@/models/tourney/Tourney';
 import TourneyStats from '@/models/tourney/TourneyStats';
 import Discussion from '@/models/statement/Discussion';
 import Message from '@/models/statement/Message';
+
+import DiscussionStats from '@/models/statement/DiscussionStats';
+
 import StudentQuestionStats from '@/models/submissions/StudentQuestionStats';
+
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 10000;
@@ -673,11 +677,28 @@ export default class RemoteServices {
       });
   }
 
+
+
+  static async submitMessage(
+      discussionId: number | undefined,
+      message: Message
+  ) {
+    return httpClient
+      .post(
+        `/quizAnswer/${discussionId}/${Store.getters.getUser.username}`,
+        message
+      )
+      .then(response => {
+        return new Message(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async getTourneysDashboard(): Promise<TourneyStats[]> {
     return httpClient
-      .get(
-        `/tourneys/dashboard`
-      )
+      .get('/tourneys/dashboard')
       .then(response => {
         return response.data.map((tourneyStats: any) => {
           return new TourneyStats(tourneyStats);
@@ -688,14 +709,49 @@ export default class RemoteServices {
       });
   }
 
-  static async submitStudentAnswer(questionAnswerId: number, message: Message) {
+  static async createDiscussion(quizAnswerId: number | undefined) {
     return httpClient
       .post(
-        `/courses/${Store.getters.getCurrentCourse.courseExecutionId}/questionAnswer/${questionAnswerId}/discussion/submit`,
-        message
+        `/quizAnswer/createDisscussion/${Store.getters.getCurrentCourse.courseId}/${Store.getters.getUser.username}/` +
+          quizAnswerId
       )
       .then(response => {
-        return new Message(response.data);
+        return new Discussion(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async changeDiscussionDashboardPrivacy() {
+    return httpClient
+      .post(`/discussion/${Store.getters.getUser.username}/dashboard`)
+      .then(response => {
+        return response.data;
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getDiscussionDashboardPrivacy() {
+    return httpClient
+      .get(`/discussion/dashboard/${Store.getters.getUser.username}`)
+      .then(response => {
+        return response.data;
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getDiscussionStats() {
+    return httpClient
+      .get(
+        `/discussion/${Store.getters.getCurrentCourse.courseId}/${Store.getters.getUser.username}/dashboard`
+      )
+      .then(response => {
+        return new DiscussionStats(response.data);
       })
       .catch(async error => {
         throw Error(await this.errorMessage(error));
@@ -716,6 +772,7 @@ export default class RemoteServices {
         throw Error(await this.errorMessage(error));
       });
   }
+
 
   static async makeQuestionAvailable(
     questionId: number | undefined
@@ -749,6 +806,7 @@ export default class RemoteServices {
       });
   }
 
+
   static async getTourneys() {
     return httpClient
       .get('/tourneys/open')
@@ -764,8 +822,21 @@ export default class RemoteServices {
 
   static async getDiscussions() {
     return httpClient
+      .get(`/discussion/${Store.getters.getCurrentCourse.courseId}`)
+      .then(response => {
+        return response.data.map((discussion: any) => {
+          return new Discussion(discussion);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getDiscussionsStudent() {
+    return httpClient
       .get(
-        `/visualize/teacher/${Store.getters.getCurrentCourse.courseExecutionId}`
+        `/discussion/${Store.getters.getCurrentCourse.courseId}/${Store.getters.getUser.username}`
       )
       .then(response => {
         return response.data.map((discussion: any) => {
@@ -777,9 +848,38 @@ export default class RemoteServices {
       });
   }
 
-  static async teacherMessageSub(message: Message) {
+  static async getPublicDiscussionsQuizz(quizAnswerId: number | undefined) {
     return httpClient
-      .post('/discussion/teacher/submit', message)
+      .get(
+        `/discussion/public/${Store.getters.getCurrentCourse.courseId}/${quizAnswerId}`
+      )
+      .then(response => {
+        return response.data.map((discussion: any) => {
+          return new Discussion(discussion);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async seeMessagesDiscussion(discussionId: number | undefined) {
+    return httpClient
+      .get(`/quizAnswer/${discussionId}`)
+      .then(response => {
+        return response.data.map((message: any) => {
+          return new Message(message);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async makeDiscussionPublic(discussionId: number | undefined) {
+    console.log(discussionId);
+    return httpClient
+      .post(`/discussion/${discussionId}`)
       .then(response => {
         return new Discussion(response.data);
       })
@@ -809,13 +909,13 @@ export default class RemoteServices {
 
   static async getTourneyQuizAnswer(tourney: Tourney) {
     return httpClient
-        .get(`/tourneys/${tourney.tourneyId}/quiz`)
-        .then(response => {
-          return new StatementQuiz(response.data)
-        })
-        .catch(async error => {
-          throw Error(await this.errorMessage(error));
-        });
+      .get(`/tourneys/${tourney.tourneyId}/quiz`)
+      .then(response => {
+        return new StatementQuiz(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
   }
 
   static async toggleTourneysPrivacy(privacy: String) : Promise<boolean> {

@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.user;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Discussion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.config.DateHandler;
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseExecution;
@@ -76,6 +77,11 @@ public class User implements UserDetails, DomainEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "creator", fetch = FetchType.LAZY, orphanRemoval=true)
     private Set<Tourney> createdTourneys = new HashSet<>();
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "creatorStudent", fetch = FetchType.LAZY, orphanRemoval=true)
+    private Set<Discussion> createdDiscussions = new HashSet<>();
+
+    @Column(columnDefinition = "boolean default true", nullable = false)
+    private Boolean discussionPrivacy = true;
     @Column(columnDefinition = "boolean default true", nullable = false)
     private Boolean studentQuestionPrivacy = true;
 
@@ -531,5 +537,25 @@ public class User implements UserDetails, DomainEntity {
         }
 
         return result;
+    }
+
+    public void addDiscussion(Discussion discussion){
+        createdDiscussions.add(discussion);
+    }
+
+    public Set<Discussion> getCreatedDiscussions() {
+        return createdDiscussions;
+    }
+
+    public void setCreatedDiscussions(Set<Discussion> createdDiscussions) {
+        this.createdDiscussions = createdDiscussions;
+    }
+
+    public Boolean getDiscussionPrivacy() {
+        return discussionPrivacy;
+    }
+
+    public void setDiscussionPrivacy(Boolean discussionPrivacy) {
+        this.discussionPrivacy = discussionPrivacy;
     }
 }

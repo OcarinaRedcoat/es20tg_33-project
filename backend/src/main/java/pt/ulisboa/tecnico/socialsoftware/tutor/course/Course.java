@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.course;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.Discussion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
@@ -8,6 +9,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Topic;
 import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestion;
 
 import javax.persistence.*;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -18,6 +20,8 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.IN
 @Entity
 @Table(name = "courses")
 public class Course implements DomainEntity {
+    public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
     public enum Type {TECNICO, EXTERNAL}
 
     @Id
@@ -41,6 +45,10 @@ public class Course implements DomainEntity {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "course", fetch=FetchType.LAZY, orphanRemoval=true)
     private final Set<Topic> topics = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "course", fetch = FetchType.LAZY, orphanRemoval=true)
+    private Set<Discussion> createdDiscussions = new HashSet<>();
+
 
     public Course() {}
 
@@ -109,6 +117,10 @@ public class Course implements DomainEntity {
             throw new TutorException(INVALID_TYPE_FOR_COURSE);
 
         this.type = type;
+    }
+
+    public void addDiscussion(Discussion discussion) {
+        createdDiscussions.add(discussion);
     }
 
     @Override

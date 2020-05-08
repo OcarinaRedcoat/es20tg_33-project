@@ -25,7 +25,12 @@ import CreateTourney from './views/student/tourney/CreateTourney.vue';
 import OpenTourneys from './views/student/tourney/OpenTourneys.vue';
 import TourneysDashboard from './views/student/tourney/TourneysDashboard.vue';
 import DiscussionAnswerView from './views/student/quiz/DiscussionAnswerView.vue';
+
+
+
 import AllDiscussionView from './views/student/quiz/AllDiscussionView.vue';
+import DiscussionDashboard from './views/student/DiscussionDashboard.vue';
+import DiscussionPublicQ from './views/student/quiz/DiscussionPublicQ.vue';
 import TeacherDiscussionView from './views/teacher/TeacherDiscussionView.vue';
 
 import AdminManagementView from '@/views/admin/AdminManagementView.vue';
@@ -214,20 +219,29 @@ let router = new Router({
           }
         },
         {
-          path: 'discussion',
-          name: 'discussion',
-          component: DiscussionAnswerView,
-          meta: {
-            title: process.env.VUE_APP_NAME + ' - Discussion',
-            requiredAuth: 'Student'
-          }
-        },
-        {
           path: 'discussions',
           name: 'discussions',
           component: AllDiscussionView,
           meta: {
             title: process.env.VUE_APP_NAME + ' - Discussions',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+          path: 'discussions/stats',
+          name: 'discussionsStats',
+          component: DiscussionDashboard,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Discussions',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+          path: 'publicQuizDiscussions',
+          name: 'public-discussions',
+          component: DiscussionPublicQ,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Public Discussions',
             requiredAuth: 'Student'
           }
         },

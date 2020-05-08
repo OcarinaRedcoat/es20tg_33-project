@@ -88,6 +88,8 @@
 
         <v-divider />
 
+
+
           <v-card-actions>
             <v-spacer />
             <v-btn color="secondary" text @click="confirmationDialog = false">
@@ -99,6 +101,8 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+
+
 
     <v-dialog v-model="nextConfirmationDialog" width="50%">
       <v-card>

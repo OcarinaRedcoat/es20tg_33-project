@@ -1,12 +1,14 @@
 
 package pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.MessageDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
@@ -18,43 +20,59 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column(name = "username")
+    private String userName;
+
+    @Column(name = "name")
+    private String name;
+
+    @ManyToOne(cascade = CascadeType.ALL,fetch=FetchType.LAZY)
+    @JoinColumn(name = "discussion_id")
+    private Discussion discussion;
 
     private String sentence;
 
     private LocalDateTime messageDate;
 
-    @ManyToOne(cascade = CascadeType.ALL,fetch=FetchType.LAZY)
-    private Discussion discussion;
 
     public Message(){
     }
 
-    public Message(MessageDto messageDto,User user){
-        checkConsistentMessage(messageDto);
-        this.messageDate = messageDto.getMessageDate();
+    public Message(Discussion discussion, MessageDto messageDto){
+        this.discussion = discussion;
+        this.userName = messageDto.getUserName();
+        this.name = messageDto.getName();
         this.sentence = messageDto.getSentence();
-        this.user = user;
+        if (messageDto.getMessageDate() != null){
+            this.messageDate = LocalDateTime.parse(messageDto.getMessageDate(), Course.formatter);
+        }
+        this.discussion.addDiscussionMessages(this);
 
     }
 
-    public Integer getId() {return this.id;}
+    public Integer getId() {
+        return id;
+    }
 
-    public void setId(Integer id) {this.id=id;}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-    public User getUser() {return user;}
+    public String getUserName() {
+        return userName;
+    }
 
-    public void setUser(User user) {this.user=user;}
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
-    public String getSentence() {return this.sentence;}
+    public String getName() {
+        return name;
+    }
 
-    public void setSentence(String string) {this.sentence=string;}
-
-    public LocalDateTime getMessageDate() {return this.messageDate;}
-
-    public void setMessageDate(LocalDateTime messageDate) {this.messageDate=messageDate;}
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public Discussion getDiscussion() {
         return discussion;
@@ -64,8 +82,20 @@ public class Message {
         this.discussion = discussion;
     }
 
-    public String displayMessage(){
-        return user.getName() + "(" + user.getRole() + ") - " + getSentence() + getMessageDate();
+    public String getSentence() {
+        return sentence;
+    }
+
+    public void setSentence(String sentence) {
+        this.sentence = sentence;
+    }
+
+    public LocalDateTime getMessageDate() {
+        return messageDate;
+    }
+
+    public void setMessageDate(LocalDateTime messageDate) {
+        this.messageDate = messageDate;
     }
 
     public void checkConsistentMessage(MessageDto messageDto) {
@@ -82,14 +112,5 @@ public class Message {
 
     }
 
-    @Override
-    public String toString() {
-        return "Message{" +
-                "id=" + id +
-                ", user=" + user +
-                ", sentence='" + sentence + '\'' +
-                ", messageDate=" + messageDate +
-                '}';
-    }
 }
 

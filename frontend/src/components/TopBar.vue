@@ -66,7 +66,9 @@
                 <v-icon>fas fa-certificate</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title data-cy="top-bar-approve-reject">Submitted</v-list-item-title>
+                <v-list-item-title data-cy="top-bar-approve-reject"
+                  >Submitted</v-list-item-title
+                >
               </v-list-item-content>
             </v-list-item>
             <v-list-item to="/management/topics">
@@ -105,7 +107,7 @@
               <v-list-item-action>
                 <v-icon>fas fa-comment</v-icon>
               </v-list-item-action>
-              <v-list-item-content>Discussions</v-list-item-content>
+              <v-list-item-title data-cy="top-bar-discussions">Discussions</v-list-item-title>
             </v-list-item>
             <v-list-item to="/management/impexp">
               <v-list-item-action>
@@ -131,7 +133,9 @@
                 <v-icon>assignment</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title data-cy="top-bar-create-tourney">Create Tourney</v-list-item-title>
+                <v-list-item-title data-cy="top-bar-create-tourney"
+                  >Create Tourney</v-list-item-title
+                >
               </v-list-item-content>
             </v-list-item>
             <v-list-item to="/student/tourneys">
@@ -139,7 +143,9 @@
                 <v-icon>list</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title data-cy="top-bar-open-tourneys">Open Tourneys List</v-list-item-title>
+                <v-list-item-title data-cy="top-bar-open-tourneys"
+                  >Open Tourneys List</v-list-item-title
+                >
               </v-list-item-content>
             </v-list-item>
             <v-list-item to="/student/tourneys/dashboard">
@@ -149,6 +155,29 @@
               <v-list-item-content>
                 <v-list-item-title data-cy="top-bar-tourneys-dashboard">Tourneys Dashboard</v-list-item-title>
               </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+
+        <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
+          <template v-slot:activator="{ on }">
+            <v-btn v-on="on" text dark data-cy="top-bar-discussion">
+              Discussion
+              <v-icon>fab fa-telegram-plane</v-icon>
+            </v-btn>
+          </template>
+          <v-list dense>
+            <v-list-item to="/student/discussions">
+              <v-list-item-action>
+                <v-icon>fas fa-comment</v-icon>
+              </v-list-item-action>
+              <v-list-item-title data-cy="top-bar-discussions">Discussions</v-list-item-title>
+            </v-list-item>
+            <v-list-item to="/student/discussions/stats">
+              <v-list-item-action>
+                <v-icon>fas fa-percentage</v-icon>
+              </v-list-item-action>
+              <v-list-item-title>Stats</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -166,7 +195,9 @@
                 <v-icon>fas fa-file-alt</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title data-cy="top-bar-submitted-questions">Submitted Questions</v-list-item-title>
+                <v-list-item-title data-cy="top-bar-submitted-questions"
+                  >Submitted Questions</v-list-item-title
+                >
               </v-list-item-content>
             </v-list-item>
             <v-list-item to="/student/studentQuestionsDashboard">
@@ -182,7 +213,7 @@
 
         <v-menu offset-y v-if="isStudent && currentCourse" open-on-hover>
           <template v-slot:activator="{ on }">
-            <v-btn v-on="on" text dark  data-cy="top-bar-quizzes">
+            <v-btn v-on="on" text dark data-cy="top-bar-quizzes">
               Quizzes
               <v-icon>fas fa-file-alt</v-icon>
             </v-btn>
@@ -193,7 +224,9 @@
                 <v-icon>assignment</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title data-cy="top-bar-available">Available</v-list-item-title>
+                <v-list-item-title data-cy="top-bar-available"
+                  >Available</v-list-item-title
+                >
               </v-list-item-content>
             </v-list-item>
             <v-list-item to="/student/create">
@@ -217,14 +250,14 @@
                 <v-icon>done</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title>Solved</v-list-item-title>
+                <v-list-item-title data-cy="top-bar-solved">Solved</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-list-item to="/student/discussions">
               <v-list-item-action>
                 <v-icon>fas fa-comment</v-icon>
               </v-list-item-action>
-              <v-list-item-title>Discussions</v-list-item-title>
+              <v-list-item-title data-cy="top-bar-discussions">Discussions</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -405,7 +438,6 @@
             </v-list-item-action>
             <v-list-item-content>Discussions</v-list-item-content>
           </v-list-item>
-
         </v-list-group>
 
         <v-list-item to="/courses" v-if="isLoggedIn && moreThanOneCourse">

@@ -3,18 +3,21 @@ import Discussion from '@/models/statement/Discussion';
 
 export default class Message {
   id: number | undefined;
-  message: string | undefined;
+  discussionId: number | undefined;
   messageDate: string | undefined;
-  user: User | undefined;
-  discussionDto: Discussion | undefined;
+  userName: string | undefined;
+  name: string | undefined;
+  sentence: string | undefined;
 
   constructor(jsonObj?: Message) {
     if (jsonObj) {
+      console.log(jsonObj);
       this.id = jsonObj.id;
-      this.message = jsonObj.message;
+      this.discussionId = jsonObj.discussionId;
       this.messageDate = jsonObj.messageDate;
-      this.user = jsonObj.user;
-      this.discussionDto = jsonObj.discussionDto;
+      this.userName = jsonObj.userName;
+      this.name = jsonObj.name;
+      this.sentence = jsonObj.sentence;
     }
   }
 }

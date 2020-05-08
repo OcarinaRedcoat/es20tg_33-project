@@ -1,108 +1,142 @@
 <template>
   <v-card class="table">
-    <v-card-title>Discussions</v-card-title>
-    <v-data-table
-      :headers="headers"
-      :items="discussions"
-      :search="search"
-      disable-pagination
-      :hide-default-footer="true"
-      :mobile-breakpoint="0"
-      multi-sort
-      :items-per-page="5"
-      :footer-props="{ itemsPerPageOptions: [5, 10, 15, 50, 100] }"
-    >
-      <template v-slot:top>
-        <v-card-title>
-          <v-text-field
-            v-model="search"
-            append-icon="search"
-            label="Search"
-            class="mx-2"
-          />
-          <v-spacer />
-        </v-card-title>
-      </template>
-      <template v-slot:item.action="{ item }">
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-icon
-              small
-              class="mr-2"
-              v-on="on"
-              @click="deleteQuestion(item)"
-              color="red"
-              >delete</v-icon
-            >
-          </template>
-          <span>Delete Student Question</span>
-        </v-tooltip>
-      </template>
-    </v-data-table>
+    <v-form ref="form">
+      <v-card-title>Responses</v-card-title>
+      <v-data-table
+        :headers="headers"
+        :items="discussions"
+        :search="search"
+        disable-pagination
+        :hide-default-footer="true"
+        :mobile-breakpoint="0"
+        multi-sort
+        :items-per-page="5"
+        :footer-props="{ itemsPerPageOptions: [5, 10, 15, 50, 100] }"
+      >
+        <template v-slot:top>
+          <v-card-title>
+            <v-text-field
+              v-model="search"
+              append-icon="search"
+              label="Search"
+              class="mx-2"
+              data-cy="searchDiscussion"
+            />
+            <v-spacer />
+            <v-spacer />
+          </v-card-title>
+        </template>
+        <template v-slot:item.action="{ item }">
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-icon
+                small
+                class="mr-2"
+                v-on="on"
+                @click="createNewMessage(item)"
+                data-cy="createNewMessage"
+                >fas fa-envelope-square</v-icon
+              >
+            </template>
+            <span>Create new Message</span>
+          </v-tooltip>
+          <v-tooltip bottom>
+            <template v-slot:activator="{ on }">
+              <v-icon data-cy="seeMessage" small class="mr-2" v-on="on" @click="seeMessages(item)"
+                >far fa-eye</v-icon
+              >
+            </template>
+            <span>See Messages</span>
+          </v-tooltip>
+        </template>
+      </v-data-table>
+    </v-form>
+    <edit-discussion-dialog
+      v-if="currentDiscussion"
+      v-model="editDiscussionDialog"
+      :discussion="currentDiscussion"
+      v-on:close-dialog="onCloseDialog"
+    />
+    <see-discussion-messages-dialog
+      v-if="currentDiscussion"
+      v-model="seeMessagesDialog"
+      :discussion="currentDiscussion"
+      v-on:close-dialog="onCloseDialog"
+    />
   </v-card>
 </template>
 
-<script>
-export default {
-  name: 'AllDiscussionView'
-};
-</script>
-
-<style lang="scss" scoped>
-.container {
-  max-width: 1000px;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 10px;
-  padding-right: 10px;
-
-  h2 {
-    font-size: 26px;
-    margin: 20px 0;
-    text-align: center;
-    small {
-      font-size: 0.5em;
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator';
+import RemoteServices from '@/services/RemoteServices';
+import Discussion from '@/models/statement/Discussion';
+import EditDiscussionDialog from '@/views/student/quiz/EditDiscussionDialog.vue';
+import SeeDiscussionMessagesDialog from '@/views/student/quiz/SeeDiscussionMessagesDialog.vue';
+@Component({
+  components: {
+    'see-discussion-messages-dialog': SeeDiscussionMessagesDialog,
+    'edit-discussion-dialog': EditDiscussionDialog
+  }
+})
+export default class TeacherDiscussionView extends Vue {
+  discussions: Discussion[] = [];
+  search: string = '';
+  currentDiscussion: Discussion | null = null;
+  editDiscussionDialog: boolean = false;
+  seeMessagesDialog: boolean = false;
+  headers: object = [
+    {
+      text: 'Discussion',
+      value: 'title',
+      align: 'left',
+      width: '30%'
+    },
+    {
+      text: 'Student',
+      value: 'creatorStudent.name',
+      align: 'center',
+      width: '30%'
+    },
+    {
+      text: 'Solved Status',
+      value: 'solvedStatus',
+      align: 'center',
+      width: '30%'
+    },
+    {
+      text: 'Create/See Messages',
+      value: 'action',
+      align: 'center',
+      width: '10%',
+      sortable: false
     }
+  ];
+
+  async created() {
+    await this.$store.dispatch('loading');
+    try {
+      this.discussions = await RemoteServices.getDiscussionsStudent();
+      console.log(this.discussions);
+    } catch (error) {
+      await this.$store.dispatch('error', error);
+    }
+    await this.$store.dispatch('clearLoading');
   }
 
-  ul {
-    overflow: hidden;
-    padding: 0 5px;
+  createNewMessage(discussion: Discussion) {
+    this.currentDiscussion = new Discussion(discussion);
+    this.editDiscussionDialog = true;
+  }
 
-    li {
-      border-radius: 3px;
-      padding: 15px 10px;
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    }
+  seeMessages(discussion: Discussion) {
+    this.currentDiscussion = new Discussion(discussion);
+    this.seeMessagesDialog = true;
+  }
 
-    .list-header {
-      background-color: #1976d2;
-      color: white;
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-      text-align: center;
-    }
-
-    .col {
-      width: 25%;
-    }
-
-    .last-col {
-      max-width: 50px !important;
-    }
-
-    .list-row {
-      background-color: #ffffff;
-      cursor: pointer;
-      box-shadow: 0 0 9px 0 rgba(0, 0, 0, 0.1);
-    }
-
-    .list-row:hover {
-      background-color: #c8c8c8;
-    }
+  onCloseDialog() {
+    this.seeMessagesDialog = false;
+    this.editDiscussionDialog = false;
+    this.currentDiscussion = null;
   }
 }
-</style>
+</script>
