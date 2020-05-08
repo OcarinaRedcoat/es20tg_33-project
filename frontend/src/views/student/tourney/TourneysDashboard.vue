@@ -54,7 +54,7 @@ export default class TourneysDashboard extends Vue {
       return;
     }
     const conf = confirm(
-      "Are you sure you want to change this dashboard's privacy settings?"
+      'Are you sure you want to change this dashboard\'s privacy settings?'
     );
     if (conf) {
       try {
