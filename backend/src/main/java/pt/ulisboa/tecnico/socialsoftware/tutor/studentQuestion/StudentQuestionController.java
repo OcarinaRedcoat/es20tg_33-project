@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.validation.Valid;
@@ -59,6 +60,13 @@ public class StudentQuestionController {
         return this.studentQuestionService.getUserSubmittedQuestions(user.getUsername());
     }
 
+    @PostMapping("/courses/{courseId}/questionsFromStudents")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#courseId, 'COURSE.ACCESS')")
+    public QuestionDto makeStudentQuestionAvailable(@PathVariable int courseId, @RequestBody int studentQuestionId) {
+
+        return this.studentQuestionService.makeStudentQuestionAvailable(studentQuestionId);
+    }
+
     @GetMapping("/courses/{courseId}/studentQuestions")
     @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#courseId, 'COURSE.ACCESS')")
     public List<StudentQuestionDto> getPendingQuestions(@PathVariable int courseId) {
@@ -76,4 +84,33 @@ public class StudentQuestionController {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping("studentQuestions/{questionId}/resubmit")
+    @PreAuthorize("hasRole('ROLE_STUDENT') and hasPermission(#questionId, 'STUDENT_QUESTION.ACCESS')")
+    public StudentQuestionDto resubmitQuestion(@PathVariable int questionId, @Valid @RequestBody StudentQuestionDto question) {
+        question.setStatus(StudentQuestion.Status.PENDING.name());
+        return this.studentQuestionService.resubmitQuestion(questionId, question);
+    }
+
+    @PutMapping("studentQuestions/{questionId}/editApprovedQuestion")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#questionId, 'STUDENT_QUESTION.ACCESS')")
+    public StudentQuestionDto editApprovedQuestion(@PathVariable int questionId, @Valid @RequestBody StudentQuestionDto questionChanges) {
+
+        return this.studentQuestionService.editApprovedQuestion(questionId, questionChanges);
+    }
+
+    @GetMapping("/studentQuestions/dashboard")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public StudentQuestionStatsDto getStudentQuestionsDashboard(Principal principal) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+        return this.studentQuestionService.getStudentQuestionStats(user.getUsername());
+    }
+
+    @PutMapping("/student/studentQuestions/{privacy}")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public boolean toggleStudentQuestionPrivacy(@PathVariable String privacy, Principal principal) {
+        logger.debug("privacy: {}: ", privacy);
+
+        User user = (User) ((Authentication) principal).getPrincipal();
+        return this.studentQuestionService.toggleStudentQuestionPrivacy(privacy, user.getId());
+    }
 }

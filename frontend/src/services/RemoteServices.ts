@@ -15,9 +15,14 @@ import StatementAnswer from '@/models/statement/StatementAnswer';
 import { QuizAnswers } from '@/models/management/QuizAnswers';
 import StudentQuestion from '@/models/submissions/StudentQuestion';
 import Tourney from '@/models/tourney/Tourney';
+import TourneyStats from '@/models/tourney/TourneyStats';
 import Discussion from '@/models/statement/Discussion';
 import Message from '@/models/statement/Message';
+
 import DiscussionStats from '@/models/statement/DiscussionStats';
+
+import StudentQuestionStats from '@/models/submissions/StudentQuestionStats';
+
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 10000;
@@ -589,6 +594,20 @@ export default class RemoteServices {
       });
   }
 
+  static async resubmitQuestion(
+    questionId: number | undefined,
+    studentQuestion: StudentQuestion
+  ): Promise<StudentQuestion> {
+    return httpClient
+      .put(`/studentQuestions/${questionId}/resubmit`, studentQuestion)
+      .then(response => {
+        return new StudentQuestion(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static deleteStudentQuestion(questionId: number) {
     return httpClient
       .delete(`/studentQuestions/${questionId}`)
@@ -624,6 +643,29 @@ export default class RemoteServices {
         throw Error(await this.errorMessage(error));
       });
   }
+
+  static async getStudentQuestionDashboard(): Promise<StudentQuestionStats> {
+    return httpClient
+      .get('/studentQuestions/dashboard')
+      .then(response => {
+          return new StudentQuestionStats(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async toggleStudentQuestionPrivacy(
+    privacy: String
+  ) : Promise<boolean> {
+    return httpClient
+      .put(`/student/studentQuestions/${privacy}`)
+      .then(response => response.data)
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async createTourney(tourney: Tourney) {
     return httpClient
       .post('/tourneys', tourney)
@@ -635,9 +677,24 @@ export default class RemoteServices {
       });
   }
 
+  static async getTourneysDashboard(): Promise<TourneyStats[]> {
+    return httpClient
+      .get(
+        `/tourneys/dashboard`
+      )
+      .then(response => {
+        return response.data.map((tourneyStats: any) => {
+          return new TourneyStats(tourneyStats);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async submitMessage(
-    discussionId: number | undefined,
-    message: Message
+      discussionId: number | undefined,
+      message: Message
   ) {
     return httpClient
       .post(
@@ -719,6 +776,40 @@ export default class RemoteServices {
         throw Error(await this.errorMessage(error));
       });
   }
+
+
+  static async makeQuestionAvailable(
+    questionId: number | undefined
+  ): Promise<Question> {
+    return httpClient
+      .post(
+        `/courses/${Store.getters.getCurrentCourse.courseId}/questionsFromStudents`,
+        questionId
+      )
+      .then(response => {
+        return new Question(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async saveApprovedQuestionChanges(
+    studentQuestion: StudentQuestion
+  ): Promise<StudentQuestion> {
+    return httpClient
+      .put(
+        `/studentQuestions/${studentQuestion.id}/editApprovedQuestion`,
+        studentQuestion
+      )
+      .then(response => {
+        return new StudentQuestion(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
 
   static async getTourneys() {
     return httpClient
@@ -818,6 +909,31 @@ export default class RemoteServices {
       .catch(async error => {
         throw Error(await this.errorMessage(error));
       });
+  }
+
+  static async getTourneyQuizAnswer(tourney: Tourney) {
+    return httpClient
+        .get(`/tourneys/${tourney.tourneyId}/quiz`)
+        .then(response => {
+          return new StatementQuiz(response.data)
+        })
+        .catch(async error => {
+          throw Error(await this.errorMessage(error));
+        });
+  }
+
+  static async toggleTourneysPrivacy(privacy: String) : Promise<boolean> {
+    return httpClient
+        .put(`/student/tourneyprivacy/${privacy}`).then(response => response.data).catch(async error => {
+          throw Error(await this.errorMessage(error));
+        });
+  }
+
+  static async getTourneysPrivacy(privacy: String) : Promise<boolean> {
+    return httpClient
+        .get(`/student/tourneyprivacy`).then(response => response.data).catch(async error => {
+          throw Error(await this.errorMessage(error));
+        });
   }
 
   static async exportAll() {

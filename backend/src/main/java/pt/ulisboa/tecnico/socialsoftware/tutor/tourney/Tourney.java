@@ -30,7 +30,7 @@ public class Tourney {
 
     private String title;
 
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "topicTourneys", fetch=FetchType.LAZY)
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "tourneys")
     private List<Topic> topics = new ArrayList<>();
 
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "enrolledTourneys", fetch=FetchType.LAZY)

@@ -53,6 +53,8 @@ public class User implements UserDetails, DomainEntity {
     private Integer numberOfApprovedQuestions;
     private Integer numberOfRejectedQuestions;
 
+    @Column(columnDefinition = "boolean default true", nullable = false)
+    private Boolean tourneyPrivacy = true;
 
     @Column(name = "creation_date")
     private LocalDateTime creationDate;
@@ -80,6 +82,8 @@ public class User implements UserDetails, DomainEntity {
 
     @Column(columnDefinition = "boolean default true", nullable = false)
     private Boolean discussionPrivacy = true;
+    @Column(columnDefinition = "boolean default true", nullable = false)
+    private Boolean studentQuestionPrivacy = true;
 
     public User() {
     }
@@ -210,11 +214,15 @@ public class User implements UserDetails, DomainEntity {
 
     public void setNumberOfSubmittedQuestions(Integer numberOfSubmittedQuestions) { this.numberOfSubmittedQuestions = numberOfSubmittedQuestions; }
 
+    public void addNumberOfSubmittedQuestions() {this.numberOfSubmittedQuestions =  getNumberOfSubmittedQuestions() + 1;}
+
     public Integer getNumberOfApprovedQuestions() {
         return numberOfApprovedQuestions;
     }
 
     public void setNumberOfApprovedQuestions(Integer numberOfApprovedQuestions) { this.numberOfApprovedQuestions = numberOfApprovedQuestions; }
+
+    public void addNumberOfApprovedQuestions() {this.numberOfApprovedQuestions = getNumberOfApprovedQuestions() + 1;}
 
     public Integer getNumberOfRejectedQuestions() {
         return numberOfRejectedQuestions;
@@ -360,6 +368,14 @@ public class User implements UserDetails, DomainEntity {
         this.numberOfCorrectStudentAnswers = numberOfCorrectStudentAnswers;
     }
 
+    public boolean getTourneyPrivacy() {
+        return tourneyPrivacy;
+    }
+
+    public void setTourneyPrivacy(boolean tourneyPrivacy) {
+        this.tourneyPrivacy = tourneyPrivacy;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -380,6 +396,8 @@ public class User implements UserDetails, DomainEntity {
                 ", numberOfCorrectStudentAnswers=" + numberOfCorrectStudentAnswers +
                 ", creationDate=" + creationDate +
                 ", lastAccess=" + lastAccess +
+                ", tourneyPrivacy=" + tourneyPrivacy +
+                ", StudentQuestionPrivacy=" + studentQuestionPrivacy +
                 '}';
     }
 
@@ -429,6 +447,13 @@ public class User implements UserDetails, DomainEntity {
             default:
                 break;
         }
+    }
+    public boolean getStudentQuestionPrivacy() {
+        return studentQuestionPrivacy;
+    }
+
+    public void setStudentQuestionPrivacy(boolean studentQuestionPrivacy) {
+        this.studentQuestionPrivacy = studentQuestionPrivacy;
     }
 
     public void addQuizAnswer(QuizAnswer quizAnswer) {

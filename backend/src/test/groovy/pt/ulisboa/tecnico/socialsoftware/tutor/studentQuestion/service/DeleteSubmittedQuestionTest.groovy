@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option
 import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestion
@@ -31,6 +32,9 @@ class DeleteSubmittedQuestionTest extends Specification {
     StudentQuestionService studentQuestionService
 
     @Autowired
+    QuestionService questionService
+
+    @Autowired
     CourseRepository courseRepository
 
     @Autowired
@@ -50,7 +54,6 @@ class DeleteSubmittedQuestionTest extends Specification {
         user = new User(PERSON_NAME, USERNAME, 1, User.Role.STUDENT)
         userRepository.save(user)
 
-        given: "create a question"
         question = new StudentQuestion()
         question.setKey(1)
         question.setTitle(QUESTION_TITLE)
@@ -59,7 +62,6 @@ class DeleteSubmittedQuestionTest extends Specification {
         question.setSubmittingUser(user)
         question.setCourse(course)
 
-        and: 'four options'
         def option = new Option()
         option.setContent(OPTION_CONTENT)
         option.setSequence(0)
@@ -123,6 +125,11 @@ class DeleteSubmittedQuestionTest extends Specification {
         @Bean
         StudentQuestionService studentQuestionService() {
             return new StudentQuestionService()
+        }
+
+        @Bean
+        QuestionService questionService() {
+            return new QuestionService()
         }
     }
 

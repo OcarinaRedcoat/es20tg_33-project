@@ -90,8 +90,10 @@ public enum ErrorMessage {
     STUDENT_QUESTION_NOT_FOUND("Student Question not found with id %d"),
     QUESTION_MISSING_JUSTIFICATION("Missing a justification in order to reject question"),
     QUESTION_NOT_PENDING("Question status not pending"),
+    QUESTION_NOT_REJECTED("Question status not rejected"),
     USER_WITHOUT_SUBMITTED_QUESTIONS("This user doesn't have any submitted questions"),
     QUESTION_ALREADY_APPROVED("You can't delete an approved question"),
+    QUESTION_NOT_APPROVED("This question is not approved"),
     QUESTION_MISSING_OPTIONS("You need to fill all the option fields"),
   
     ACCESS_DENIED("You do not have permission to view this resource"),
@@ -102,6 +104,8 @@ public enum ErrorMessage {
     TOURNEY_NOT_FOUND("Tourney not found"),
     TOURNEY_CLOSED("Tourney closed"),
     STUDENT_ALREADY_ENROLLED("Student already enroled at tourney"),
+
+    PRIVACY_NOT_DEFINED("Not able to define the privacy for this dashboard"),
 
     USER_NOT_STUDENT("The user is not a student"),
     STUDENT_CANT_ACCESS_COURSE_EXECUTION("Student is not enrolled in the course execution: %s"),

@@ -19,8 +19,12 @@ import ResultsView from './views/student/quiz/ResultsView.vue';
 import StatsView from './views/student/StatsView.vue';
 import ScanView from './views/student/ScanView.vue';
 import SubmittedQuestionsView from './views/student/submissions/SubmittedQuestionsView.vue';
+import SubmittedDashboard from './views/student/submissions/SubmittedDashboard.vue';
+
 import CreateTourney from './views/student/tourney/CreateTourney.vue';
 import OpenTourneys from './views/student/tourney/OpenTourneys.vue';
+import TourneysDashboard from './views/student/tourney/TourneysDashboard.vue';
+import DiscussionAnswerView from './views/student/quiz/DiscussionAnswerView.vue';
 import AllDiscussionView from './views/student/quiz/AllDiscussionView.vue';
 import DiscussionDashboard from './views/student/DiscussionDashboard.vue';
 import DiscussionPublicQ from './views/student/quiz/DiscussionPublicQ.vue';
@@ -222,7 +226,7 @@ let router = new Router({
         },
         {
           path: 'discussions/stats',
-          name: 'discussions',
+          name: 'discussionsStats',
           component: DiscussionDashboard,
           meta: {
             title: process.env.VUE_APP_NAME + ' - Discussions',
@@ -262,6 +266,24 @@ let router = new Router({
           component: OpenTourneys,
           meta: {
             title: process.env.VUE_APP_NAME + ' - Open Tourneys',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+          path: 'studentQuestionsDashboard',
+          name: 'student-dashboard',
+          component: SubmittedDashboard,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Student Dashboard',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+          path: 'tourneys/dashboard',
+          name: 'tourneys-dashboard',
+          component: TourneysDashboard,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Tourneys Dashboard',
             requiredAuth: 'Student'
           }
         }

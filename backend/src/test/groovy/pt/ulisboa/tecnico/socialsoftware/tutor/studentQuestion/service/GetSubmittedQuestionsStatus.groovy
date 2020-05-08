@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestion
@@ -29,6 +30,9 @@ class GetSubmittedQuestionsStatus extends Specification {
 
     @Autowired
     UserRepository userRepository
+
+    @Autowired
+    QuestionService questionService
 
     @Autowired
     StudentQuestionService studentQuestionService
@@ -115,6 +119,11 @@ class GetSubmittedQuestionsStatus extends Specification {
         @Bean
         StudentQuestionService studentQuestionService() {
             return new StudentQuestionService()
+        }
+
+        @Bean
+        QuestionService questionService() {
+            return new QuestionService()
         }
     }
 

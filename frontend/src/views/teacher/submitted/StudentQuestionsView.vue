@@ -30,7 +30,7 @@
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-icon
-              small
+              medium
               class="mr-2"
               v-on="on"
               @click="showQuestionDialog(item)"
@@ -38,15 +38,47 @@
               >visibility</v-icon
             >
           </template>
-          <span>Show and Review Question</span>
+          <span>Show Question and see actions</span>
+        </v-tooltip>
+        <v-tooltip bottom v-if="item.status === 'APPROVED'">
+          <template v-slot:activator="{ on }">
+            <v-icon
+              medium
+              class="mr-2"
+              v-on="on"
+              @click="makeQuestionAvailable(item)"
+              data-cy="makeQuestionAvailableButton"
+              >done</v-icon
+            >
+          </template>
+          <span>Make Question Available</span>
+        </v-tooltip>
+        <v-tooltip bottom v-if="item.status === 'APPROVED'">
+          <template v-slot:activator="{ on }">
+            <v-icon
+              medium
+              class="mr-2"
+              v-on="on"
+              @click="editApprovedQuestion(item)"
+              data-cy="editApprovedQuestionButton"
+              >edit</v-icon
+            >
+          </template>
+          <span>Edit Approved Question</span>
         </v-tooltip>
       </template>
     </v-data-table>
-    <review-question-dialog
+    <question-actions-dialog
       v-if="currentQuestion"
       :dialog="questionDialog"
       :question="currentQuestion"
       v-on:review-question="onReviewQuestion"
+    />
+    <edit-approved-question
+      v-if="currentQuestion"
+      :dialog="editStudentQuestionDialog"
+      :question="currentQuestion"
+      v-on:edit-approved-question="onSaveQuestion"
     />
   </v-card>
 </template>
@@ -56,11 +88,13 @@ import { Component, Vue, Watch } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import StudentQuestion from '@/models/submissions/StudentQuestion';
 import Question from '@/models/management/Question';
-import ReviewQuestionDialog from '@/views/teacher/submitted/ReviewQuestionDialog.vue';
+import QuestionActionsDialog from '@/views/teacher/submitted/QuestionActionsDialog.vue';
+import EditApprovedQuestionDialog from '@/views/teacher/submitted/EditApprovedQuestionDialog.vue';
 
 @Component({
   components: {
-    'review-question-dialog': ReviewQuestionDialog
+    'question-actions-dialog': QuestionActionsDialog,
+    'edit-approved-question': EditApprovedQuestionDialog
   }
 })
 export default class StudentQuestionsView extends Vue {
@@ -123,11 +157,36 @@ export default class StudentQuestionsView extends Vue {
     this.questionDialog = true;
   }
 
+  editApprovedQuestion(question: StudentQuestion) {
+    this.currentQuestion = question;
+    this.editStudentQuestionDialog = true;
+  }
+
   async onReviewQuestion(question: StudentQuestion) {
     this.questions = this.questions.filter(q => q.id !== question.id);
     this.questions.unshift(question);
     this.questionDialog = false;
     this.currentQuestion = null;
+  }
+
+  async onSaveQuestion(question: StudentQuestion) {
+    this.questions = this.questions.filter(q => q.id !== question.id);
+    this.questions.unshift(question);
+    this.editStudentQuestionDialog = false;
+    this.currentQuestion = null;
+  }
+
+  async makeQuestionAvailable(studentQuestion: StudentQuestion) {
+    if (
+      studentQuestion.id &&
+      confirm('Are you sure you want to make this question available?')
+    ) {
+      try {
+        await RemoteServices.makeQuestionAvailable(studentQuestion.id);
+      } catch (error) {
+        await this.$store.dispatch('error', error);
+      }
+    }
   }
 }
 </script>

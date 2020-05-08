@@ -58,7 +58,7 @@
                 <v-icon>question_answer</v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title>Questions</v-list-item-title>
+                <v-list-item-title data-cy="top-bar-questions">Questions</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
             <v-list-item to="/management/submitted">
@@ -148,6 +148,14 @@
                 >
               </v-list-item-content>
             </v-list-item>
+            <v-list-item to="/student/tourneys/dashboard">
+              <v-list-item-action>
+                <v-icon>dashboard</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title data-cy="top-bar-tourneys-dashboard">Tourneys Dashboard</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
           </v-list>
         </v-menu>
 
@@ -190,6 +198,14 @@
                 <v-list-item-title data-cy="top-bar-submitted-questions"
                   >Submitted Questions</v-list-item-title
                 >
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item to="/student/studentQuestionsDashboard">
+              <v-list-item-action>
+                <v-icon>fas fa-columns</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title data-cy="top-bar-submitted-dashboard">Submitted Dashboard</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </v-list>

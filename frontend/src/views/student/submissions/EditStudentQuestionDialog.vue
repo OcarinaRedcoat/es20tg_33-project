@@ -46,7 +46,7 @@
             />
             <v-textarea
               v-model="editStudentQuestion.options[index - 1].content"
-              label="Option Content"
+              :label="`Option ${index}`"
               data-cy="OptionContent"
             ></v-textarea>
           </v-flex>
