@@ -355,7 +355,7 @@ public class User implements UserDetails, DomainEntity {
         this.numberOfCorrectStudentAnswers = numberOfCorrectStudentAnswers;
     }
 
-    public boolean isTourneyPrivacy() {
+    public boolean getTourneyPrivacy() {
         return tourneyPrivacy;
     }
 

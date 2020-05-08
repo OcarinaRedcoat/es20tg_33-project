@@ -749,9 +749,16 @@ export default class RemoteServices {
         });
   }
 
-  static async toggleTourneyPrivacy(privacy: String) : Promise<boolean> {
+  static async toggleTourneysPrivacy(privacy: String) : Promise<boolean> {
     return httpClient
         .put(`/student/tourneyprivacy/${privacy}`).then(response => response.data).catch(async error => {
+          throw Error(await this.errorMessage(error));
+        });
+  }
+
+  static async getTourneysPrivacy(privacy: String) : Promise<boolean> {
+    return httpClient
+        .get(`/student/tourneyprivacy`).then(response => response.data).catch(async error => {
           throw Error(await this.errorMessage(error));
         });
   }

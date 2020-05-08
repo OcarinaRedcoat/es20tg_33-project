@@ -70,4 +70,11 @@ public class TourneyController {
         return tourneyService.toggleTourneysPrivacy(privacy, user.getId());
     }
 
+    @GetMapping("/student/tourneyprivacy")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public boolean toggleTourneyPrivacy(Principal principal) {
+        User user = (User) ((Authentication) principal).getPrincipal();
+        return tourneyService.getTourneysPrivacy(user.getId());
+    }
+
 }

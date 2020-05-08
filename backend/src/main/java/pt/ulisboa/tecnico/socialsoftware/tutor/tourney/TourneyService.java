@@ -308,6 +308,14 @@ public class TourneyService {
             throw new TutorException(ErrorMessage.PRIVACY_NOT_DEFINED, userId);
         } user.setTourneyPrivacy(tourneyPrivacy.equals("private"));
 
-        return user.isTourneyPrivacy();
+        return user.getTourneyPrivacy();
     }
+
+    @Retryable(value = { SQLException.class }, backoff = @Backoff(delay = 5000))
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public boolean getTourneysPrivacy( Integer userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
+        return user.getTourneyPrivacy();
+    }
+    
 }
