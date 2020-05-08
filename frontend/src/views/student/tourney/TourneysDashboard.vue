@@ -2,7 +2,7 @@
   <div class="container">
     <h2>Tourneys Dashboard</h2>
     <div class="dashboard-card">
-      <v-switch v-model="private" class="mx-2"></v-switch>
+      <v-switch v-model="private" class="mx-2" data-cy="toggleTourneyPrivacy"></v-switch>
       <span>{{privacy}}</span>
     </div>
     <dashboard-list :headers="headers" :elements="tourneyStats" />

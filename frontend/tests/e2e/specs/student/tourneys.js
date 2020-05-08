@@ -15,7 +15,7 @@ describe('Student create a Tourney', () => {
     cy.contains('Logout').click();
   });
 
-  /*it('student creates a Tourney, gets the list, enrolls in it and deletes it', () => {
+  it('student creates a Tourney, gets the list, enrolls in it and deletes it', () => {
     cy.visitCreateTourneyPage();
 
     cy.createTourney(
@@ -42,7 +42,7 @@ describe('Student create a Tourney', () => {
     cy.cancelTourney(
         TITLE
     );
-  });*/
+  });
 
   it('student solves a Tourney', () => {
     cy.visitCreateTourneyPage();
@@ -75,6 +75,10 @@ describe('Student create a Tourney', () => {
     cy.doesQuiz(TITLE);
     cy.visitTourneysDashboard();
     cy.checkDashboard(TITLE);
+  });
 
+  it('toggle privacy setting', () => {
+    cy.visitTourneysDashboard();
+    cy.toggleTourneyPrivacy();
   });
 });

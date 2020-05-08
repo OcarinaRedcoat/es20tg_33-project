@@ -290,6 +290,11 @@ Cypress.Commands.add('doesQuiz', name => {
         .click();
 });
 
+Cypress.Commands.add('toggleTourneyPrivacy', () => {
+    cy.get('[data-cy="toggleTourneyPrivacy"]')
+        .click({force: true});
+});
+
 //Student Question commands
 
 Cypress.Commands.add('submitQuestion', (title, content, optionContent) => {
