@@ -1,4 +1,6 @@
-export function formatUTCDate(dateString: string) {
+// Deprecated
+export function formatISODate(dateString: string | undefined) {
+  if (dateString == undefined) return "";
   const date = new Date(dateString);
   const options = {
     year: 'numeric',
@@ -8,8 +10,5 @@ export function formatUTCDate(dateString: string) {
     minute: 'numeric',
     hour12: false
   };
-  return new Intl.DateTimeFormat('pt-PT', options)
-    .format(date)
-    .replace(/[/]/g, '-')
-    .replace(',', '');
+  return new Intl.DateTimeFormat('pt-PT', options).format(date);
 }

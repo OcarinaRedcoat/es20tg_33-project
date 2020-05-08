@@ -26,8 +26,6 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.tourney.TourneyService
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import spock.lang.Specification
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 @DataJpaTest
 class CreateTourneyTest extends Specification{

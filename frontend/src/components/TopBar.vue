@@ -148,6 +148,14 @@
                 >
               </v-list-item-content>
             </v-list-item>
+            <v-list-item to="/student/tourneys/dashboard">
+              <v-list-item-action>
+                <v-icon>dashboard</v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title data-cy="top-bar-tourneys-dashboard">Tourneys Dashboard</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
           </v-list>
         </v-menu>
 

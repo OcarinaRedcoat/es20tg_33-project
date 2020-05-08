@@ -231,6 +231,26 @@ class StudentEnrolsIntoTourneyTest extends Specification{
         tourney.getEnrolledStudents().size() == 0
     }
 
+    def "enrolled student gets the quiz answer"() {
+        given: "two students"
+        def user1Id = userRepository.findAll().get(0).getId()
+        def user = new User("name4", "username4", OTHER_STUDENT_KEY, User.Role.STUDENT)
+        user.addCourse(courseExecution)
+        userRepository.save(user)
+        def user2Id = userRepository.findAll().get(3).getId()
+
+        and: "a tourney"
+        def tourneyId = tourneyRepository.findAll().get(0).getId()
+        tourneyService.enrollStudent(tourneyId, user1Id)
+        tourneyService.enrollStudent(tourneyId, user2Id)
+
+        when:
+        def response = tourneyService.getTourneyQuizAnswer(tourneyId, user2Id)
+
+        then:
+        response.getId() != null
+    }
+
 
     @TestConfiguration
     static class TourneyServiceImplTestContextConfiguration{

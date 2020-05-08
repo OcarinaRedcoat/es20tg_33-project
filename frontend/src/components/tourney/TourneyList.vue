@@ -37,6 +37,12 @@
             </template>
             <span>Cancel</span>
           </v-tooltip>
+          <v-tooltip bottom v-if="isOpen(item)">
+            <template v-slot:activator="{ on }">
+              <v-icon small class="mr-2" v-on="on" @click="getTourneyQuizAnswer(item)" data-cy="startTourney">fa-chevron-circle-right</v-icon>
+            </template>
+            <span>Start Tourney</span>
+          </v-tooltip>
         </template>
       </v-data-table>
       <!-- End Table -->
@@ -49,6 +55,8 @@ import { Component, Model, Prop, Vue, Watch } from 'vue-property-decorator';
 import Tourney from '../../models/tourney/Tourney';
 import RemoteServices from '../../services/RemoteServices';
 import User from '@/models/user/User';
+import StatementQuiz from "@/models/statement/StatementQuiz";
+import StatementManager from "@/models/statement/StatementManager";
 
 @Component
 export default class TourneyList extends Vue {
@@ -109,6 +117,10 @@ export default class TourneyList extends Vue {
     return tourney?.tourneyCreator?.username === this.username;
   }
 
+  isOpen(tourney: Tourney) {
+    return tourney.tourneyStatus === 'OPEN';
+  }
+
   async enrollInTourney(tourney: Tourney) {
     if (confirm('Are you sure you want to enroll in this tourney?')) {
       try {
@@ -128,6 +140,12 @@ export default class TourneyList extends Vue {
         await this.$store.dispatch('error', error);
       }
     }
+  }
+
+  async getTourneyQuizAnswer(tourney: Tourney) {
+    let statementManager: StatementManager = StatementManager.getInstance;
+    statementManager.statementQuiz = await RemoteServices.getTourneyQuizAnswer(tourney);
+    await this.$router.push({ name: 'solve-quiz' });
   }
 }
 </script>

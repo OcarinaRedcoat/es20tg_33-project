@@ -15,6 +15,7 @@ import StatementAnswer from '@/models/statement/StatementAnswer';
 import { QuizAnswers } from '@/models/management/QuizAnswers';
 import StudentQuestion from '@/models/submissions/StudentQuestion';
 import Tourney from '@/models/tourney/Tourney';
+import TourneyStats from '@/models/tourney/TourneyStats';
 import Discussion from '@/models/statement/Discussion';
 import Message from '@/models/statement/Message';
 import DiscussionStats from '@/models/statement/DiscussionStats';
@@ -652,6 +653,19 @@ export default class RemoteServices {
       });
   }
 
+  static async getTourneysDashboard(): Promise<TourneyStats[]> {
+    return httpClient
+      .get('/tourneys/dashboard')
+      .then(response => {
+        return response.data.map((tourneyStats: any) => {
+          return new TourneyStats(tourneyStats);
+        });
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async createDiscussion(quizAnswerId: number | undefined) {
     return httpClient
       .post(
@@ -668,9 +682,7 @@ export default class RemoteServices {
 
   static async changeDiscussionDashboardPrivacy() {
     return httpClient
-      .post(
-        `/discussion/${Store.getters.getUser.username}/dashboard`
-      )
+      .post(`/discussion/${Store.getters.getUser.username}/dashboard`)
       .then(response => {
         return response.data;
       })
@@ -681,9 +693,7 @@ export default class RemoteServices {
 
   static async getDiscussionDashboardPrivacy() {
     return httpClient
-      .get(
-        `/discussion/dashboard/${Store.getters.getUser.username}`
-      )
+      .get(`/discussion/dashboard/${Store.getters.getUser.username}`)
       .then(response => {
         return response.data;
       })
@@ -815,6 +825,17 @@ export default class RemoteServices {
   static async cancelTourney(tourney: Tourney) {
     return httpClient
       .put(`/tourneys/${tourney.tourneyId}/cancel`)
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getTourneyQuizAnswer(tourney: Tourney) {
+    return httpClient
+      .get(`/tourneys/${tourney.tourneyId}/quiz`)
+      .then(response => {
+        return new StatementQuiz(response.data);
+      })
       .catch(async error => {
         throw Error(await this.errorMessage(error));
       });
