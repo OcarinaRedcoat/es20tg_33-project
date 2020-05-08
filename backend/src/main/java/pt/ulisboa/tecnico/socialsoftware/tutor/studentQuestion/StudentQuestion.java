@@ -4,6 +4,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.QuestionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User;
 
 import javax.persistence.*;
@@ -16,7 +17,7 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 @Table(name = "student_questions")
 public class StudentQuestion {
 
-    public enum Status {PENDING, REJECTED, APPROVED}
+    public enum Status {PENDING, REJECTED, APPROVED, AVAILABLE}
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -108,6 +109,11 @@ public class StudentQuestion {
 
     public void addOption(Option option) {
         this.studentQuestionOptions.add(option);
+        option.setStudentQuestion(this);
+    }
+
+    public void removeOptions() {
+        studentQuestionOptions = new ArrayList<>();
     }
 
     public void remove() {
@@ -130,6 +136,25 @@ public class StudentQuestion {
                 ", submittingUser=" + submittingUser +
                 ", justification='" + justification + '\'' +
                 '}';
+    }
+
+    public void editStudentQuestion(StudentQuestionDto studentQuestionDto) {
+        checkConsistentQuestion(studentQuestionDto);
+
+        setTitle(studentQuestionDto.getTitle());
+        setContent(studentQuestionDto.getContent());
+
+        List<Option> options = getOptions();
+        List<OptionDto> changedOptions = studentQuestionDto.getOptions();
+
+        for (Option option : options) {
+            for (OptionDto optionDto : changedOptions) {
+                if (option.getSequence().equals(optionDto.getSequence())) {
+                    option.setContent(optionDto.getContent());
+                    option.setCorrect(optionDto.getCorrect());
+                }
+            }
+        }
     }
 
     private void checkConsistentQuestion(StudentQuestionDto questionDto) {
@@ -161,5 +186,4 @@ public class StudentQuestion {
             throw new TutorException(QUESTION_ALREADY_APPROVED);
         }
     }
-
 }

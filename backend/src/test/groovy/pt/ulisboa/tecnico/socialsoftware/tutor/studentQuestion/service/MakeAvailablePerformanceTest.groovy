@@ -8,22 +8,20 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.course.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.course.CourseRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option
-import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestionService
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.QuestionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestion
 import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestionRepository
-import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
-import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
+import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.UserRepository
 import spock.lang.Specification
 
 @DataJpaTest
-class DeleteSubmittedQuestionTest extends Specification {
+class MakeAvailablePerformanceTest extends Specification {
     public static final String USERNAME = "user"
     public static final String PERSON_NAME = "Name"
-    public static final String TEST_COURSE = "TestCourse"
-    public static final String ACRONYM = "TC"
-    public static final String ACADEMIC_TERM = "1S"
+    public static final String COURSE_NAME = "Test Course"
     public static final String QUESTION_TITLE = 'question title'
     public static final String QUESTION_CONTENT = 'question content'
     public static final String OPTION_CONTENT = "optionId content"
@@ -35,20 +33,26 @@ class DeleteSubmittedQuestionTest extends Specification {
     QuestionService questionService
 
     @Autowired
-    CourseRepository courseRepository
+    OptionRepository optionRepository
 
     @Autowired
     UserRepository userRepository
 
     @Autowired
+    CourseRepository courseRepository
+
+    @Autowired
     StudentQuestionRepository studentQuestionRepository
 
+    @Autowired
+    QuestionRepository questionRepository
+
     def question
-    def user
     def course
+    def user
 
     def setup() {
-        course = new Course(TEST_COURSE, Course.Type.TECNICO)
+        course = new Course(COURSE_NAME, Course.Type.TECNICO)
         courseRepository.save(course)
 
         user = new User(PERSON_NAME, USERNAME, 1, User.Role.STUDENT)
@@ -58,29 +62,28 @@ class DeleteSubmittedQuestionTest extends Specification {
         question.setKey(1)
         question.setTitle(QUESTION_TITLE)
         question.setContent(QUESTION_CONTENT)
-        question.setStatus(StudentQuestion.Status.PENDING)
         question.setSubmittingUser(user)
         question.setCourse(course)
 
         def option = new Option()
         option.setContent(OPTION_CONTENT)
-        option.setSequence(0)
         option.setCorrect(true)
+        option.setSequence(0)
         question.addOption(option)
         option = new Option()
         option.setContent(OPTION_CONTENT)
+        option.setCorrect(false)
         option.setSequence(1)
-        option.setCorrect(false)
         question.addOption(option)
         option = new Option()
         option.setContent(OPTION_CONTENT)
+        option.setCorrect(false)
         option.setSequence(2)
-        option.setCorrect(false)
         question.addOption(option)
         option = new Option()
         option.setContent(OPTION_CONTENT)
-        option.setSequence(3)
         option.setCorrect(false)
+        option.setSequence(3)
         question.addOption(option)
 
         studentQuestionRepository.save(question)
@@ -89,35 +92,20 @@ class DeleteSubmittedQuestionTest extends Specification {
         user.addSubmittedQuestion(question)
     }
 
-    def "delete a pending question"() {
-        when:
-        studentQuestionService.removeStudentQuestion(question.getId())
-
-        then: "the question is removed successfully"
-        studentQuestionRepository.count() == 0L
-    }
-
-    def "delete a rejected question"() {
-        question.setStatus(StudentQuestion.Status.REJECTED)
-
-        when:
-        studentQuestionService.removeStudentQuestion(question.getId())
-
-        then: "the question is removed successfully"
-        studentQuestionRepository.count() == 0L
-    }
-
-    def "delete an approved question"() {
+    def "performance test to make 2000 available questions"() {
+        given: "an approved student question"
         question.setStatus(StudentQuestion.Status.APPROVED)
 
         when:
-        studentQuestionService.removeStudentQuestion(question.getId())
+        1.upto(1, {
+            studentQuestionService.makeStudentQuestionAvailable(question.getId())
+            question.setStatus(StudentQuestion.Status.APPROVED)
+        })
 
-        then: "the question can't be removed"
-        def exception = thrown(TutorException)
-        exception.getErrorMessage() == ErrorMessage.QUESTION_ALREADY_APPROVED
-        studentQuestionRepository.count() == 1L
+        then: "all the questions where successfully created"
+        questionRepository.count() == 1L
     }
+
 
     @TestConfiguration
     static class StudentQuestionServiceImplTestContextConfiguration {
@@ -132,5 +120,4 @@ class DeleteSubmittedQuestionTest extends Specification {
             return new QuestionService()
         }
     }
-
 }

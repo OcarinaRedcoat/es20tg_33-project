@@ -19,6 +19,8 @@ import ResultsView from './views/student/quiz/ResultsView.vue';
 import StatsView from './views/student/StatsView.vue';
 import ScanView from './views/student/ScanView.vue';
 import SubmittedQuestionsView from './views/student/submissions/SubmittedQuestionsView.vue';
+import SubmittedDashboard from './views/student/submissions/SubmittedDashboard.vue';
+
 import CreateTourney from './views/student/tourney/CreateTourney.vue';
 import OpenTourneys from './views/student/tourney/OpenTourneys.vue';
 import TourneysDashboard from './views/student/tourney/TourneysDashboard.vue';
@@ -253,6 +255,15 @@ let router = new Router({
           component: OpenTourneys,
           meta: {
             title: process.env.VUE_APP_NAME + ' - Open Tourneys',
+            requiredAuth: 'Student'
+          }
+        },
+        {
+          path: 'studentQuestionsDashboard',
+          name: 'student-dashboard',
+          component: SubmittedDashboard,
+          meta: {
+            title: process.env.VUE_APP_NAME + ' - Student Dashboard',
             requiredAuth: 'Student'
           }
         },

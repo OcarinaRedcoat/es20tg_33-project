@@ -9,7 +9,7 @@
     <v-card class="pt-9 mx-auto">
       <v-card-title>
         <span class="headline">
-          Submit Question
+          Resubmit Question
         </span>
       </v-card-title>
       <v-container>
@@ -17,7 +17,19 @@
           <v-flex xs24 sm12 md12>
             <v-text-field
               class="py-5"
-              v-model="editStudentQuestion.title"
+              v-model="resubmitStudentQuestion.justification"
+              label="Rejection justification"
+              data-cy="justification"
+              readonly
+              filled
+              disabled
+              outlined
+            />
+          </v-flex>
+          <v-flex xs24 sm12 md12>
+            <v-text-field
+              class="py-5"
+              v-model="resubmitStudentQuestion.title"
               label="Title"
               data-cy="Title"
             />
@@ -25,7 +37,7 @@
           <v-flex xs24 sm12 md12>
             <v-textarea
               class="py-5 mx-auto"
-              v-model="editStudentQuestion.content"
+              v-model="resubmitStudentQuestion.content"
               label="Question Content"
               data-cy="QuestionContent"
             ></v-textarea>
@@ -35,18 +47,18 @@
             xs24
             sm12
             md12
-            v-for="index in editStudentQuestion.options.length"
+            v-for="index in resubmitStudentQuestion.options.length"
             :key="index"
           >
             <v-switch
-              v-model="editStudentQuestion.options[index - 1].correct"
+              v-model="resubmitStudentQuestion.options[index - 1].correct"
               class="ma-4"
               label="Correct"
               data-cy="OptionCorrect"
             />
             <v-textarea
-              v-model="editStudentQuestion.options[index - 1].content"
-              :label="`Option ${index}`"
+              v-model="resubmitStudentQuestion.options[index - 1].content"
+              label="Option Content"
               data-cy="OptionContent"
             ></v-textarea>
           </v-flex>
@@ -61,9 +73,9 @@
             >
             <v-btn
               color="success"
-              @click="submitQuestion"
-              data-cy="submitButton"
-              >Submit</v-btn
+              @click="resubmitQuestion"
+              data-cy="resubmitButton"
+              >Resubmit</v-btn
             >
           </v-card-actions>
         </v-form>
@@ -78,22 +90,23 @@ import StudentQuestion from '@/models/submissions/StudentQuestion';
 import RemoteServices from '@/services/RemoteServices';
 
 @Component
-export default class SubmitQuestionView extends Vue {
+export default class ResubmitQuestionView extends Vue {
   @Model('dialog', Boolean) dialog!: boolean;
   @Prop({ type: StudentQuestion, required: true })
   readonly question!: StudentQuestion;
 
-  editStudentQuestion!: StudentQuestion;
+  resubmitStudentQuestion!: StudentQuestion;
 
   async created() {
-    this.editStudentQuestion = new StudentQuestion(this.question);
-    this.editStudentQuestion.submittingUser = await this.getSubmittingUser();
+    this.resubmitStudentQuestion = new StudentQuestion(this.question);
+    this.resubmitStudentQuestion.submittingUser = await this.getSubmittingUser();
   }
 
-  async submitQuestion() {
+  async resubmitQuestion() {
     if (
-      this.editStudentQuestion &&
-      (!this.editStudentQuestion.title || !this.editStudentQuestion.content)
+      this.resubmitStudentQuestion &&
+      (!this.resubmitStudentQuestion.title ||
+        !this.resubmitStudentQuestion.content)
     ) {
       await this.$store.dispatch(
         'error',
@@ -102,8 +115,9 @@ export default class SubmitQuestionView extends Vue {
       return;
     } else {
       try {
-        const result = await RemoteServices.submitQuestion(
-          this.editStudentQuestion
+        const result = await RemoteServices.resubmitQuestion(
+          this.resubmitStudentQuestion.id,
+          this.resubmitStudentQuestion
         );
         this.$emit('submit-question', result);
       } catch (error) {

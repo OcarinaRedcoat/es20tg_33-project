@@ -1,15 +1,15 @@
 <template>
   <v-dialog
     :value="dialog"
-    @input="$emit('dialog', false)"
-    @keydown.esc="$emit('dialog', false)"
+    @input="$emit('edit-approved-question', false)"
+    @keydown.esc="$emit('edit-approved-question', false)"
     max-width="75%"
     max-height="80%"
   >
     <v-card class="pt-9 mx-auto">
       <v-card-title>
         <span class="headline">
-          Submit Question
+          Edit Question
         </span>
       </v-card-title>
       <v-container>
@@ -17,17 +17,17 @@
           <v-flex xs24 sm12 md12>
             <v-text-field
               class="py-5"
-              v-model="editStudentQuestion.title"
+              v-model="editApprovedQuestion.title"
               label="Title"
-              data-cy="Title"
+              data-cy="editApprovedQuestionTitle"
             />
           </v-flex>
           <v-flex xs24 sm12 md12>
             <v-textarea
               class="py-5 mx-auto"
-              v-model="editStudentQuestion.content"
+              v-model="editApprovedQuestion.content"
               label="Question Content"
-              data-cy="QuestionContent"
+              data-cy="editApprovedQuestionContent"
             ></v-textarea>
           </v-flex>
           <v-flex
@@ -35,19 +35,19 @@
             xs24
             sm12
             md12
-            v-for="index in editStudentQuestion.options.length"
+            v-for="index in editApprovedQuestion.options.length"
             :key="index"
           >
             <v-switch
-              v-model="editStudentQuestion.options[index - 1].correct"
+              v-model="editApprovedQuestion.options[index - 1].correct"
               class="ma-4"
               label="Correct"
-              data-cy="OptionCorrect"
+              data-cy="editApprovedQuestionOptionCorrect"
             />
             <v-textarea
-              v-model="editStudentQuestion.options[index - 1].content"
+              v-model="editApprovedQuestion.options[index - 1].content"
+              data-cy="editApprovedQuestionOptionContent"
               :label="`Option ${index}`"
-              data-cy="OptionContent"
             ></v-textarea>
           </v-flex>
           <v-card-actions>
@@ -55,15 +55,14 @@
             <v-btn
               color="error"
               class="mr-4"
-              @click="$emit('dialog', false)"
-              data-cy="cancelButton"
+              @click="$emit('edit-approved-question', false)"
               >Cancel</v-btn
             >
             <v-btn
               color="success"
-              @click="submitQuestion"
-              data-cy="submitButton"
-              >Submit</v-btn
+              @click="saveQuestion"
+              data-cy="saveApprovedQuestionChangesButton"
+              >Save</v-btn
             >
           </v-card-actions>
         </v-form>
@@ -79,21 +78,21 @@ import RemoteServices from '@/services/RemoteServices';
 
 @Component
 export default class SubmitQuestionView extends Vue {
-  @Model('dialog', Boolean) dialog!: boolean;
+  @Model('edit-approved-question', Boolean) dialog!: boolean;
   @Prop({ type: StudentQuestion, required: true })
   readonly question!: StudentQuestion;
 
-  editStudentQuestion!: StudentQuestion;
+  editApprovedQuestion!: StudentQuestion;
 
   async created() {
-    this.editStudentQuestion = new StudentQuestion(this.question);
-    this.editStudentQuestion.submittingUser = await this.getSubmittingUser();
+    this.editApprovedQuestion = new StudentQuestion(this.question);
+    this.editApprovedQuestion.submittingUser = await this.getSubmittingUser();
   }
 
-  async submitQuestion() {
+  async saveQuestion() {
     if (
-      this.editStudentQuestion &&
-      (!this.editStudentQuestion.title || !this.editStudentQuestion.content)
+      this.editApprovedQuestion &&
+      (!this.editApprovedQuestion.title || !this.editApprovedQuestion.content)
     ) {
       await this.$store.dispatch(
         'error',
@@ -102,10 +101,10 @@ export default class SubmitQuestionView extends Vue {
       return;
     } else {
       try {
-        const result = await RemoteServices.submitQuestion(
-          this.editStudentQuestion
+        const result = await RemoteServices.saveApprovedQuestionChanges(
+          this.editApprovedQuestion
         );
-        this.$emit('submit-question', result);
+        this.$emit('edit-approved-question', result);
       } catch (error) {
         await this.$store.dispatch('error', error);
       }

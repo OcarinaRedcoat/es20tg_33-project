@@ -60,9 +60,6 @@ public class QuestionService {
 
     @Autowired
     private ImageRepository imageRepository;
-
-    @PersistenceContext
-    EntityManager entityManager;
     
     @Autowired
     private QuizQuestionRepository quizQuestionRepository;

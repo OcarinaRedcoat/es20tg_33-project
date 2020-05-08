@@ -121,6 +121,7 @@
               class="mr-2"
               v-on="on"
               @click="deleteQuestion(item)"
+              data-cy="deleteAvailableQuestionButton"
               color="red"
               >delete</v-icon
             >

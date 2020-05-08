@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.QuestionService
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.studentQuestion.StudentQuestion
@@ -19,9 +20,6 @@ import spock.lang.Specification
 class ApprovalRejectionQuestionTest extends Specification {
     public static final String USERNAME = "user"
     public static final String PERSON_NAME = "Name"
-    public static final String COURSE_NAME = "Software Architecture"
-    public static final String ACRONYM = "AS1"
-    public static final String ACADEMIC_TERM = "1 SEM"
     public static final String QUESTION_TITLE = 'question title'
     public static final String QUESTION_CONTENT = 'question content'
     public static final String OPTION_CONTENT = "optionId content"
@@ -29,6 +27,9 @@ class ApprovalRejectionQuestionTest extends Specification {
 
     @Autowired
     StudentQuestionService studentQuestionService
+
+    @Autowired
+    QuestionService questionService
 
     @Autowired
     OptionRepository optionRepository
@@ -48,14 +49,12 @@ class ApprovalRejectionQuestionTest extends Specification {
         user = new User(PERSON_NAME, USERNAME, 1, User.Role.STUDENT)
         userRepository.save(user)
 
-        given: "create a question"
         question = new StudentQuestion()
         question.setKey(1)
         question.setTitle(QUESTION_TITLE)
         question.setContent(QUESTION_CONTENT)
         question.setStatus(StudentQuestion.Status.PENDING)
 
-        and: 'two options'
         option = new Option()
         option.setContent(OPTION_CONTENT)
         option.setCorrect(true)
@@ -181,6 +180,11 @@ class ApprovalRejectionQuestionTest extends Specification {
         @Bean
         StudentQuestionService studentQuestionService() {
             return new StudentQuestionService()
+        }
+
+        @Bean
+        QuestionService questionService() {
+            return new QuestionService()
         }
     }
 }

@@ -25,9 +25,9 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 /// <reference types="Cypress" />
 
-Cypress.Commands.add('demoStudentLogin', () => {
+Cypress.Commands.add('demoAdminLogin', () => {
   cy.visit('/');
-  cy.get('[data-cy="demoStudentLoginButton"]').click();
+  cy.get('[data-cy="demoAdminLoginButton"]').click();
 });
 
 Cypress.Commands.add('demoTeacherLogin', () => {
@@ -163,6 +163,11 @@ Cypress.Commands.add('visitSubmittedQuestionsPage', () => {
   cy.get('[data-cy="top-bar-submitted-questions"]').click();
 });
 
+Cypress.Commands.add('visitSubmittedQuestionsDashboardPage', () => {
+  cy.get('[data-cy="top-bar-submissions"]').click();
+  cy.get('[data-cy="top-bar-submitted-dashboard"]').click();
+});
+
 Cypress.Commands.add('visitOpenTourneysPage', () => {
   cy.get('[data-cy="top-bar-tourneys"]').click();
   cy.get('[data-cy="top-bar-open-tourneys"]').click();
@@ -180,6 +185,11 @@ Cypress.Commands.add('visitTourneysDashboard', () => {
 Cypress.Commands.add('visitApproveRejectPage', () => {
   cy.get('[data-cy="top-bar-management"]').click();
   cy.get('[data-cy="top-bar-approve-reject"]').click();
+});
+
+Cypress.Commands.add('visitQuestionsPage', () => {
+  cy.get('[data-cy="top-bar-management"]').click();
+  cy.get('[data-cy="top-bar-questions"]').click();
 });
 
 //Discussion commands
@@ -327,7 +337,7 @@ Cypress.Commands.add('deleteSubmittedQuestion', title => {
     .click();
 });
 
-Cypress.Commands.add('approveQuestion', title => {
+Cypress.Commands.add('approveQuestionNoJust', title => {
   cy.contains(title)
     .parent()
     .should('have.length', 1)
@@ -335,6 +345,18 @@ Cypress.Commands.add('approveQuestion', title => {
     .should('have.length', 5)
     .find('[data-cy="reviewQuestionButton"]')
     .click();
+  cy.get('[data-cy="approveButton"]').click();
+});
+
+Cypress.Commands.add('approveQuestion', (title, justification) => {
+  cy.contains(title)
+    .parent()
+    .should('have.length', 1)
+    .children()
+    .should('have.length', 5)
+    .find('[data-cy="reviewQuestionButton"]')
+    .click();
+  cy.get('[data-cy="justification"]').type(justification);
   cy.get('[data-cy="approveButton"]').click();
 });
 
@@ -346,17 +368,47 @@ Cypress.Commands.add('rejectQuestion', (title, justification) => {
     .should('have.length', 5)
     .find('[data-cy="reviewQuestionButton"]')
     .click();
-  cy.get('[data-cy="justification"]').type(justification, { force: true });
+  cy.get('[data-cy="justification"]').type(justification);
   cy.get('[data-cy="rejectButton"]').click();
 });
 
-Cypress.Commands.add('rejectQuestion', title => {
+Cypress.Commands.add('resubmitQuestion', (title, content, optionContent) => {
+  cy.get('[data-cy="ResubmitQuestion"]').click();
+  cy.get('[data-cy="Title"]').type(title, { force: true });
+  cy.get('[data-cy="QuestionContent"]').type(content);
+  cy.get('[data-cy="OptionContent"]')
+    .eq(0)
+    .type(optionContent);
+  cy.get('[data-cy="resubmitButton"]').click();
+});
+
+Cypress.Commands.add('makeQuestionAvailable', title => {
   cy.contains(title)
     .parent()
     .should('have.length', 1)
     .children()
     .should('have.length', 5)
-    .find('[data-cy="reviewQuestionButton"]')
+    .find('[data-cy="makeQuestionAvailableButton"]')
     .click();
-  cy.get('[data-cy="rejectButton"]').click();
 });
+
+Cypress.Commands.add('deleteAvailableQuestion', title => {
+  cy.contains(title)
+    .get('[data-cy="deleteAvailableQuestionButton"]')
+    .click();
+});
+
+Cypress.Commands.add(
+  'editApprovedQuestion',
+  (title, changedTitle, changedContent, changedOptionContent) => {
+    cy.contains(title)
+      .get('[data-cy="editApprovedQuestionButton"]')
+      .click();
+    cy.get('[data-cy="editApprovedQuestionTitle"]').type(changedTitle, { force: true });
+    cy.get('[data-cy="editApprovedQuestionContent"]').type(changedContent);
+    cy.get('[data-cy="editApprovedQuestionOptionContent"]')
+      .eq(0)
+      .type(changedOptionContent);
+    cy.get('[data-cy="saveApprovedQuestionChangesButton"]').click();
+  }
+);
