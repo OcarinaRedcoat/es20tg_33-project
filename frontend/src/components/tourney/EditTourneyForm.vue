@@ -24,22 +24,21 @@
           </v-col>
 
           <v-col cols="12" md="6">
-            <v-datetime-picker
-              label="Available Date"
-              format="yyyy-MM-dd HH:mm"
-              v-model="availableDate"
-              date-format="yyyy-MM-dd"
-              time-format="HH:mm"
-              data-cy="availableDate"
-            ></v-datetime-picker>
 
-            <v-datetime-picker
-              label="Conclusion Date"
+            <VueCtkDateTimePicker
+              label="*Available Date"
+              v-model="availableDate"
+              format="YYYY-MM-DDTHH:mm:ssZ"
+              data-cy="availableDate"
+            ></VueCtkDateTimePicker>
+
+            <VueCtkDateTimePicker
+              label="*Conclusion Date"
               v-model="conclusionDate"
-              date-format="yyyy-MM-dd"
-              time-format="HH:mm"
+              format="YYYY-MM-DDTHH:mm:ssZ"
               data-cy="conclusionDate"
-            ></v-datetime-picker>
+            ></VueCtkDateTimePicker>
+
           </v-col>
         </v-row>
 
@@ -83,7 +82,6 @@
 
 <script lang="ts">
 import { Component, Model, Prop, Vue, Watch } from 'vue-property-decorator';
-import { formatUTCDate } from '../../utils';
 import RemoteServices from '../../services/RemoteServices';
 import Tourney from '../../models/tourney/Tourney';
 import Course from '../../models/user/Course';
@@ -106,16 +104,12 @@ export default class EditTourneyForm extends Vue {
 
   @Watch('availableDate', { deep: true })
   formatAvailableDate() {
-    this.editTourney.tourneyAvailableDate = formatUTCDate(
-      this.availableDate
-    );
+    this.editTourney.tourneyAvailableDate = this.availableDate;
   }
 
   @Watch('conclusionDate', { deep: true })
   formatConclusionDate() {
-    this.editTourney.tourneyConclusionDate = formatUTCDate(
-      this.conclusionDate
-    );
+    this.editTourney.tourneyConclusionDate = this.conclusionDate;
   }
 
   hasAllValues() {
@@ -169,3 +163,10 @@ export default class EditTourneyForm extends Vue {
   }
 }
 </script>
+
+
+<style lang="css" scoped>
+.date-time-picker {
+  padding: 8px 0 20px;
+}
+</style>

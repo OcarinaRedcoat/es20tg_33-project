@@ -93,7 +93,7 @@
             <v-btn color="secondary" text @click="confirmationDialog = false">
               Cancel
             </v-btn>
-            <v-btn color="primary" data-cy="endQuiz" text @click="endQuiz">
+            <v-btn color="primary" data-cy="endQuiz" text @click="concludeQuiz">
               I'm sure
             </v-btn>
           </v-card-actions>
@@ -264,7 +264,7 @@ export default class QuizView extends Vue {
       await this.statementManager.concludeQuiz();
 
       if (
-        this.statementQuiz?.timeToResults === 0 &&
+        !this.statementQuiz?.timeToResults &&
         this.statementManager.correctAnswers.length !== 0
       ) {
         await this.$router.push({ name: 'quiz-results' });

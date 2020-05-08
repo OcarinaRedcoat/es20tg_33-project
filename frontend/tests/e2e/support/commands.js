@@ -42,9 +42,9 @@ Cypress.Commands.add('demoStudentLogin', () => {
 
 Cypress.Commands.add('createCourseExecution', (name, acronym, academicTerm) => {
   cy.get('[data-cy="createButton"]').click();
-  cy.get('[data-cy="Name"]').type(name);
-  cy.get('[data-cy="Acronym"]').type(acronym);
-  cy.get('[data-cy="AcademicTerm"]').type(academicTerm);
+  cy.get('[data-cy="courseExecutionNameInput"]').type(name);
+  cy.get('[data-cy="courseExecutionAcronymInput"]').type(acronym);
+  cy.get('[data-cy="courseExecutionAcademicTermInput"]').type(academicTerm);
   cy.get('[data-cy="saveButton"]').click();
 });
 
@@ -75,10 +75,8 @@ Cypress.Commands.add(
       .should('have.length', 7)
       .find('[data-cy="createFromCourse"]')
       .click();
-    cy.get('[div="v-date-picker-table--date"]')
-      .contains()
-      .type(acronym);
-    cy.get('[data-cy="AcademicTerm"]').type(academicTerm);
+    cy.get('[data-cy="courseExecutionAcronymInput"]').type(acronym);
+    cy.get('[data-cy="courseExecutionAcademicTermInput"]').type(academicTerm);
     cy.get('[data-cy="saveButton"]').click();
   }
 );
@@ -103,47 +101,49 @@ function getMonthName(monthNumber) {
   return monthNames[monthNumber - 1];
 }
 
-Cypress.Commands.add('selectDate', (dialog, datePicker, dateTime) => {
+Cypress.Commands.add('selectDate', (datePicker, dateTime) => {
   const dateTimeArr = dateTime.split(' ');
   const dateArr = dateTimeArr[0].split('-');
-  const year = dateArr[2];
+  const year = dateArr[0];
   const month = dateArr[1];
-  const day = dateArr[0];
+  const day = dateArr[2];
   const timeArr = dateTimeArr[1].split(':');
   const hour = timeArr[0];
   const minute = timeArr[1];
 
-  cy.get('[data-cy="form"]')
-    .contains(datePicker)
+  cy.get(`[data-cy="${datePicker}"]`).click();
+  cy.get(`[data-cy="${datePicker}"]`)
     .parent()
-    .children('input')
-    .click();
-  cy.get('.v-picker__title__btn.v-date-picker-title__year')
-    .last()
-    .click();
-  cy.get('.v-date-picker-years')
-    .contains(year)
-    .click();
-  cy.get('.v-date-picker-table')
-    .last()
-    .contains(getMonthName(Number.parseInt(month)).slice(0, 3))
-    .click();
-  cy.get('.v-date-picker-table--date')
-    .last()
-    .contains(day)
-    .click();
-  cy.get('.v-time-picker-clock__inner')
-    .last()
-    .contains((Number.parseInt(hour) % 12) + 12)
-    .click();
-  cy.get('.v-time-picker-clock__inner')
-    .last()
-    .contains(minute)
-    .click();
-  cy.get('.v-card__actions')
-    .last()
-    .contains('OK')
-    .click();
+    .parent()
+    .within(() => {
+      cy.get(
+        '#undefined-picker-container-DatePicker > div > div.datepicker-controls.flex.align-center.justify-content-center > div.datepicker-container-label.flex-1.flex.justify-content-center > span:nth-child(2) > button'
+      )
+        .click();
+      cy.get('.year-month-selector')
+        .contains(year)
+        .click();
+      cy.get(
+        '#undefined-picker-container-DatePicker > div > div.datepicker-controls.flex.align-center.justify-content-center > div.datepicker-container-label.flex-1.flex.justify-content-center > span.h-100.flex.align-center.flex-1.flex.justify-content-right > button'
+      )
+        .click();
+      cy.get('.year-month-selector')
+        .contains(getMonthName(Number.parseInt(month)).slice(0, 3))
+        .click();
+      cy.get('.month-container .datepicker-days')
+        .last()
+        .children()
+        .children()
+        .contains(day)
+        .click();
+      cy.get('.time-picker-column-hours')
+        .contains((Number.parseInt(hour) % 12) + 12)
+        .click();
+      cy.get('.time-picker-column-minutes')
+        .contains(minute)
+        .click();
+      cy.get('.datepicker-button.validate').click();
+    });
 });
 
 // Student commands
@@ -171,6 +171,12 @@ Cypress.Commands.add('visitSubmittedQuestionsDashboardPage', () => {
 Cypress.Commands.add('visitOpenTourneysPage', () => {
   cy.get('[data-cy="top-bar-tourneys"]').click();
   cy.get('[data-cy="top-bar-open-tourneys"]').click();
+  cy.get('.scrollbar').click();
+});
+
+Cypress.Commands.add('visitTourneysDashboard', () => {
+  cy.get('[data-cy="top-bar-tourneys"]').click();
+  cy.get('[data-cy="top-bar-tourneys-dashboard"]').click();
   cy.get('.scrollbar').click();
 });
 
@@ -217,12 +223,8 @@ Cypress.Commands.add(
   (name, numberOfQuestions, availableDate, conclusionDate, topics) => {
     cy.get('[data-cy="title"]').type(name);
     cy.get('[data-cy="numberOfQuestions"]').type(numberOfQuestions);
-    cy.selectDate('[data-cy="availableDate"]', 'Available Date', availableDate);
-    cy.selectDate(
-      '[data-cy="conclusionDate"]',
-      'Conclusion Date',
-      conclusionDate
-    );
+    cy.selectDate('availableDate', availableDate);
+    cy.selectDate('conclusionDate', conclusionDate);
     for (let topic of topics) {
       cy.get('[data-cy="topics"]')
         .contains(topic)
@@ -238,6 +240,7 @@ Cypress.Commands.add(
     return cy
       .get('[data-cy="tourneysList"] tbody tr')
       .last()
+      .children()
       .should('contain', name)
       .and('contain', numberOfQuestions)
       .and('contain', availableDate)
@@ -246,7 +249,9 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add('enrollInTourney', name => {
-  cy.contains(name)
+  cy.get('[data-cy="tourneysList"] tbody tr')
+    .last()
+    .children().contains(name)
     .parent()
     .should('have.length', 1)
     .children()
@@ -256,12 +261,22 @@ Cypress.Commands.add('enrollInTourney', name => {
 });
 
 Cypress.Commands.add('cancelTourney', name => {
-  cy.contains(name)
+  cy.get('[data-cy="tourneysList"] tbody tr')
+    .last()
+    .children()
+    .contains(name)
     .parent()
     .should('have.length', 1)
     .children()
     .should('have.length', 5)
     .find('[data-cy="cancelTourney"]')
+    .click();
+});
+
+Cypress.Commands.add('checkDashboard', name => {
+  cy.get('[data-cy="dashboardList"] .list-row')
+    .children()
+    .contains(name)
     .click();
 });
 
