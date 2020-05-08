@@ -18,6 +18,7 @@ import Tourney from '@/models/tourney/Tourney';
 import TourneyStats from '@/models/tourney/TourneyStats';
 import Discussion from '@/models/statement/Discussion';
 import Message from '@/models/statement/Message';
+import StudentQuestionStats from '@/models/submissions/StudentQuestionStats';
 
 const httpClient = axios.create();
 httpClient.defaults.timeout = 10000;
@@ -589,6 +590,20 @@ export default class RemoteServices {
       });
   }
 
+  static async resubmitQuestion(
+    questionId: number | undefined,
+    studentQuestion: StudentQuestion
+  ): Promise<StudentQuestion> {
+    return httpClient
+      .put(`/studentQuestions/${questionId}/resubmit`, studentQuestion)
+      .then(response => {
+        return new StudentQuestion(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static deleteStudentQuestion(questionId: number) {
     return httpClient
       .delete(`/studentQuestions/${questionId}`)
@@ -624,6 +639,29 @@ export default class RemoteServices {
         throw Error(await this.errorMessage(error));
       });
   }
+
+  static async getStudentQuestionDashboard(): Promise<StudentQuestionStats> {
+    return httpClient
+      .get('/studentQuestions/dashboard')
+      .then(response => {
+          return new StudentQuestionStats(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async toggleStudentQuestionPrivacy(
+    privacy: String
+  ) : Promise<boolean> {
+    return httpClient
+      .put(`/student/studentQuestions/${privacy}`)
+      .then(response => response.data)
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
   static async createTourney(tourney: Tourney) {
     return httpClient
       .post('/tourneys', tourney)
@@ -679,6 +717,37 @@ export default class RemoteServices {
       });
   }
 
+  static async makeQuestionAvailable(
+    questionId: number | undefined
+  ): Promise<Question> {
+    return httpClient
+      .post(
+        `/courses/${Store.getters.getCurrentCourse.courseId}/questionsFromStudents`,
+        questionId
+      )
+      .then(response => {
+        return new Question(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async saveApprovedQuestionChanges(
+    studentQuestion: StudentQuestion
+  ): Promise<StudentQuestion> {
+    return httpClient
+      .put(
+        `/studentQuestions/${studentQuestion.id}/editApprovedQuestion`,
+        studentQuestion
+      )
+      .then(response => {
+        return new StudentQuestion(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
 
   static async getTourneys() {
     return httpClient
@@ -692,7 +761,6 @@ export default class RemoteServices {
         throw Error(await this.errorMessage(error));
       });
   }
-
 
   static async getDiscussions() {
     return httpClient
@@ -733,7 +801,8 @@ export default class RemoteServices {
 
   static async cancelTourney(tourney: Tourney) {
     return httpClient
-      .put(`/tourneys/${tourney.tourneyId}/cancel`).catch(async error => {
+      .put(`/tourneys/${tourney.tourneyId}/cancel`)
+      .catch(async error => {
         throw Error(await this.errorMessage(error));
       });
   }
@@ -786,5 +855,4 @@ export default class RemoteServices {
       return 'Unknown Error - Contact admin';
     }
   }
-
 }

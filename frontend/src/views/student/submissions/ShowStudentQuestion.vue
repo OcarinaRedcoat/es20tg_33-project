@@ -1,6 +1,6 @@
 <template>
   <div>
-    <span v-html="convertMarkDown(question.content, null)" />
+    <span v-html="convertMarkDown(question.content)" />
     <ul>
       <li v-for="option in question.options" :key="option.number">
         <span
@@ -12,13 +12,15 @@
       </li>
     </ul>
     <br />
+    <span class="font-weight-bold" v-if="hasJustification(question)">Justification</span>
+    <br />
+    <span v-if="hasJustification(question)" v-html="convertMarkDown(question.justification)" />
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { convertMarkDown } from '@/services/ConvertMarkdownService';
-import Image from '@/models/management/Image';
 import StudentQuestion from '@/models/submissions/StudentQuestion';
 
 @Component
@@ -26,8 +28,15 @@ export default class ShowStudentQuestion extends Vue {
   @Prop({ type: StudentQuestion, required: true })
   readonly question!: StudentQuestion;
 
-  convertMarkDown(text: string, image: Image | null = null): string {
-    return convertMarkDown(text, image);
+  convertMarkDown(text: string): string {
+    return convertMarkDown(text, null);
+  }
+
+  hasJustification(question: StudentQuestion): boolean {
+    return !(
+      question.justification == null ||
+      question.justification.trim().length == 0
+    );
   }
 }
 </script>

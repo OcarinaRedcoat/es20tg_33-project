@@ -73,6 +73,9 @@ public class User implements UserDetails, DomainEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "creator", fetch = FetchType.LAZY, orphanRemoval=true)
     private Set<Tourney> createdTourneys = new HashSet<>();
 
+    @Column(columnDefinition = "boolean default true", nullable = false)
+    private Boolean studentQuestionPrivacy = true;
+
     public User() {
     }
 
@@ -202,11 +205,15 @@ public class User implements UserDetails, DomainEntity {
 
     public void setNumberOfSubmittedQuestions(Integer numberOfSubmittedQuestions) { this.numberOfSubmittedQuestions = numberOfSubmittedQuestions; }
 
+    public void addNumberOfSubmittedQuestions() {this.numberOfSubmittedQuestions =  getNumberOfSubmittedQuestions() + 1;}
+
     public Integer getNumberOfApprovedQuestions() {
         return numberOfApprovedQuestions;
     }
 
     public void setNumberOfApprovedQuestions(Integer numberOfApprovedQuestions) { this.numberOfApprovedQuestions = numberOfApprovedQuestions; }
+
+    public void addNumberOfApprovedQuestions() {this.numberOfApprovedQuestions = getNumberOfApprovedQuestions() + 1;}
 
     public Integer getNumberOfRejectedQuestions() {
         return numberOfRejectedQuestions;
@@ -372,6 +379,7 @@ public class User implements UserDetails, DomainEntity {
                 ", numberOfCorrectStudentAnswers=" + numberOfCorrectStudentAnswers +
                 ", creationDate=" + creationDate +
                 ", lastAccess=" + lastAccess +
+                ", StudentQuestionPrivacy=" + studentQuestionPrivacy +
                 '}';
     }
 
@@ -421,6 +429,13 @@ public class User implements UserDetails, DomainEntity {
             default:
                 break;
         }
+    }
+    public boolean getStudentQuestionPrivacy() {
+        return studentQuestionPrivacy;
+    }
+
+    public void setStudentQuestionPrivacy(boolean studentQuestionPrivacy) {
+        this.studentQuestionPrivacy = studentQuestionPrivacy;
     }
 
     public void addQuizAnswer(QuizAnswer quizAnswer) {

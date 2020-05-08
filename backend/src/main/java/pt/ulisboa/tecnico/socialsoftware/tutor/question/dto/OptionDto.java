@@ -9,6 +9,7 @@ public class OptionDto implements Serializable {
     private Integer sequence;
     private boolean correct;
     private String content;
+    private boolean isStudentQuestionOption;
 
     public OptionDto() {
     }
@@ -47,6 +48,10 @@ public class OptionDto implements Serializable {
     public void setContent(String content) {
         this.content = content;
     }
+
+    public boolean isStudentQuestionOption() { return isStudentQuestionOption; }
+
+    public void setStudentQuestionOption(boolean studentQuestionOption) { isStudentQuestionOption = studentQuestionOption; }
 
     @Override
     public String toString() {
