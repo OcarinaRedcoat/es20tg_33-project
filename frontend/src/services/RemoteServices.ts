@@ -677,20 +677,7 @@ export default class RemoteServices {
       });
   }
 
-  static async getTourneysDashboard(): Promise<TourneyStats[]> {
-    return httpClient
-      .get(
-        `/tourneys/dashboard`
-      )
-      .then(response => {
-        return response.data.map((tourneyStats: any) => {
-          return new TourneyStats(tourneyStats);
-        });
-      })
-      .catch(async error => {
-        throw Error(await this.errorMessage(error));
-      });
-  }
+
 
   static async submitMessage(
       discussionId: number | undefined,
@@ -703,6 +690,19 @@ export default class RemoteServices {
       )
       .then(response => {
         return new Message(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
+  }
+
+  static async getTourneysDashboard(): Promise<TourneyStats[]> {
+    return httpClient
+      .get('/tourneys/dashboard')
+      .then(response => {
+        return response.data.map((tourneyStats: any) => {
+          return new TourneyStats(tourneyStats);
+        });
       })
       .catch(async error => {
         throw Error(await this.errorMessage(error));
@@ -725,9 +725,7 @@ export default class RemoteServices {
 
   static async changeDiscussionDashboardPrivacy() {
     return httpClient
-      .post(
-        `/discussion/${Store.getters.getUser.username}/dashboard`
-      )
+      .post(`/discussion/${Store.getters.getUser.username}/dashboard`)
       .then(response => {
         return response.data;
       })
@@ -738,9 +736,7 @@ export default class RemoteServices {
 
   static async getDiscussionDashboardPrivacy() {
     return httpClient
-      .get(
-        `/discussion/dashboard/${Store.getters.getUser.username}`
-      )
+      .get(`/discussion/dashboard/${Store.getters.getUser.username}`)
       .then(response => {
         return response.data;
       })
@@ -913,13 +909,13 @@ export default class RemoteServices {
 
   static async getTourneyQuizAnswer(tourney: Tourney) {
     return httpClient
-        .get(`/tourneys/${tourney.tourneyId}/quiz`)
-        .then(response => {
-          return new StatementQuiz(response.data)
-        })
-        .catch(async error => {
-          throw Error(await this.errorMessage(error));
-        });
+      .get(`/tourneys/${tourney.tourneyId}/quiz`)
+      .then(response => {
+        return new StatementQuiz(response.data);
+      })
+      .catch(async error => {
+        throw Error(await this.errorMessage(error));
+      });
   }
 
   static async toggleTourneysPrivacy(privacy: String) : Promise<boolean> {

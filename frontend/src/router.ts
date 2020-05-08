@@ -25,6 +25,9 @@ import CreateTourney from './views/student/tourney/CreateTourney.vue';
 import OpenTourneys from './views/student/tourney/OpenTourneys.vue';
 import TourneysDashboard from './views/student/tourney/TourneysDashboard.vue';
 import DiscussionAnswerView from './views/student/quiz/DiscussionAnswerView.vue';
+
+
+
 import AllDiscussionView from './views/student/quiz/AllDiscussionView.vue';
 import DiscussionDashboard from './views/student/DiscussionDashboard.vue';
 import DiscussionPublicQ from './views/student/quiz/DiscussionPublicQ.vue';
